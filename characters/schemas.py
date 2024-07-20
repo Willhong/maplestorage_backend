@@ -1,7 +1,7 @@
 # schemas.py
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 
 class CharacterBasicSchema(BaseModel):
@@ -17,7 +17,8 @@ class CharacterBasicSchema(BaseModel):
     character_guild_name: Optional[str] = Field(
         None, description="캐릭터 소속 길드 명")
     character_image: str = Field(..., description="캐릭터 외형 이미지")
-    character_date_create: datetime = Field(..., description="캐릭터 생성일 (KST)")
+    character_date_create: Optional[datetime] = Field(
+        None, description="캐릭터 생성일 (KST)")
     access_flag: bool = Field(..., description="최근 7일간 접속 여부")
     liberation_quest_clear_flag: bool = Field(..., description="해방 퀘스트 완료 여부")
 
@@ -25,3 +26,29 @@ class CharacterBasicSchema(BaseModel):
         json_encoders = {
             datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M%z")
         }
+
+
+class CharacterPopularitySchema(BaseModel):
+    date: Optional[datetime] = Field(
+        None, description="조회 기준일 (KST, 일 단위 데이터로 시, 분은 일괄 0으로 표기)")
+    popularity: int
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M%z")
+        }
+
+
+class StatDetailSchema(BaseModel):
+    stat_name: str
+    stat_value: str
+
+
+class CharacterStatSchema(BaseModel):
+    date: Optional[datetime]
+    character_class: str
+    final_stat: List[StatDetailSchema]
+    remain_ap: int
+
+    class Config:
+        orm_mode = True

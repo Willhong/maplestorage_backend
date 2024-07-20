@@ -10,7 +10,7 @@ from accounts.models import Character
 from define.define import APIKEY, BASE_URL
 from util.util import CharacterDataManager
 from .models import CharacterBasic
-from .schemas import CharacterBasicSchema
+from .schemas import CharacterBasicSchema, CharacterPopularitySchema, CharacterStatSchema
 from .serializers import CharacterBasicSerializer
 
 
@@ -19,6 +19,7 @@ class CharacterBasicView(APIView):
         character_name = request.query_params.get('character_name')
         character_name = character_name.strip()
         date = request.query_params.get('date')  # 조회 기준일 (KST, YYYY-MM-DD)
+        force_refresh = request.query_params.get('force_refresh', False)
 
         if not character_name:
             return Response({"error": "Character name is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -33,17 +34,19 @@ class CharacterBasicView(APIView):
             ocid = self.get_ocid_from_api(character_name)
             if not ocid:
                 return Response({"error": "Character not found"}, status=status.HTTP_404_NOT_FOUND)
-        if not date:
+        if not date and (force_refresh == False):
             # 캐시된 CharacterBasic 데이터 확인
             cached_data = self.get_cached_data(character_name)
             if cached_data:
                 return Response(CharacterBasicSerializer(cached_data).data)
-
         # 캐시된 데이터가 없으면 API에서 가져오기
         character_data = self.get_character_data_from_api(ocid, date)
+        popularity_data = self.get_popularity_data_from_api(ocid, date)
+        stat_data = self.get_stat_data_from_api(ocid, date)
+
         if character_data:
             saved_data = CharacterDataManager.update_character_data(
-                character_data.model_dump(), ocid)
+                character_data.model_dump(), popularity_data.model_dump(), stat_data.model_dump(), ocid)
             return Response(CharacterBasicSerializer(saved_data).data)
         if not character_data:
             return Response({"error": "Failed to fetch character data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -86,14 +89,51 @@ class CharacterBasicView(APIView):
             )
             response.raise_for_status()
             data = response.json()
-            date = data.get('date')
+            date = data.get('date')  # '2024-07-09T00:00+09:00' -> datetime
             if not date:
-                data['date'] = timezone.now().isoformat()
+                data['date'] = timezone.now().replace(
+                    hour=15, minute=0, second=0, microsecond=0).isoformat()
 
             return CharacterBasicSchema.model_validate(data)
         except Exception as e:
             print(f"Error fetching character data: {str(e)}")
             return None
+
+    def get_popularity_data_from_api(self, ocid, date):
+        try:
+            headers = {
+                "accept": "application/json",
+                "x-nxopen-api-key": APIKEY
+            }
+            url = f"{BASE_URL}/character/popularity?ocid={ocid}{f'&date={date}' if date else ''}"
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+            if not date:
+                data['date'] = timezone.now().replace(
+                    hour=15, minute=0, second=0, microsecond=0).isoformat()
+            return CharacterPopularitySchema.model_validate(data)
+        except Exception as e:
+            print(f"Error fetching popularity data: {str(e)}")
+            return None
+
+    def get_stat_data_from_api(self, ocid, date):
+        try:
+            headers = {
+                "accept": "application/json",
+                "x-nxopen-api-key": APIKEY
+            }
+            url = f"{BASE_URL}/character/stat?ocid={ocid}{f'&date={date}' if date else ''}"
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+            date = data.get('date')
+            if not date:
+                data['date'] = timezone.now().replace(
+                    hour=15, minute=0, second=0, microsecond=0).isoformat()
+            return CharacterStatSchema.model_validate(data)
+        except Exception as e:
+            print(f"Error fetching stat data: {str(e)}")
 
     def get_cached_data(self, character_name):
         cache_time = timezone.now() - timedelta(minutes=15)
