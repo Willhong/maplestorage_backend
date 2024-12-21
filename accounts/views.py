@@ -17,15 +17,23 @@ CACHE_DURATION = timedelta(hours=1)  # 캐시 유효 기간
 
 
 class APIKeyView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def post(self, request):
         serializer = MapleStoryAPIKeySerializer(data=request.data)
         if serializer.is_valid():
-            MapleStoryAPIKey.objects.update_or_create(
-                user=request.user,
-                defaults={'api_key': serializer.validated_data['api_key']}
-            )
+            if request.user.is_authenticated:
+                MapleStoryAPIKey.objects.update_or_create(
+                    user=request.user,
+                    defaults={
+                        'api_key': serializer.validated_data['api_key']}
+                )
+            else:
+                MapleStoryAPIKey.objects.update_or_create(
+                    defaults={
+                        'api_key': serializer.validated_data['api_key']}
+                )
+
             return Response({"message": "API key saved successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

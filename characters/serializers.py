@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CharacterBasic, CharacterPopularity, CharacterStat, StatDetail
+from .models import AbilityInfo, AbilityPreset, CharacterAbility, CharacterBasic, CharacterPopularity, CharacterStat, StatDetail
 
 
 class CharacterPopularitySerializer(serializers.ModelSerializer):
@@ -46,3 +46,29 @@ class CharacterStatSerializer(serializers.ModelSerializer):
     class Meta:
         model = CharacterStat
         fields = ['date', 'character_class', 'final_stat', 'remain_ap']
+
+
+class AbilityInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AbilityInfo
+        fields = ['ability_no', 'ability_grade', 'ability_value']
+
+
+class AbilityPresetSerializer(serializers.ModelSerializer):
+    ability_info = AbilityInfoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AbilityPreset
+        fields = ['ability_preset_grade', 'ability_info']
+
+
+class CharacterAbilitySerializer(serializers.ModelSerializer):
+    ability_info = AbilityInfoSerializer(many=True, read_only=True)
+    ability_preset_1 = AbilityPresetSerializer(read_only=True)
+    ability_preset_2 = AbilityPresetSerializer(read_only=True)
+    ability_preset_3 = AbilityPresetSerializer(read_only=True)
+
+    class Meta:
+        model = CharacterAbility
+        fields = ['date', 'ability_grade', 'ability_info', 'remain_fame',
+                  'preset_no', 'ability_preset_1', 'ability_preset_2', 'ability_preset_3']
