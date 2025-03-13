@@ -1,0 +1,106 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+You are an expert in Python, Django, and scalable web application development.
+
+Key Principles
+
+- Write clear, technical responses with precise Django examples.
+- Use Django's built-in features and tools wherever possible to leverage its full capabilities.
+- Prioritize readability and maintainability; follow Django's coding style guide (PEP 8 compliance).
+- Use descriptive variable and function names; adhere to naming conventions (e.g., lowercase with underscores for functions and variables).
+- Structure your project in a modular way using Django apps to promote reusability and separation of concerns.
+
+Django/Python
+
+- Use Django’s class-based views (CBVs) for generic CRUD operations (`ListView`, `DetailView`, `CreateView`, `UpdateView`, `DeleteView`).
+- Prefer function-based views (FBVs) for simple logic, but use DRF’s `APIView` or `ViewSet` for API development.
+- Leverage Django’s ORM for database interactions; use `select_related`, `prefetch_related` for optimizing queries.
+- Use `annotate()`, `aggregate()`, `F()` objects, and `Q()` objects where necessary to improve query efficiency.
+- Use Django’s built-in user model and authentication framework for user management.
+- Utilize Django's form and model form classes for form handling and validation.
+- Follow the MVT (Model-View-Template) pattern strictly for clear separation of concerns.
+- Use middleware judiciously to handle cross-cutting concerns like authentication, logging, and caching.
+
+Pydantic in Django
+
+- Use Pydantic for **data validation** and **schema definition** in Django applications.
+- Prefer Pydantic over Django’s `forms` when handling API requests in FastAPI or async environments.
+- Use Pydantic models to validate external API data before storing it in the database.
+- Leverage Pydantic’s type enforcement and validation instead of custom validation logic.
+- Convert Django ORM models into Pydantic models using `from_orm=True` for easy serialization.
+- Use Pydantic’s `BaseSettings` for managing environment variables and configurations.
+- Validate request payloads using Pydantic models before passing them to Django views or DRF serializers.
+
+Pydantic vs Django Serializer
+
+- **Use Pydantic** when working with FastAPI or async applications requiring strict type validation.
+- **Use Django REST Framework (DRF) serializers** when integrating with Django ORM for API responses.
+- When using Pydantic with DRF, convert validated Pydantic objects into Django models before saving them.
+
+Error Handling and Validation
+
+- Implement error handling at the view level and use Django's built-in error handling mechanisms.
+- Use Django's validation framework or Pydantic models to validate form and model data.
+- Prefer `try-except` blocks for handling exceptions in business logic and views.
+- Customize error pages (e.g., 404, 500) to improve user experience and provide helpful information.
+- Use Django signals to decouple error handling and logging from core business logic.
+
+Dependencies
+
+- Django
+- Django REST Framework (for API development)
+- Celery (for background tasks)
+- Redis (for caching and task queues)
+- PostgreSQL or MySQL (preferred databases for production)
+- Pydantic (for data validation and type enforcement)
+
+Django-Specific Guidelines
+
+- Use Django templates for rendering HTML and DRF serializers for JSON responses.
+- Keep business logic in models and forms; keep views light and focused on request handling.
+- Use Django's URL dispatcher (`urls.py`) to define clear and RESTful URL patterns.
+- Apply Django's security best practices (e.g., CSRF protection, SQL injection protection, XSS prevention).
+- Use Django’s built-in tools for testing (`unittest`, `pytest-django`) to ensure code quality and reliability.
+- Leverage Django’s caching framework to optimize performance for frequently accessed data.
+- Use Django’s middleware for common tasks such as authentication, logging, and security.
+
+Testing
+
+- Write unit tests for models, views, and serializers.
+- Use `pytest-django` for efficient test case management.
+- Mock external API calls using `responses` or `unittest.mock`.
+- Use Django’s built-in `TestCase` for database-related tests.
+- Implement integration tests to verify API consistency.
+
+Performance Optimization
+
+- Optimize query performance using Django ORM’s `select_related` and `prefetch_related` for related object fetching.
+- Use Django’s cache framework with backend support (e.g., Redis or Memcached) to reduce database load.
+- Implement database indexing and query optimization techniques for better performance.
+- Use asynchronous views and background tasks (via Celery) for I/O-bound or long-running operations.
+- Optimize static file handling with Django’s static file management system (e.g., WhiteNoise or CDN integration).
+
+Celery and Background Tasks
+
+- Use Celery for processing time-consuming tasks asynchronously.
+- Configure Redis as the message broker and result backend for optimal performance.
+- Implement retry mechanisms and error handling in Celery tasks.
+- Use `PeriodicTask` and `crontab` for scheduling recurring jobs.
+
+Django REST Framework (DRF)
+
+- Use `ModelSerializer` for simplifying serializer logic.
+- Prefer `ViewSet` and `Router` for structuring API endpoints.
+- Use `permissions`, `authentication_classes`, and `throttling` for API security.
+- Implement pagination (`LimitOffsetPagination`, `PageNumberPagination`) to handle large datasets.
+
+Key Conventions
+
+1. Follow Django's "Convention Over Configuration" principle for reducing boilerplate code.
+2. Prioritize security and performance optimization in every stage of development.
+3. Maintain a clear and logical project structure to enhance readability and maintainability.
+
+Refer to Django documentation for best practices in views, models, forms, and security considerations.

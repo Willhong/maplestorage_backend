@@ -3,14 +3,23 @@ from .models import AbilityInfo, AbilityPreset, CharacterAbility, CharacterBasic
 
 
 class CharacterPopularitySerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
+
     class Meta:
         model = CharacterPopularity
         fields = ['date', 'popularity']
+
+    def get_date(self, obj):
+        """날짜를 ISO 형식 문자열로 변환하여 반환"""
+        if obj.date:
+            return obj.date.isoformat()
+        return None
 
 
 class CharacterBasicSerializer(serializers.ModelSerializer):
     popularity = serializers.SerializerMethodField()
     stats = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterBasic
@@ -19,6 +28,12 @@ class CharacterBasicSerializer(serializers.ModelSerializer):
                   'character_exp', 'character_exp_rate', 'character_guild_name',
                   'character_image', 'character_date_create', 'access_flag',
                   'liberation_quest_clear_flag', 'popularity', 'stats']
+
+    def get_date(self, obj):
+        """날짜를 ISO 형식 문자열로 변환하여 반환"""
+        if obj.date:
+            return obj.date.isoformat()
+        return None
 
     def get_popularity(self, obj):
         popularity = obj.popularity.order_by('-date').first()
@@ -42,10 +57,17 @@ class StatDetailSerializer(serializers.ModelSerializer):
 
 class CharacterStatSerializer(serializers.ModelSerializer):
     final_stat = StatDetailSerializer(many=True, read_only=True)
+    date = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterStat
         fields = ['date', 'character_class', 'final_stat', 'remain_ap']
+
+    def get_date(self, obj):
+        """날짜를 ISO 형식 문자열로 변환하여 반환"""
+        if obj.date:
+            return obj.date.isoformat()
+        return None
 
 
 class AbilityInfoSerializer(serializers.ModelSerializer):
@@ -67,8 +89,15 @@ class CharacterAbilitySerializer(serializers.ModelSerializer):
     ability_preset_1 = AbilityPresetSerializer(read_only=True)
     ability_preset_2 = AbilityPresetSerializer(read_only=True)
     ability_preset_3 = AbilityPresetSerializer(read_only=True)
+    date = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterAbility
         fields = ['date', 'ability_grade', 'ability_info', 'remain_fame',
                   'preset_no', 'ability_preset_1', 'ability_preset_2', 'ability_preset_3']
+
+    def get_date(self, obj):
+        """날짜를 ISO 형식 문자열로 변환하여 반환"""
+        if obj.date:
+            return obj.date.isoformat()
+        return None

@@ -76,10 +76,23 @@ class CharacterDataManager:
     @staticmethod
     # @transaction.atomic
     def create_ability_data(ability_data, character_basic):
+        from characters.mixins import CharacterDataMixin
+        import logging
+        logger = logging.getLogger('maple_api')
+
+        # 날짜 처리
         date = ability_data.date
+
+        # CharacterDataMixin 인스턴스 생성
+        mixin = CharacterDataMixin()
 
         if date is None:
             date = character_basic.date
+
+        # 날짜 변환
+        local_time = mixin.convert_to_local_time(date)
+        logger.info(f"어빌리티 데이터 저장 날짜 변환: {date} -> {local_time}")
+        date = local_time
 
         ability_presets = []
         for key, value in ability_data.model_dump().items():

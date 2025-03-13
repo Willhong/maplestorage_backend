@@ -1,6 +1,7 @@
 # schemas.py
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional, Any
+from datetime import datetime
 
 
 class CharacterBasicSchema(BaseModel):
@@ -135,8 +136,8 @@ class ItemEquipmentSchema(BaseModel):
     item_gender: Optional[str]
     item_total_option: ItemTotalOptionSchema
     item_base_option: ItemBaseOptionSchema
-    potential_option_flag: str
-    additional_potential_option_flag: str
+    potential_option_flag: Optional[str]
+    additional_potential_option_flag: Optional[str]
     potential_option_grade: Optional[str]
     additional_potential_option_grade: Optional[str]
     potential_option_1: Optional[str]
@@ -150,17 +151,17 @@ class ItemEquipmentSchema(BaseModel):
     item_add_option: Optional[ItemAddOptionSchema]
     growth_exp: Optional[int]
     growth_level: Optional[int]
-    scroll_upgrade: str
-    cuttable_count: str
-    golden_hammer_flag: str
-    scroll_resilience_count: str
+    scroll_upgrade: Optional[str]
+    cuttable_count: Optional[str]
+    golden_hammer_flag: Optional[str]
+    scroll_resilience_count: Optional[str]
     scroll_upgradable_count: Optional[str] = None
     soul_name: Optional[str] = None
     soul_option: Optional[str] = None
-    item_etc_option: ItemEtcOptionSchema
-    starforce: str
-    starforce_scroll_flag: str
-    item_starforce_option: ItemStarforceOptionSchema
+    item_etc_option: Optional[ItemEtcOptionSchema]
+    starforce: Optional[str]
+    starforce_scroll_flag: Optional[str]
+    item_starforce_option: Optional[ItemStarforceOptionSchema]
     special_ring_level: Optional[int]
     date_expire: Optional[str]
 
@@ -211,7 +212,7 @@ class AbilityPresetSchema(BaseModel):
 
 
 class CharacterAbilitySchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     ability_grade: str
     ability_info: List[AbilityInfoSchema]
     remain_fame: int
@@ -238,17 +239,18 @@ class CashItemEquipmentSchema(BaseModel):
     cash_item_equipment_slot: str
     cash_item_name: str
     cash_item_icon: str
-    cash_item_description: str
+    cash_item_description: Optional[str] = None
     cash_item_option: List[CashItemOptionSchema]
-    date_expire: Optional[str]
-    date_option_expire: Optional[str]
-    cash_item_label: Optional[str]
-    cash_item_coloring_prism: Optional[CashItemColoringPrismSchema]
-    item_gender: Optional[str]
+    date_expire: Optional[str] = None
+    date_option_expire: Optional[str] = None
+    cash_item_label: Optional[str] = None
+    cash_item_coloring_prism: Optional[CashItemColoringPrismSchema] = None
+    item_gender: Optional[str] = None
+    skill: Optional[List[str]] = None
 
 
 class CharacterCashItemEquipmentSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[str] = None
     character_gender: str
     character_class: str
     character_look_mode: str
@@ -257,10 +259,10 @@ class CharacterCashItemEquipmentSchema(BaseModel):
     cash_item_equipment_preset_1: List[CashItemEquipmentSchema]
     cash_item_equipment_preset_2: List[CashItemEquipmentSchema]
     cash_item_equipment_preset_3: List[CashItemEquipmentSchema]
-    additional_cash_item_equipment_base: Optional[List[CashItemEquipmentSchema]]
-    additional_cash_item_equipment_preset_1: Optional[List[CashItemEquipmentSchema]]
-    additional_cash_item_equipment_preset_2: Optional[List[CashItemEquipmentSchema]]
-    additional_cash_item_equipment_preset_3: Optional[List[CashItemEquipmentSchema]]
+    additional_cash_item_equipment_base: Optional[List[CashItemEquipmentSchema]] = None
+    additional_cash_item_equipment_preset_1: Optional[List[CashItemEquipmentSchema]] = None
+    additional_cash_item_equipment_preset_2: Optional[List[CashItemEquipmentSchema]] = None
+    additional_cash_item_equipment_preset_3: Optional[List[CashItemEquipmentSchema]] = None
 
 
 class SymbolSchema(BaseModel):
@@ -279,6 +281,12 @@ class SymbolSchema(BaseModel):
     symbol_exp_rate: Optional[str]
     symbol_growth_count: int
     symbol_require_growth_count: int
+
+
+class CharacterSymbolSchema(BaseModel):
+    date: Optional[str]
+    character_class: str
+    symbol: List[SymbolSchema]
 
 
 class CharacterSymbolEquipmentSchema(BaseModel):
@@ -314,7 +322,7 @@ class LinkSkillSchema(BaseModel):
 class CharacterLinkSkillSchema(BaseModel):
     date: Optional[str]
     character_class: str
-    character_link_skill: Optional[LinkSkillSchema]
+    character_link_skill: List[LinkSkillSchema] = []
     character_link_skill_preset_1: List[LinkSkillSchema]
     character_link_skill_preset_2: List[LinkSkillSchema]
     character_link_skill_preset_3: List[LinkSkillSchema]
@@ -338,8 +346,10 @@ class VCoreSchema(BaseModel):
 class CharacterVMatrixSchema(BaseModel):
     date: Optional[str]
     character_class: str
-    character_v_core_equipment: List[VCoreSchema]
-    character_v_matrix_remain_slot_upgrade_point: int
+    character_v_core_equipment: List[VCoreSchema] = []
+    character_v_matrix_remain_slot_upgrade_point: int = 0
+    character_skill_grade: Optional[str] = None
+    character_skill: Optional[List[CharacterSkillGradeSchema]] = None
 
 
 class HexaSkillSchema(BaseModel):
@@ -367,6 +377,15 @@ class HexaStatCoreSchema(BaseModel):
     sub_stat_level_1: int
     sub_stat_level_2: int
     stat_grade: int
+
+
+class CharacterHexaStatSchema(BaseModel):
+    date: Optional[str]
+    character_class: str
+    character_hexa_stat_core: List[HexaStatCoreSchema]
+    character_hexa_stat_core_2: List[HexaStatCoreSchema]
+    preset_hexa_stat_core: List[HexaStatCoreSchema]
+    preset_hexa_stat_core_2: List[HexaStatCoreSchema]
 
 
 class CharacterHexaMatrixStatSchema(BaseModel):

@@ -153,6 +153,23 @@ class CharacterItemEquipment(models.Model):
     character_gender = models.CharField(max_length=10)
     character_class = models.CharField(max_length=255)
     preset_no = models.IntegerField()
+    item_equipment = models.ManyToManyField(
+        'ItemEquipment', related_name='character_equipments')
+    item_equipment_preset_1 = models.ManyToManyField(
+        'ItemEquipment', related_name='character_preset_1')
+    item_equipment_preset_2 = models.ManyToManyField(
+        'ItemEquipment', related_name='character_preset_2')
+    item_equipment_preset_3 = models.ManyToManyField(
+        'ItemEquipment', related_name='character_preset_3')
+    title = models.ForeignKey(
+        'Title', on_delete=models.SET_NULL, null=True, blank=True)
+    dragon_equipment = models.ManyToManyField(
+        'ItemEquipment', related_name='character_dragon_equipment', blank=True)
+    mechanic_equipment = models.ManyToManyField(
+        'ItemEquipment', related_name='character_mechanic_equipment', blank=True)
+
+
+class ItemEquipment(models.Model):
     item_equipment_part = models.CharField(max_length=50)
     item_equipment_slot = models.CharField(max_length=50)
     item_name = models.CharField(max_length=255)
@@ -162,11 +179,13 @@ class CharacterItemEquipment(models.Model):
     item_shape_icon = models.URLField(null=True, blank=True)
     item_gender = models.CharField(max_length=10, null=True, blank=True)
     item_total_option = models.OneToOneField(
-        ItemTotalOption, on_delete=models.CASCADE)
+        'ItemTotalOption', on_delete=models.CASCADE)
     item_base_option = models.OneToOneField(
-        ItemBaseOption, on_delete=models.CASCADE)
-    potential_option_flag = models.CharField(max_length=10)
-    additional_potential_option_flag = models.CharField(max_length=10)
+        'ItemBaseOption', on_delete=models.CASCADE)
+    potential_option_flag = models.CharField(
+        max_length=10, null=True, blank=True)
+    additional_potential_option_flag = models.CharField(
+        max_length=10, null=True, blank=True)
     potential_option_grade = models.CharField(
         max_length=50, null=True, blank=True)
     additional_potential_option_grade = models.CharField(
@@ -185,30 +204,27 @@ class CharacterItemEquipment(models.Model):
         max_length=255, null=True, blank=True)
     equipment_level_increase = models.IntegerField(null=True, blank=True)
     item_exceptional_option = models.OneToOneField(
-        ItemExceptionalOption, on_delete=models.CASCADE, null=True, blank=True)
+        'ItemExceptionalOption', on_delete=models.SET_NULL, null=True, blank=True)
     item_add_option = models.OneToOneField(
-        ItemAddOption, on_delete=models.CASCADE, null=True, blank=True)
+        'ItemAddOption', on_delete=models.SET_NULL, null=True, blank=True)
     growth_exp = models.IntegerField(null=True, blank=True)
     growth_level = models.IntegerField(null=True, blank=True)
     scroll_upgrade = models.CharField(max_length=10)
     cuttable_count = models.CharField(max_length=10)
     golden_hammer_flag = models.CharField(max_length=10)
     scroll_resilience_count = models.CharField(max_length=10)
-    scroll_upgradable_count = models.CharField(max_length=10)
+    scroll_upgradable_count = models.CharField(
+        max_length=10, null=True, blank=True)
     soul_name = models.CharField(max_length=255, null=True, blank=True)
     soul_option = models.CharField(max_length=255, null=True, blank=True)
     item_etc_option = models.OneToOneField(
-        ItemEtcOption, on_delete=models.CASCADE)
+        'ItemEtcOption', on_delete=models.CASCADE)
     starforce = models.CharField(max_length=10)
     starforce_scroll_flag = models.CharField(max_length=10)
     item_starforce_option = models.OneToOneField(
-        ItemStarforceOption, on_delete=models.CASCADE)
+        'ItemStarforceOption', on_delete=models.CASCADE)
     special_ring_level = models.IntegerField(null=True, blank=True)
     date_expire = models.DateTimeField(null=True, blank=True)
-    title = models.OneToOneField(
-        Title, on_delete=models.CASCADE, null=True, blank=True)
-    is_dragon_equipment = models.BooleanField(default=False)
-    is_mechanic_equipment = models.BooleanField(default=False)
 
 
 class CharacterStat(models.Model):
@@ -276,7 +292,7 @@ class CashItemEquipment(models.Model):
     cash_item_equipment_slot = models.CharField(max_length=50)
     cash_item_name = models.CharField(max_length=255)
     cash_item_icon = models.URLField()
-    cash_item_description = models.TextField()
+    cash_item_description = models.TextField(null=True, blank=True)
     cash_item_option = models.ManyToManyField(CashItemOption)
     date_expire = models.DateTimeField(null=True, blank=True)
     date_option_expire = models.DateTimeField(null=True, blank=True)
@@ -329,6 +345,9 @@ class Symbol(models.Model):
     symbol_growth_count = models.IntegerField()
     symbol_require_growth_count = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.symbol_name} Lv.{self.symbol_level}"
+
 
 class CharacterSymbolEquipment(models.Model):
     character = models.ForeignKey(
@@ -336,6 +355,9 @@ class CharacterSymbolEquipment(models.Model):
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
     symbol = models.ManyToManyField(Symbol)
+
+    def __str__(self):
+        return f"{self.character.character_name}의 심볼 장착 정보"
 
 
 class CharacterSkillGrade(models.Model):

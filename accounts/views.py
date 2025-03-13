@@ -3,15 +3,19 @@ from datetime import timedelta
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.utils import timezone
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from define.define import BASE_URL
 
 from .models import MapleStoryAPIKey, Account, Character
-from .serializers import MapleStoryAPIKeySerializer, AccountSerializer
+from .serializers import (
+    MapleStoryAPIKeySerializer, AccountSerializer,
+    CharacterListSerializer, RegisterSerializer,
+    CustomTokenObtainPairSerializer
+)
 from .schemas import CharacterListSchema, AccountSchema, CharacterSchema
-from .serializers import CharacterListSerializer
 
 CACHE_DURATION = timedelta(hours=1)  # 캐시 유효 기간
 
@@ -38,8 +42,30 @@ class APIKeyView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "message": "회원가입이 성공적으로 완료되었습니다.",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email
+                }
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
 class AccountListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def get(self, request):
         try:

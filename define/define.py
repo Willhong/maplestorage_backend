@@ -1,3 +1,10 @@
+# import os
+# from dotenv import load_dotenv
+
+# load_dotenv()
+# BASE_URL = "https://open.api.nexon.com/maplestory/v1"
+# APIKEY = os.getenv("MAPLESTORY_API_KEY")
+
 import os
 BASE_URL = "https://open.api.nexon.com/maplestory/v1"
 APIKEY = "test_4468fa7dc351c4fc07584a17f0b664d4ef5267515c18bc96e3db4c225b7f8789cb6dfb7e3b98213ec2b17da60c255a43"
