@@ -1,7 +1,6 @@
 # schemas.py
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional, Any
-from datetime import datetime
 
 
 class CharacterBasicSchema(BaseModel):
@@ -212,7 +211,7 @@ class AbilityPresetSchema(BaseModel):
 
 
 class CharacterAbilitySchema(BaseModel):
-    date: Optional[datetime]
+    date: Optional[str]
     ability_grade: str
     ability_info: List[AbilityInfoSchema]
     remain_fame: int

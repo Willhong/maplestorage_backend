@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AbilityInfo, AbilityPreset, CharacterAbility, CharacterBasic, CharacterPopularity, CharacterStat, StatDetail
+from .models import AbilityInfo, AbilityPreset, CharacterAbility, CharacterBasic, CharacterPopularity, CharacterStat, StatDetail, Account, AccountList, CharacterId
 
 
 class CharacterPopularitySerializer(serializers.ModelSerializer):
@@ -101,3 +101,44 @@ class CharacterAbilitySerializer(serializers.ModelSerializer):
         if obj.date:
             return obj.date.isoformat()
         return None
+
+
+class CharacterBasicListSerializer(serializers.ModelSerializer):
+    """
+    계정에 연결된 캐릭터 리스트를 위한 간단한 Serializer
+    """
+    class Meta:
+        model = CharacterBasic
+        fields = ['ocid', 'character_name', 'world_name',
+                  'character_class', 'character_level']
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    """
+    계정 정보 Serializer
+    """
+    character_list = CharacterBasicListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ['account_id', 'character_list']
+
+
+class AccountListSerializer(serializers.ModelSerializer):
+    """
+    계정 리스트 Serializer
+    """
+    account_list = AccountSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AccountList
+        fields = ['account_list']
+
+
+class CharacterIdSerializer(serializers.ModelSerializer):
+    """
+    캐릭터 ID Serializer
+    """
+    class Meta:
+        model = CharacterId
+        fields = ['ocid']

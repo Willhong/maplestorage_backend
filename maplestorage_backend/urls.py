@@ -8,12 +8,6 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from characters.views import (
-    CharacterBasicView, CharacterAbilityView, CharacterItemEquipmentView,
-    CharacterCashItemEquipmentView, CharacterSymbolView, CharacterLinkSkillView,
-    CharacterVMatrixView, CharacterHexaMatrixView, CharacterHexaStatView
-)
-
 # Swagger 관련 import 추가
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -44,23 +38,7 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('accounts/', AccountListView.as_view(), name='account-list'),
-    path('characters/basic/', CharacterBasicView.as_view(), name='character-basic'),
-    path('characters/ability/', CharacterAbilityView.as_view(),
-         name='character-ability'),
-    path('characters/item-equipment/', CharacterItemEquipmentView.as_view(),
-         name='character-item-equipment'),
-    path('characters/cashitem-equipment/', CharacterCashItemEquipmentView.as_view(),
-         name='character-cashitem-equipment'),
-    path('characters/symbol-equipment/',
-         CharacterSymbolView.as_view(), name='character-symbol'),
-    path('characters/link-skill/', CharacterLinkSkillView.as_view(),
-         name='character-link-skill'),
-    path('characters/skill/', CharacterVMatrixView.as_view(), name='character-skill'),
-    path('characters/hexamatrix/', CharacterHexaMatrixView.as_view(),
-         name='character-hexamatrix'),
-    path('characters/hexamatrix-stat/', CharacterHexaStatView.as_view(),
-         name='character-hexamatrix-stat'),
-
+    path('characters/', include('characters.urls')),
     # Swagger UI URL 추가
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),

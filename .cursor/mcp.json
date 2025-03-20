@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "TalkToFigma": {
+      "command": "C:/Users/Hong/.bun/bin/bun.exe",
+      "args": [
+        "C:/Users/Hong/Downloads/cursor-talk-to-figma-mcp-main/cursor-talk-to-figma-mcp-main/src/talk_to_figma_mcp/server.ts"
+      ]
+    }
+  }
+}

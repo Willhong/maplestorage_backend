@@ -52,3 +52,382 @@ Traceback (most recent call last):
   File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\fields\__init__.py", line 2125, in get_prep_value
     raise e.__class__(
 TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x000001787D0C3040>.
+ERROR 2025-03-20 00:16:51,346 mixins 캐시 데이터 확인 중 오류 발생: 1 validation error for CharacterHexaMatrixSchema
+character_hexa_core_equipment
+  Field required [type=missing, input_value={'date': '2025-03-19T15:1...eferred_filter': None}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:17:43,274 mixins 캐시 데이터 확인 중 오류 발생: 1 validation error for CharacterHexaMatrixSchema
+character_hexa_core_equipment
+  Field required [type=missing, input_value={'date': '2025-03-19T15:1... - Lv.288 팬텀>})}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:21:42,666 mixins 캐시 데이터 확인 중 오류 발생: 7 validation errors for CharacterCashItemEquipmentSchema
+character_gender
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+character_look_mode
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+preset_no
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_1
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_2
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_3
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2..., 'cash_equipments': []}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:22:05,794 mixins 캐시 데이터 확인 중 오류 발생: 7 validation errors for CharacterCashItemEquipmentSchema
+character_gender
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+character_look_mode
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+preset_no
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_1
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_2
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_3
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:22:42,044 mixins 캐시 데이터 확인 중 오류 발생: 7 validation errors for CharacterCashItemEquipmentSchema
+character_gender
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+character_look_mode
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+preset_no
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_1
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_2
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_3
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:24:26,066 mixins 캐시 데이터 확인 중 오류 발생: 7 validation errors for CharacterCashItemEquipmentSchema
+character_gender
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+character_look_mode
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+preset_no
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_1
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_2
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_preset_3
+  Field required [type=missing, input_value={'date': '2025-03-19T15:2...: '0', 'preset_no': 1}]}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:25:27,439 mixins 캐시 데이터 확인 중 오류 발생: 11 validation errors for CharacterCashItemEquipmentSchema
+cash_item_equipment_base.0.cash_item_option
+  Field required [type=missing, input_value={'id': 1, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.1.cash_item_option
+  Field required [type=missing, input_value={'id': 2, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.2.cash_item_option
+  Field required [type=missing, input_value={'id': 3, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.3.cash_item_option
+  Field required [type=missing, input_value={'id': 4, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.4.cash_item_option
+  Field required [type=missing, input_value={'id': 5, 'cash_item_equi...e, 'item_gender': '남'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.5.cash_item_option
+  Field required [type=missing, input_value={'id': 6, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.6.cash_item_option
+  Field required [type=missing, input_value={'id': 7, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.7.cash_item_option
+  Field required [type=missing, input_value={'id': 8, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.8.cash_item_option
+  Field required [type=missing, input_value={'id': 9, 'cash_item_equi...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.9.cash_item_option
+  Field required [type=missing, input_value={'id': 10, 'cash_item_equ...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+cash_item_equipment_base.10.cash_item_option
+  Field required [type=missing, input_value={'id': 11, 'cash_item_equ...None, 'item_gender': ''}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-03-20 00:34:12,359 views 예상치 못한 오류: APIViewMixin.get_cached_data() missing 1 required positional argument: 'model_class'
+ERROR 2025-03-20 00:34:20,536 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:32:26,765 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:32:26,767 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:33:33,414 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:33:33,421 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:42:12,371 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:42:12,458 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:42:44,380 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:42:44,383 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:42:46,449 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:42:46,450 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:43:00,686 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:43:00,690 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:43:14,724 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:43:14,725 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:43:16,582 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:43:16,583 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:43:18,825 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:43:18,826 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 01:43:21,746 views 예상치 못한 오류: API 호출 제한에 도달했습니다. 잠시 후 다시 시도해주세요.
+ERROR 2025-03-20 01:43:21,747 log Internal Server Error: /characters/all/
+ERROR 2025-03-20 09:50:55,522 utils API 호출 중 HTTP 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+ERROR 2025-03-20 09:50:55,526 utils 예상치 못한 오류: 메이플스토리 API 호출 중 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 141, in get_character_data
+    response.raise_for_status()
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 149, in get_character_basic
+    basic_data = MapleAPIService.get_character_data('basic', ocid, date)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 50, in wrapper
+    raise MapleAPIError(detail=str(e), status_code=status_code)
+characters.exceptions.MapleAPIError: 메이플스토리 API 호출 중 오류가 발생했습니다.
+
+ERROR 2025-03-20 09:50:55,526 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 09:50:55,527 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 09:51:16,185 utils API 호출 중 HTTP 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+ERROR 2025-03-20 09:51:16,187 utils 예상치 못한 오류: 메이플스토리 API 호출 중 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 141, in get_character_data
+    response.raise_for_status()
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 149, in get_character_basic
+    basic_data = MapleAPIService.get_character_data('basic', ocid, date)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 50, in wrapper
+    raise MapleAPIError(detail=str(e), status_code=status_code)
+characters.exceptions.MapleAPIError: 메이플스토리 API 호출 중 오류가 발생했습니다.
+
+ERROR 2025-03-20 09:51:22,875 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 09:51:22,881 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 10:17:16,554 utils API 호출 중 HTTP 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+ERROR 2025-03-20 10:17:16,557 utils 예상치 못한 오류: 메이플스토리 API 호출 중 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 141, in get_character_data
+    response.raise_for_status()
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 149, in get_character_basic
+    basic_data = MapleAPIService.get_character_data('basic', ocid, date)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 50, in wrapper
+    raise MapleAPIError(detail=str(e), status_code=status_code)
+characters.exceptions.MapleAPIError: 메이플스토리 API 호출 중 오류가 발생했습니다.
+
+ERROR 2025-03-20 10:17:16,557 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 10:17:16,558 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 10:47:34,532 utils API 호출 중 HTTP 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+ERROR 2025-03-20 10:47:34,535 utils 예상치 못한 오류: 메이플스토리 API 호출 중 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 141, in get_character_data
+    response.raise_for_status()
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/character/basic?ocid=2e0a31fb5fef6dfe331d3bfef62f7ac8
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 149, in get_character_basic
+    basic_data = MapleAPIService.get_character_data('basic', ocid, date)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 50, in wrapper
+    raise MapleAPIError(detail=str(e), status_code=status_code)
+characters.exceptions.MapleAPIError: 메이플스토리 API 호출 중 오류가 발생했습니다.
+
+ERROR 2025-03-20 10:47:34,535 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 10:47:34,536 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 13:24:32,311 utils 예상치 못한 오류: 'skill'
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+ERROR 2025-03-20 13:24:32,312 utils 예상치 못한 오류: 서버에서 예상치 못한 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 225, in get_character_skill
+    return MapleAPIService.get_character_data('skill', ocid, date, character_skill_grade=skill_grade)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 74, in wrapper
+    raise MapleAPIError(
+characters.exceptions.MapleAPIError: 서버에서 예상치 못한 오류가 발생했습니다.
+
+ERROR 2025-03-20 13:24:32,313 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 13:24:32,313 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 13:25:29,674 utils 예상치 못한 오류: 'skill'
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+ERROR 2025-03-20 13:25:29,675 utils 예상치 못한 오류: 서버에서 예상치 못한 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 225, in get_character_skill
+    return MapleAPIService.get_character_data('skill', ocid, date, character_skill_grade=skill_grade)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 74, in wrapper
+    raise MapleAPIError(
+characters.exceptions.MapleAPIError: 서버에서 예상치 못한 오류가 발생했습니다.
+
+ERROR 2025-03-20 13:25:29,676 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 13:25:29,676 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 13:26:24,693 utils 예상치 못한 오류: 'skill'
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+ERROR 2025-03-20 13:26:31,554 utils 예상치 못한 오류: 서버에서 예상치 못한 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+KeyError: 'skill'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 225, in get_character_skill
+    return MapleAPIService.get_character_data('skill', ocid, date, character_skill_grade=skill_grade)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 74, in wrapper
+    raise MapleAPIError(
+characters.exceptions.MapleAPIError: 서버에서 예상치 못한 오류가 발생했습니다.
+
+ERROR 2025-03-20 13:26:31,555 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 13:26:31,561 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 13:28:02,463 utils 예상치 못한 오류: 'skill'
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    headers = MapleAPIService.get_headers()
+KeyError: 'skill'
+
+ERROR 2025-03-20 13:28:02,464 utils 예상치 못한 오류: 서버에서 예상치 못한 오류가 발생했습니다.
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 128, in get_character_data
+    headers = MapleAPIService.get_headers()
+KeyError: 'skill'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 33, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\services.py", line 225, in get_character_skill
+    """캐릭터 스킬 정보 조회"""
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\utils.py", line 74, in wrapper
+    raise MapleAPIError(
+characters.exceptions.MapleAPIError: 서버에서 예상치 못한 오류가 발생했습니다.
+
+ERROR 2025-03-20 13:28:02,465 views V매트릭스 정보 조회 중 오류 발생: 서버에서 예상치 못한 오류가 발생했습니다.
+ERROR 2025-03-20 13:28:02,470 log Internal Server Error: /characters/skill/
+ERROR 2025-03-20 16:31:18,781 views 데이터베이스 저장 중 오류 발생: Cannot assign "{'ability_preset_grade': '레전드리', 'ability_info': [{'ability_no': '1', 'ability_grade': '레전드리', 'ability_value': '보스 몬스터 공격 시 데미지 19% 증가'}, {'ability_no': '2', 'ability_grade': '유니크', 'ability_value': '스킬 사용 시 10% 확률로 재사용 대기시간이 미적용'}, {'ability_no': '3', 'ability_grade': '유니크', 'ability_value': '크리티컬 확률 20% 증가'}]}": "CharacterAbility.ability_preset_1" must be a "AbilityPreset" instance.
+ERROR 2025-03-20 16:33:05,068 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_preset_1_id
+ERROR 2025-03-20 16:48:58,029 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterandroidequipment
+ERROR 2025-03-20 16:55:16,879 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
+ERROR 2025-03-20 16:55:50,918 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-20 16:58:04,809 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-20 16:59:16,516 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-20 16:59:54,123 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-20 17:00:05,243 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.access_flag
+ERROR 2025-03-20 17:01:32,480 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.access_flag
+ERROR 2025-03-20 17:01:45,884 views 데이터베이스 저장 중 오류 발생: ['“true” value must be either True or False.']
+ERROR 2025-03-20 18:04:46,291 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
+ERROR 2025-03-20 18:06:29,612 views 데이터베이스 저장 중 오류 발생: Invalid field name(s) for model CharacterId: 'date'.
+ERROR 2025-03-20 18:07:45,810 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
+ERROR 2025-03-20 18:08:38,970 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterid.ocid

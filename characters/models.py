@@ -15,8 +15,6 @@ class CharacterBasic(models.Model):
     character_exp = models.BigIntegerField(help_text="현재 레벨에서 보유한 경험치")
     character_exp_rate = models.CharField(
         max_length=10, help_text="현재 레벨에서 경험치 퍼센트")
-    character_guild_name = models.CharField(
-        max_length=255, null=True, blank=True, help_text="캐릭터 소속 길드 명")
     character_image = models.URLField(help_text="캐릭터 외형 이미지")
     character_date_create = models.DateTimeField(
         help_text="캐릭터 생성일 (KST)", null=True, blank=True)
@@ -179,9 +177,9 @@ class ItemEquipment(models.Model):
     item_shape_icon = models.URLField(null=True, blank=True)
     item_gender = models.CharField(max_length=10, null=True, blank=True)
     item_total_option = models.OneToOneField(
-        'ItemTotalOption', on_delete=models.CASCADE)
+        'ItemTotalOption', on_delete=models.CASCADE, null=True, blank=True)
     item_base_option = models.OneToOneField(
-        'ItemBaseOption', on_delete=models.CASCADE)
+        'ItemBaseOption', on_delete=models.CASCADE, null=True, blank=True)
     potential_option_flag = models.CharField(
         max_length=10, null=True, blank=True)
     additional_potential_option_flag = models.CharField(
@@ -391,6 +389,7 @@ class CharacterLinkSkill(models.Model):
         CharacterBasic, on_delete=models.CASCADE, related_name='link_skills')
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
+    preset_no = models.IntegerField()
     character_link_skill = models.OneToOneField(
         LinkSkill, on_delete=models.CASCADE, null=True, blank=True, related_name='main_link')
     character_link_skill_preset_1 = models.ManyToManyField(
@@ -425,6 +424,7 @@ class CharacterVMatrix(models.Model):
         CharacterBasic, on_delete=models.CASCADE, related_name='v_matrix')
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
+    preset_no = models.IntegerField()
     character_v_core_equipment = models.ManyToManyField(VCore)
     character_v_matrix_remain_slot_upgrade_point = models.IntegerField()
 
@@ -463,6 +463,7 @@ class CharacterHexaMatrixStat(models.Model):
         CharacterBasic, on_delete=models.CASCADE, related_name='hexa_stats')
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
+    preset_no = models.IntegerField()
     character_hexa_stat_core = models.ManyToManyField(
         HexaStatCore, related_name='main_stats')
     character_hexa_stat_core_2 = models.ManyToManyField(
@@ -482,3 +483,149 @@ class CharacterDojang(models.Model):
     dojang_best_floor = models.IntegerField()
     date_dojang_record = models.DateTimeField(null=True, blank=True)
     dojang_best_time = models.IntegerField()
+
+
+class CharacterSetEffect(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='set_effects')
+    date = models.DateTimeField(null=True, blank=True)
+    set_effect = models.JSONField()  # 세트 효과는 동적 필드가 많아 JSONField로 저장
+
+    def __str__(self):
+        return f"{self.character.character_name}의 세트 효과"
+
+
+class BeautyEquipment(models.Model):
+    beauty_equipment_part = models.CharField(max_length=50)
+    beauty_equipment_slot = models.CharField(max_length=50)
+    beauty_name = models.CharField(max_length=255)
+    beauty_icon = models.URLField()
+    beauty_description = models.TextField(null=True, blank=True)
+    date_expire = models.DateTimeField(null=True, blank=True)
+    date_option_expire = models.DateTimeField(null=True, blank=True)
+    shape_name = models.CharField(max_length=255, null=True, blank=True)
+    shape_icon = models.URLField(null=True, blank=True)
+    base_color = models.CharField(max_length=50, null=True, blank=True)
+    mix_color = models.CharField(max_length=50, null=True, blank=True)
+    mix_rate = models.IntegerField(null=True, blank=True)
+    hair_color = models.CharField(max_length=50, null=True, blank=True)
+
+
+class CharacterBeautyEquipment(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='beauty_equipments')
+    date = models.DateTimeField(null=True, blank=True)
+    character_gender = models.CharField(max_length=10)
+    character_class = models.CharField(max_length=255)
+    beauty_equipment = models.ManyToManyField(BeautyEquipment)
+
+    def __str__(self):
+        return f"{self.character.character_name}의 성형/헤어 정보"
+
+
+class AndroidEquipment(models.Model):
+    android_name = models.CharField(max_length=255)
+    android_nickname = models.CharField(max_length=255)
+    android_icon = models.URLField()
+    android_description = models.TextField(null=True, blank=True)
+    android_grade = models.CharField(max_length=50, null=True, blank=True)
+    android_skin_name = models.CharField(max_length=255, null=True, blank=True)
+    android_hair = models.OneToOneField(
+        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_hair')
+    android_face = models.OneToOneField(
+        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_face')
+    android_ear = models.OneToOneField(
+        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_ear')
+    android_equipment = models.ManyToManyField(ItemEquipment)
+    date_expire = models.DateTimeField(null=True, blank=True)
+
+
+class CharacterAndroidEquipment(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='android_equipments')
+    date = models.DateTimeField(null=True, blank=True)
+    android_equipment = models.ManyToManyField(AndroidEquipment)
+
+    def __str__(self):
+        return f"{self.character.character_name}의 안드로이드 정보"
+
+
+class PetEquipment(models.Model):
+    pet_name = models.CharField(max_length=255)
+    pet_nickname = models.CharField(max_length=255)
+    pet_icon = models.URLField()
+    pet_description = models.TextField(null=True, blank=True)
+    pet_equipment = models.ManyToManyField(ItemEquipment)
+    pet_auto_skill = models.JSONField(null=True, blank=True)
+    pet_pet_type = models.CharField(max_length=50, null=True, blank=True)
+    date_expire = models.DateTimeField(null=True, blank=True)
+    date_option_expire = models.DateTimeField(null=True, blank=True)
+
+
+class CharacterPetEquipment(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='pet_equipments')
+    date = models.DateTimeField(null=True, blank=True)
+    pet_equipment = models.ManyToManyField(PetEquipment)
+
+    def __str__(self):
+        return f"{self.character.character_name}의 펫 정보"
+
+
+class CharacterPropensity(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='propensities')
+    date = models.DateTimeField(null=True, blank=True)
+    charisma_level = models.IntegerField()
+    sensibility_level = models.IntegerField()
+    insight_level = models.IntegerField()
+    willingness_level = models.IntegerField()
+    handicraft_level = models.IntegerField()
+    charm_level = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.character.character_name}의 성향 정보"
+
+
+class HyperStat(models.Model):
+    stat_type = models.CharField(max_length=50)
+    stat_point = models.IntegerField()
+    stat_level = models.IntegerField()
+    stat_increase = models.CharField(max_length=50)
+
+
+class CharacterHyperStat(models.Model):
+    character = models.ForeignKey(
+        CharacterBasic, on_delete=models.CASCADE, related_name='hyper_stats')
+    date = models.DateTimeField(null=True, blank=True)
+    character_class = models.CharField(max_length=255)
+    use_preset_no = models.IntegerField()
+    hyper_stat_preset_1 = models.ManyToManyField(
+        HyperStat, related_name='preset_1')
+    hyper_stat_preset_2 = models.ManyToManyField(
+        HyperStat, related_name='preset_2')
+    hyper_stat_preset_3 = models.ManyToManyField(
+        HyperStat, related_name='preset_3')
+    hyper_stat_preset_1_remain_point = models.IntegerField()
+    hyper_stat_preset_2_remain_point = models.IntegerField()
+    hyper_stat_preset_3_remain_point = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.character.character_name}의 하이퍼스탯 정보"
+
+
+class Account(models.Model):
+    account_id = models.CharField(max_length=255)
+    character_list = models.ManyToManyField(CharacterBasic)
+
+
+class AccountList(models.Model):
+    account_list = models.ManyToManyField(Account)
+
+
+class CharacterId(models.Model):
+    ocid = models.CharField(max_length=255, unique=True)
+    date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.ocid

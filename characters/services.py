@@ -40,6 +40,20 @@ logger = logging.getLogger(__name__)
 class MapleAPIService(CharacterDataMixin):
     """메이플스토리 API 호출 서비스"""
 
+    ENDPOINTS = {
+        'basic': CHARACTER_BASIC_URL,
+        'popularity': CHARACTER_POPULARITY_URL,
+        'stat': CHARACTER_STAT_URL,
+        'ability': CHARACTER_ABILITY_URL,
+        'item_equipment': CHARACTER_ITEM_EQUIPMENT_URL,
+        'cashitem_equipment': CHARACTER_CASHITEM_EQUIPMENT_URL,
+        'skill': CHARACTER_SKILL_URL,
+        'symbol': CHARACTER_SYMBOL_URL,
+        'link_skill': CHARACTER_LINK_SKILL_URL,
+        'hexamatrix': CHARACTER_HEXAMATRIX_URL,
+        'hexamatrix_stat': CHARACTER_HEXAMATRIX_STAT_URL
+    }
+
     @staticmethod
     def get_headers():
         """API 호출용 헤더 반환"""
@@ -91,39 +105,51 @@ class MapleAPIService(CharacterDataMixin):
 
     @staticmethod
     @handle_api_exception
-    def get_character_basic(ocid, date=None):
+    def get_character_data(endpoint_key, ocid, date=None, **kwargs):
         """
-        기본 정보 조회 및 CharacterBasic 데이터 생성
+        캐릭터 데이터 조회 공통 메서드
 
         Args:
+            endpoint_key (str): 엔드포인트 키
             ocid (str): 캐릭터 OCID
             date (str, optional): 조회 기준일
+            **kwargs: 추가 파라미터
 
         Returns:
-            tuple: (CharacterBasic 객체, 현재 시간)
+            dict: API 응답 데이터
 
         Raises:
             MapleAPIError: API 호출 중 오류가 발생한 경우
-            DatabaseError: 데이터베이스 작업 중 오류가 발생한 경우
         """
-        log_api_call("get_character_basic", {"ocid": ocid, "date": date})
-
-        # 서비스 인스턴스 생성 (convert_to_local_time 메서드 사용을 위해)
-        service = MapleAPIService()
+        log_api_call(f"get_character_{endpoint_key}", {
+                     "ocid": ocid, "date": date, **kwargs})
 
         # API 호출
         headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_BASIC_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
+        base_url = MapleAPIService.ENDPOINTS[endpoint_key]
+
+        # URL 파라미터 구성
+        params = {'ocid': ocid}
+        if date:
+            params['date'] = date
+        params.update(kwargs)
+
+        # URL 생성
+        param_str = '&'.join(f"{k}={v}" for k, v in params.items())
+        url = f"{base_url}?{param_str}"
+
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        basic_data = response.json()
 
-        # CharacterBasic 데이터 생성 또는 업데이트
-        api_date = basic_data.get('date')
+        return response.json()
 
-        # 날짜 변환
-        current_time = service.convert_to_local_time(api_date)
-        logger.info(f"API 날짜 변환: {api_date} -> {current_time}")
+    @staticmethod
+    @handle_api_exception
+    def get_character_basic(ocid, date=None):
+        """캐릭터 기본 정보 조회"""
+        basic_data = MapleAPIService.get_character_data('basic', ocid, date)
+        service = MapleAPIService()
+        current_time = service.convert_to_local_time(basic_data.get('date'))
 
         try:
             character_basic, created = CharacterBasic.objects.update_or_create(
@@ -154,267 +180,62 @@ class MapleAPIService(CharacterDataMixin):
     @staticmethod
     @handle_api_exception
     def get_character_popularity(ocid, date=None):
-        """
-        캐릭터 인기도 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 인기도 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_popularity", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_POPULARITY_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 인기도 정보 조회"""
+        return MapleAPIService.get_character_data('popularity', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_stat(ocid, date=None):
-        """
-        캐릭터 스탯 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 스탯 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_stat", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_STAT_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 스탯 정보 조회"""
+        return MapleAPIService.get_character_data('stat', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_ability(ocid, date=None):
-        """
-        캐릭터 어빌리티 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 어빌리티 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_ability", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_ABILITY_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 어빌리티 정보 조회"""
+        return MapleAPIService.get_character_data('ability', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_item_equipment(ocid, date=None):
-        """
-        캐릭터 장비 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 장비 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_item_equipment",
-                     {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_ITEM_EQUIPMENT_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 장비 정보 조회"""
+        return MapleAPIService.get_character_data('item_equipment', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_cashitem_equipment(ocid, date=None):
-        """
-        캐릭터 캐시 장비 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 캐시 장비 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_cashitem_equipment",
-                     {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_CASHITEM_EQUIPMENT_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 캐시 장비 정보 조회"""
+        return MapleAPIService.get_character_data('cashitem_equipment', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_symbol(ocid, date=None):
-        """
-        캐릭터 심볼 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 심볼 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_symbol", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_SYMBOL_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 심볼 정보 조회"""
+        return MapleAPIService.get_character_data('symbol', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_link_skill(ocid, date=None):
-        """
-        캐릭터 링크 스킬 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 링크 스킬 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_link_skill", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_LINK_SKILL_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 링크 스킬 정보 조회"""
+        return MapleAPIService.get_character_data('link_skill', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_skill(ocid, skill_grade, date=None):
-        """
-        캐릭터 스킬 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            skill_grade (str): 스킬 등급 (0: 0차, 1: 1차, 1.5: 1.5차, 2: 2차, 2.5: 2.5차, 3: 3차, 4: 4차, hyperpassive: 하이퍼 패시브, hyperactive: 하이퍼 액티브, 5: 5차, 6: 6차)
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: 스킬 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_skill", {
-                     "ocid": ocid, "skill_grade": skill_grade, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_SKILL_URL}?ocid={ocid}&character_skill_grade={skill_grade}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 스킬 정보 조회"""
+        return MapleAPIService.get_character_data('skill', ocid, date, character_skill_grade=skill_grade)
 
     @staticmethod
     @handle_api_exception
     def get_character_hexamatrix(ocid, date=None):
-        """
-        캐릭터 HEXA 매트릭스 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: HEXA 매트릭스 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_hexamatrix", {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_HEXAMATRIX_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 HEXA 매트릭스 정보 조회"""
+        return MapleAPIService.get_character_data('hexamatrix', ocid, date)
 
     @staticmethod
     @handle_api_exception
     def get_character_hexamatrix_stat(ocid, date=None):
-        """
-        캐릭터 HEXA 매트릭스 스탯 정보 조회
-
-        Args:
-            ocid (str): 캐릭터 OCID
-            date (str, optional): 조회 기준일
-
-        Returns:
-            dict: HEXA 매트릭스 스탯 정보
-
-        Raises:
-            MapleAPIError: API 호출 중 오류가 발생한 경우
-        """
-        log_api_call("get_character_hexamatrix_stat",
-                     {"ocid": ocid, "date": date})
-
-        # API 호출
-        headers = MapleAPIService.get_headers()
-        url = f"{CHARACTER_HEXAMATRIX_STAT_URL}?ocid={ocid}{f'&date={date}' if date else ''}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        """캐릭터 HEXA 매트릭스 스탯 정보 조회"""
+        return MapleAPIService.get_character_data('hexamatrix_stat', ocid, date)
 
 
 class EquipmentService:
