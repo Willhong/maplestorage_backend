@@ -41,4 +41,7 @@ urlpatterns = [
          name='character-propensity'),
     path('<str:ocid>/hyper-stat/', views.CharacterHyperStatView.as_view(),
          name='character-hyper-stat'),
+    path('<str:ocid>/all/', views.CharacterAllDataView.as_view(),
+         name='character-all-data'),
+    path('redis-health/', views.RedisHealthCheckView.as_view(), name='redis-health'),
 ]

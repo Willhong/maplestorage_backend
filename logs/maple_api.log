@@ -431,3 +431,512 @@ ERROR 2025-03-20 18:04:46,291 views CharacterBasic 모델에서 OCID 2e0a31fb5fe
 ERROR 2025-03-20 18:06:29,612 views 데이터베이스 저장 중 오류 발생: Invalid field name(s) for model CharacterId: 'date'.
 ERROR 2025-03-20 18:07:45,810 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
 ERROR 2025-03-20 18:08:38,970 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterid.ocid
+ERROR 2025-03-21 11:19:36,935 views 데이터베이스 저장 중 오류 발생: get() returned more than one CharacterBasic -- it returned 2!
+ERROR 2025-03-21 11:20:07,279 views 데이터베이스 저장 중 오류 발생: get() returned more than one CharacterBasic -- it returned 2!
+ERROR 2025-03-21 11:34:37,876 views 데이터베이스 저장 중 오류 발생: get() returned more than one CharacterBasic -- it returned 2!
+ERROR 2025-03-21 11:35:48,242 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
+ERROR 2025-03-21 11:35:54,490 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-21 11:36:02,498 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-21 11:36:59,116 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-21 11:37:07,354 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-21 11:37:30,131 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.ocid
+ERROR 2025-03-21 11:37:53,338 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasichistory.date
+ERROR 2025-03-21 23:26:49,480 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got [].
+ERROR 2025-03-21 23:26:55,344 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got [].
+ERROR 2025-03-21 23:27:56,692 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got [].
+ERROR 2025-03-21 23:28:16,500 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got [].
+ERROR 2025-03-21 23:30:14,975 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got [].
+ERROR 2025-03-21 23:37:15,126 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:38:03,729 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:39:25,961 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:39:46,162 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:40:10,177 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:40:37,725 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:45:25,938 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:47:33,545 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:47:54,838 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.preset_no
+ERROR 2025-03-21 23:48:53,151 views CharacterBasic 모델에서 OCID 2e0a31fb5fef6dfe331d3bfef62f7ac8를 찾을 수 없습니다.
+ERROR 2025-03-21 23:56:04,186 views 데이터베이스 저장 중 오류 발생: local variable 'created' referenced before assignment
+ERROR 2025-03-22 00:01:15,498 views 데이터베이스 저장 중 오류 발생: Cannot assign "{'title_name': 'BOSS', 'title_icon': 'https://open.api.nexon.com/static/maplestory/item/icon/KGICLAJI', 'title_description': 'BOSS 칭호이다. \n\n보스 몬스터 공격 시 데미지 +30%\n방어율 무시+30%\n공격력/마력+30\n옵션 적용 기간: 30일\n\n클릭으로 ON/OFF시킬 수 있다.', 'date_expire': None, 'date_option_expire': '2025-03-28T09:14+09:00', 'title_shape_name': '8000일을 함께한', 'title_shape_icon': 'https://open.api.nexon.com/static/maplestory/item/icon/KGICLAHG', 'title_shape_description': '메이플스토리 8000일을 함께한 용사에게 주어지는 칭호이다.\n\n클릭으로 ON/OFF시킬 수 있다.'}": "CharacterItemEquipment.title" must be a "Title" instance.
+ERROR 2025-03-22 00:02:32,169 views 데이터베이스 저장 중 오류 발생: type object 'ItemEquipment' has no attribute 'create_from_data'
+ERROR 2025-03-22 00:03:08,013 views 데이터베이스 저장 중 오류 발생: type object 'ItemEquipment' has no attribute 'create_from_data'
+ERROR 2025-03-22 00:10:04,821 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got {'str': '0', 'dex': '30', 'int': '60', 'luk': '84', 'max_hp': '0', 'max_mp': '0', 'attack_power': '0', 'magic_power': '0', 'armor': '0', 'speed': '0', 'jump': '0', 'boss_damage': '0', 'damage': '0', 'all_stat': '6', 'equipment_level_decrease': 0}.
+ERROR 2025-03-22 00:15:13,037 views 데이터베이스 저장 중 오류 발생: Field 'id' expected a number but got {'str': '0', 'dex': '30', 'int': '60', 'luk': '84', 'max_hp': '0', 'max_mp': '0', 'attack_power': '0', 'magic_power': '0', 'armor': '0', 'speed': '0', 'jump': '0', 'boss_damage': '0', 'damage': '0', 'all_stat': '6', 'equipment_level_decrease': 0}.
+ERROR 2025-03-22 00:16:08,962 views 데이터베이스 저장 중 오류 발생: ItemEquipment() got unexpected keyword arguments: 'scroll_upgradeable_count'
+ERROR 2025-03-22 00:20:05,507 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_itemequipment.item_etc_option_id
+ERROR 2025-03-22 00:29:17,083 views 데이터베이스 저장 중 오류 발생: Cannot assign "[{'skill_name': '노블레스', 'skill_description': '[마스터 레벨 : 2]\r\n강력한 상대로부터 누군가를 지켜야 할 때 더 큰 힘을 발휘하는 숭고함을 가진다.', 'skill_level': 2, 'skill_effect': '보스 몬스터 공격 시 데미지 4% 증가\n같은 맵에 있는 자신을 포함한 파티원 1명 당 데미지 2% 증가, 최대 8%까지 증가\n파티를 하지 않았을 때는 자신만 파티한 것으로 취급', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHMJJH', 'skill_effect_next': None}, {'skill_name': '데몬스 퓨리', 'skill_description': '[마스터 레벨 : 2]\r\n대상이 보스일 경우, 내면에 잠재된 분노를 이끌어 내 더욱 강력한 데미지를 입힌다.', 'skill_level': 2, 'skill_effect': '보스 몬스터 공격 시 데미지 15% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHOBMB', 'skill_effect_next': None}, {'skill_name': '소울 컨트랙트', 'skill_description': '[마스터 레벨 : 2]\r\n에스카다와의 계약을 통해 순간적으로 데미지를 극대화한다.', 'skill_level': 2, 'skill_effect': '10초 동안 데미지 45% 증가\n재사용 대기시간 60초', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHPAJF', 'skill_effect_next': None}, {'skill_name': '시프 커닝', 'skill_description': '[마스터 레벨 : 6]\r\n도적 특유의 교활함을 발휘해 적을 약화시키면 데미지가 증가한다.\n재사용 대기시간 초기화, 버프 지속시간 증가의 효과를 받지 않는다.', 'skill_level': 6, 'skill_effect': '적에게 상태 이상을 적용시키면 10초 동안 데미지 18% 증가\n재발동 대기시간 20초 ', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHMGLA', 'skill_effect_next': None}, {'skill_name': '와일드 레이지', 'skill_description': '[마스터 레벨 : 2]\r\n분노로 인해 데미지가 증가한다.', 'skill_level': 2, 'skill_effect': '데미지 10% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHOBJA', 'skill_effect_next': None}, {'skill_name': '인텐시브 인썰트', 'skill_description': '[마스터 레벨 : 2]\r\n자신보다 약한 적에겐 더 효과적인 공격을 가한다.', 'skill_level': 2, 'skill_effect': '캐릭터보다 레벨이 낮은 몬스터 공격 시 데미지 6% 증가, 상태 이상에 걸린 몬스터 공격 시 데미지 6% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHODKB', 'skill_effect_next': None}, {'skill_name': '임피리컬 널리지', 'skill_description': '[마스터 레벨 : 6]\r\n실전적인 탐구를 통해 약점을 파악하여 해당 적에 대한 데미지와 방어율 무시를 점차 증가시킨다.', 'skill_level': 6, 'skill_effect': '공격한 적 중 최대 HP가 가장 높은 적에 대한 약점을 25% 확률로 파악, 파악한 약점은 10초 동안 지속되며 최대 3회까지 중첩\n중첩 당 데미지 3%, 방어율 무시 3% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHMGKC', 'skill_effect_next': None}, {'skill_name': '전투의 흐름', 'skill_description': '[마스터 레벨 : 2]\r\n전투의 흐름이 끊기지 않게 유지한다.\n일정 시간 내에 특정 거리를 이동 할 때 마다 데미지가 증가한다.', 'skill_level': 2, 'skill_effect': '일정 거리 이동 시 발동되며 최대 4회 중첩가능, 지속시간 10초\n각 중첩당 데미지 3% 증가  ', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHODKI', 'skill_effect_next': None}, {'skill_name': '판단', 'skill_description': '[마스터 레벨 : 2]\r\n타고난 판단력으로 적에게 가능한 최고의 치명상을 입힌다.', 'skill_level': 2, 'skill_effect': ' 크리티컬 데미지 4% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHOAEI', 'skill_effect_next': None}, {'skill_name': '프라이어 프리퍼레이션', 'skill_description': '[마스터 레벨 : 2]\r\n적을 확실하게 처리하기 위한 사전 준비를 한다.', 'skill_level': 2, 'skill_effect': '적 8명 처치, 혹은 보스 몬스터에게 5번 공격 적중 시 사전 준비 1번 완료, 사전 준비를 5번 마치면 20초 동안 데미지 17% 증가\n재발동 대기시간 40초', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHNBNF', 'skill_effect_next': None}, {'skill_name': '하이브리드 로직', 'skill_description': '[마스터 레벨 : 2]\r\n하이브리드 로직 디자인을 적용하여 모든 능력치가 영구히 증가한다.', 'skill_level': 2, 'skill_effect': '모든 능력치 10% 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHOBIH', 'skill_effect_next': None}, {'skill_name': '무아', 'skill_description': '[마스터 레벨 : 2]\r\n자신을 잊어버릴 정도로 전투에 집중한다.\n일정 시간 동안 전투 상태가 지속되면 데미지가 증가한다.', 'skill_level': 2, 'skill_effect': '전투 상태가 5초 지속되면 발동되며 최대 5회 중첩가능, 지속시간 5초\n발동 시 데미지 1% 증가, 중첩당 데미지 2% 추가 증가', 'skill_icon': 'https://open.api.nexon.com/static/maplestory/skill/icon/KFHCLHOENE', 'skill_effect_next': None}]": "CharacterLinkSkill.character_link_skill" must be a "LinkSkill" instance.
+ERROR 2025-03-22 00:34:41,994 views 데이터베이스 저장 중 오류 발생: 'list' object has no attribute 'get'
+ERROR 2025-03-22 00:38:31,974 views 데이터베이스 저장 중 오류 발생: list index out of range
+ERROR 2025-03-22 00:39:59,724 views 데이터베이스 저장 중 오류 발생: table characters_linkskill has no column named skill_effect_next
+ERROR 2025-03-22 00:47:06,025 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactervmatrix.preset_no
+ERROR 2025-03-22 00:47:47,829 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactervmatrix.preset_no
+ERROR 2025-03-22 00:48:19,125 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactervmatrix.preset_no
+ERROR 2025-03-22 00:49:59,731 views 데이터베이스 저장 중 오류 발생: local variable 'field' referenced before assignment
+ERROR 2025-03-22 00:50:49,501 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_vcore.v_core_skill_1
+ERROR 2025-03-22 17:50:09,505 log Internal Server Error: /characters/redis-health/
+ERROR 2025-03-22 20:14:16,876 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactercashitemequipment.preset_no
+ERROR 2025-03-22 20:24:13,783 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactercashitemequipment.preset_no
+ERROR 2025-03-22 20:27:47,169 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactercashitemequipment.preset_no
+ERROR 2025-03-22 20:29:05,252 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_charactercashitemequipment.preset_no
+ERROR 2025-03-22 20:50:21,029 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.character_name
+ERROR 2025-03-22 20:50:21,033 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpopularity.popularity
+ERROR 2025-03-22 20:50:21,038 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterstat.character_class
+ERROR 2025-03-22 20:50:21,062 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_grade
+ERROR 2025-03-22 20:50:21,607 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterlinkskill.character_class
+ERROR 2025-03-22 20:50:21,884 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.character_class
+ERROR 2025-03-22 20:50:21,934 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterseteffect.set_effect
+ERROR 2025-03-22 20:50:21,970 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpropensity.charisma_level
+ERROR 2025-03-22 20:50:21,975 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhyperstat.hyper_stat_preset_1_remain_point
+ERROR 2025-03-22 20:51:12,106 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.character_name
+ERROR 2025-03-22 20:51:12,111 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpopularity.popularity
+ERROR 2025-03-22 20:51:12,117 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterstat.character_class
+ERROR 2025-03-22 20:51:12,145 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_grade
+ERROR 2025-03-22 20:51:12,150 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characteritemequipment.character_gender
+ERROR 2025-03-22 20:51:12,703 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhexamatrixstat.character_class
+ERROR 2025-03-22 20:51:12,741 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterdojang.dojang_best_floor
+ERROR 2025-03-22 20:51:12,748 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterseteffect.set_effect
+ERROR 2025-03-22 20:51:12,783 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpropensity.charisma_level
+ERROR 2025-03-22 20:51:12,788 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhyperstat.hyper_stat_preset_1_remain_point
+ERROR 2025-03-22 21:01:19,097 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpropensity.charisma_level
+ERROR 2025-03-22 21:01:19,102 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterhyperstat.hyper_stat_preset_1_remain_point
+ERROR 2025-03-22 21:20:37,249 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.character_name
+ERROR 2025-03-22 21:20:37,252 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterpopularity.popularity
+ERROR 2025-03-22 21:20:37,255 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterstat.character_class
+ERROR 2025-03-22 21:20:37,282 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_grade
+ERROR 2025-03-22 21:20:37,285 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characteritemequipment.character_gender
+ERROR 2025-03-22 21:20:55,498 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.character_name
+ERROR 2025-03-22 21:20:55,852 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_grade
+ERROR 2025-03-22 21:20:55,855 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characteritemequipment.character_gender
+ERROR 2025-03-22 21:21:03,683 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:04,721 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterbasic.character_name
+ERROR 2025-03-22 21:21:04,724 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:04,774 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:04,859 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characterability.ability_grade
+ERROR 2025-03-22 21:21:04,862 views 데이터베이스 저장 중 오류 발생: NOT NULL constraint failed: characters_characteritemequipment.character_gender
+ERROR 2025-03-22 21:21:06,289 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,350 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,456 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,517 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,608 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,685 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:06,747 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:21:07,536 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:08,278 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:08,444 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:08,474 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:08,520 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:09,194 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:09,312 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:09,408 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:09,522 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,113 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,341 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,342 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,480 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,480 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,515 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,816 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:11,878 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:12,123 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:12,155 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:12,777 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:12,826 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:13,124 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:13,387 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:13,612 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:13,631 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:13,780 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:14,497 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:14,785 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:14,830 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,027 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,136 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,607 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,804 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,897 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:15,898 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,026 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,029 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,097 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,172 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,206 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,208 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,347 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,347 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,438 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:16,972 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,081 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,185 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,437 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,437 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,511 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:22:17,512 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-03-22 21:27:54,600 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,602 views 데이터베이스 저장 중 오류 발생: (1062, "Duplicate entry '2e0a31fb5fef6dfe331d3bfef62f7ac8' for key 'characters_characterbasic.ocid'")
+ERROR 2025-03-22 21:27:54,612 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,654 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,702 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,753 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,763 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,778 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,803 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:54,816 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:55,861 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:55,887 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:55,913 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:55,949 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:55,964 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,005 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,035 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,087 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,162 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,162 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:56,468 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:56,634 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:56,685 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:56,693 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:56,930 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:56,938 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:57,005 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:57,038 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:57,130 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:57,193 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,393 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,529 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,548 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,791 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,851 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,891 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:58,938 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:58,954 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:58,989 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,019 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,068 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,073 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,091 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,157 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,157 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,254 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:27:59,263 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:59,291 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:59,341 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:27:59,402 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:00,012 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:00,056 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:01,028 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:01,074 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:01,251 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:01,575 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:01,769 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:01,832 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:02,001 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:02,085 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:02,352 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,410 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,432 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,462 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,500 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,561 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,616 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:02,636 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,682 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:02,761 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,821 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,876 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:02,989 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:03,029 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:04,378 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,474 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:04,591 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:04,626 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,642 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,654 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,670 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:04,714 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,727 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,767 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,774 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:04,793 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:05,008 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:05,266 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:05,526 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:05,697 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:05,702 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:05,848 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:05,900 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:06,350 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:06,397 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:06,594 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,611 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,693 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,698 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,768 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,783 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:06,796 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,845 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,891 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,930 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,939 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:06,992 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:07,135 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:07,332 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:07,404 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:07,686 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:08,065 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:08,104 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:08,270 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:08,285 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:08,307 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:08,555 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:08,820 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:08,845 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:08,911 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:08,964 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:08,968 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,015 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,103 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,115 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,319 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,340 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,438 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:09,510 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,531 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:09,567 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,604 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,609 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:09,620 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,666 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,700 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,711 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:09,744 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,752 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,890 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,907 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:09,916 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:28:09,922 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:09,946 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:09,967 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,015 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:10,039 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,089 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,117 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,166 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,178 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,189 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:10,192 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,202 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,252 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:10,267 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,292 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,297 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,357 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,386 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,404 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,442 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,466 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,503 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,525 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,623 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,626 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:10,668 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:10,671 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,687 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,744 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:10,853 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:10,921 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:10,923 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:10,939 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:10,942 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,002 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,021 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:11,067 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:11,096 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,127 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,150 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,169 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:11,177 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,202 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:11,285 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:11,309 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,341 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:28:11,366 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,375 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:11,376 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,424 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,427 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,430 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,449 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,452 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,474 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,492 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,508 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,515 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,518 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,547 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,561 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,563 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,564 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,571 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,575 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,580 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,637 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,664 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,681 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,736 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,738 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,740 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,762 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,763 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,783 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,790 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,811 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,824 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,825 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,836 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,857 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,865 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,867 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,881 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,893 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:11,902 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,060 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,085 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,092 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,148 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,154 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,156 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,174 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,181 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,184 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,198 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,205 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,223 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,231 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,233 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,245 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,262 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,269 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,276 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,279 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,291 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/propensity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,294 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,301 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,303 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,304 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,306 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,315 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,333 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,336 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,342 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,357 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,361 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,371 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,372 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,379 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,384 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,396 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,433 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,440 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,441 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,442 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,452 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,458 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,459 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,476 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,480 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,494 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:28:12,506 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,520 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,521 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,532 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,543 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,547 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,555 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,567 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,583 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,584 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/vmatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,585 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,587 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,590 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,599 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,600 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,606 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/set-effect): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,636 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,639 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,645 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,645 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,651 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,657 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,662 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,682 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,689 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,690 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,695 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,699 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,701 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/pet-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,719 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,730 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,744 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,747 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,755 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/symbol-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,759 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,762 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,769 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,793 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/ability): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,802 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/beauty-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,808 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,812 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/android-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,812 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,812 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,813 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,818 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/dojang): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,828 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/item-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,857 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,866 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,893 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:12,921 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hexamatrix): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,934 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/cashitem-equipment): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,954 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,958 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:28:12,960 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/popularity): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:12,978 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:12,981 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/hyper-stat): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:28:13,014 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:28:13,024 views API 호출 실패 (https://open.api.nexon.com/maplestory/v1/character/link-skill): cannot schedule new futures after interpreter shutdown
+ERROR 2025-03-22 21:44:51,274 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:44:52,154 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:44:52,456 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:44:52,529 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:44:52,672 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:45:20,733 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:45:21,616 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:45:21,884 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:45:21,957 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:45:22,112 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:46:13,982 views 데이터베이스 저장 중 오류 발생: (1406, "Data too long for column 'character_image' at row 1")
+ERROR 2025-03-22 21:46:14,795 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:46:15,039 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:46:15,107 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:46:15,263 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:46:50,762 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:46:51,003 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:46:51,077 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:46:51,221 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:47:19,191 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:47:19,442 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:47:19,508 views 데이터베이스 저장 중 오류 발생: get() returned more than one HexaSkill -- it returned 2!
+ERROR 2025-03-22 21:47:19,649 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:54:03,462 views 데이터베이스 저장 중 오류 발생: bulk_create() prohibited to prevent data loss due to unsaved related object 'item_total_option'.
+ERROR 2025-03-22 21:54:04,443 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 21:54:05,120 views 데이터베이스 저장 중 오류 발생: Cannot add "<VCore: VCore object (None)>": instance is on database "default", value is on database "None"
+ERROR 2025-03-22 21:59:14,211 views 데이터베이스 저장 중 오류 발생: list index out of range
+ERROR 2025-03-22 22:00:15,733 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:01:06,582 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:02:39,568 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:03:25,233 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:04:28,457 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:04:33,313 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:04:39,836 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:04:51,390 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:05:57,824 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.
+ERROR 2025-03-22 22:06:08,853 views 데이터베이스 저장 중 오류 발생: save() prohibited to prevent data loss due to unsaved related object 'character_owned_link_skill'.

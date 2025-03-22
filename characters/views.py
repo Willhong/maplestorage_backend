@@ -5,6 +5,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.utils import timezone
 import logging
+import asyncio
+import aiohttp
+from rest_framework.views import APIView
+from util.rate_limiter import rate_limited
+from util.redis_client import redis_client
 
 from define.define import (
     CHARACTER_ID_URL, CHARACTER_BASIC_URL, CHARACTER_POPULARITY_URL,
@@ -17,14 +22,7 @@ from define.define import (
     APIKEY
 )
 from .mixins import MapleAPIClientMixin, APIViewMixin, CharacterDataMixin
-from .models import (
-    CharacterBasic, CharacterId, CharacterPopularity, CharacterStat, CharacterAbility,
-    CharacterItemEquipment, CharacterCashItemEquipment, CharacterSymbolEquipment,
-    CharacterLinkSkill, CharacterSkill, CharacterHexaMatrix, CharacterHexaMatrixStat,
-    CharacterVMatrix, CharacterDojang, CharacterSetEffect, CharacterBeautyEquipment,
-    CharacterAndroidEquipment, CharacterPetEquipment, CharacterPropensity, CharacterHyperStat,
-    AbilityPreset, AbilityInfo
-)
+from .models import *
 
 logger = logging.getLogger('maple_api')
 
@@ -41,7 +39,7 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 
             # 기본 데이터 준비
             defaults = {
-                'date': timezone.now(),
+                'date': data.get('date') or timezone.now(),
             }
             # CharacterId 모델인 경우, ocid 필드 업데이트
             if self.model_class == CharacterId:
@@ -68,13 +66,36 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 
             # 모델별 특수 처리
             if self.model_class == CharacterBasic:
-                # CharacterBasic 모델 처리
-                defaults.update({
-                    'ocid': data.get('ocid', ocid),
-                    'date': data.get('date', timezone.now()),
+                # 기존 캐릭터 조회
+                try:
+                    character = self.model_class.objects.get(
+                        ocid=data.get('ocid') or ocid)
+                except self.model_class.DoesNotExist:
+                    character = None
+
+                # 기본 정보 업데이트 또는 생성
+                basic_defaults = {
                     'character_name': data.get('character_name'),
                     'world_name': data.get('world_name'),
                     'character_gender': data.get('character_gender'),
+                    'character_class': data.get('character_class'),
+                }
+
+                if character:
+                    for key, value in basic_defaults.items():
+                        setattr(character, key, value)
+                    character.save()
+                else:
+                    character = self.model_class.objects.create(
+                        ocid=data.get('ocid') or ocid,
+                        **basic_defaults
+                    )
+
+                # 히스토리 저장
+                history_data = {
+                    # date가 없으면 현재 시간 사용
+                    'date': data.get('date') or timezone.now(),
+                    'character_name': data.get('character_name'),
                     'character_class': data.get('character_class'),
                     'character_class_level': data.get('character_class_level'),
                     'character_level': data.get('character_level'),
@@ -84,11 +105,15 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
                     'character_date_create': data.get('character_date_create'),
                     'access_flag': True if data.get('access_flag') == 'true' else False,
                     'liberation_quest_clear_flag': True if data.get('liberation_quest_clear_flag') == 'true' else False,
-                })
-                obj, created = self.model_class.objects.update_or_create(
-                    ocid=data.get('ocid'),
-                    defaults=defaults
-                )
+                }
+                try:
+                    history_obj = CharacterBasicHistory.objects.create(
+                        character=character, **history_data)
+                except Exception as e:
+                    logger.error(
+                        f"CharacterBasicHistory 모델 생성 중 오류 발생: {str(e)}")
+                    return
+                return character
 
             elif self.model_class == CharacterPopularity:
                 defaults.update({
@@ -187,6 +212,181 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 
                 obj.save()
 
+            elif self.model_class == CharacterHexaMatrix:
+                character_hexa_matrix, created = CharacterHexaMatrix.objects.get_or_create(
+                    character=character,
+                    date=data.get('date')
+                )
+
+                # 헥사 코어 장비 처리
+                if 'character_hexa_core_equipment' in data:
+                    character_hexa_matrix.character_hexa_core_equipment.clear()  # 기존 데이터 삭제
+                    for core_data in data['character_hexa_core_equipment']:
+                        hexa_core = HexaCore.create_from_data(core_data)
+                        character_hexa_matrix.character_hexa_core_equipment.add(
+                            hexa_core)
+
+                obj = character_hexa_matrix
+
+            elif self.model_class == CharacterHexaMatrixStat:
+                character_hexa_matrix_stat, created = CharacterHexaMatrixStat.objects.get_or_create(
+                    character=character,
+                    date=data.get('date'),
+                    defaults={'character_class': data.get('character_class')}
+                )
+
+                # 헥사 스탯 코어 처리 함수
+                def process_hexa_stat_cores(core_list):
+                    cores = []
+                    for core_data in core_list:
+                        core = HexaStatCore.objects.create(
+                            slot_id=core_data.get('slot_id'),
+                            main_stat_name=core_data.get('main_stat_name'),
+                            sub_stat_name_1=core_data.get('sub_stat_name_1'),
+                            sub_stat_name_2=core_data.get('sub_stat_name_2'),
+                            main_stat_level=core_data.get('main_stat_level'),
+                            sub_stat_level_1=core_data.get('sub_stat_level_1'),
+                            sub_stat_level_2=core_data.get('sub_stat_level_2'),
+                            stat_grade=core_data.get('stat_grade')
+                        )
+                        cores.append(core)
+                    return cores
+
+                # 각 코어 타입별 처리
+                core_fields = [
+                    'character_hexa_stat_core',
+                    'character_hexa_stat_core_2',
+                    'character_hexa_stat_core_3',
+                    'preset_hexa_stat_core',
+                    'preset_hexa_stat_core_2',
+                    'preset_hexa_stat_core_3'
+                ]
+
+                for field in core_fields:
+                    if field in data and data[field]:
+                        getattr(character_hexa_matrix_stat,
+                                field).clear()  # 기존 데이터 삭제
+                        cores = process_hexa_stat_cores(data[field])
+                        getattr(character_hexa_matrix_stat, field).add(*cores)
+
+                obj = character_hexa_matrix_stat
+
+            elif self.model_class == CharacterItemEquipment:
+                character_item_equipment, created = CharacterItemEquipment.objects.get_or_create(
+                    character=character,
+                    date=data.get('date'),
+                    defaults={
+                        'character_gender': data.get('character_gender'),
+                        'character_class': data.get('character_class'),
+                        'preset_no': data.get('preset_no')
+                    }
+                )
+
+                # Title 처리
+                if 'title' in data:
+                    title = Title.create_from_data(data['title'])
+                    character_item_equipment.title = title
+                    character_item_equipment.save()
+
+                # 나머지 장비 처리
+                equipment_fields = [
+                    'item_equipment',
+                    'item_equipment_preset_1',
+                    'item_equipment_preset_2',
+                    'item_equipment_preset_3',
+                    'dragon_equipment',
+                    'mechanic_equipment'
+                ]
+
+                for field in equipment_fields:
+                    if field in data and data[field]:
+                        # 기존 데이터 삭제
+                        getattr(character_item_equipment, field).clear()
+
+                        # 장비 데이터 벌크 생성
+                        created_equipments = ItemEquipment.bulk_create_from_data(
+                            data[field])
+
+                        # ManyToMany 관계 일괄 설정
+                        getattr(character_item_equipment, field).add(
+                            *created_equipments)
+
+                obj = character_item_equipment
+
+            elif self.model_class == CharacterLinkSkill:
+                defaults.update({
+                    'character_class': data.get('character_class'),
+                    'preset_no': data.get('preset_no', 1)
+                })
+
+                # 기본 링크 스킬 처리
+                if 'character_link_skill' in data and data['character_link_skill']:
+                    skills = LinkSkill.bulk_create_from_data(
+                        [data['character_link_skill']])
+                    if skills:
+                        defaults['character_link_skill'] = skills[0]
+
+                # 보유 링크 스킬 처리
+                if 'character_owned_link_skill' in data and data['character_owned_link_skill']:
+                    owned_skills = LinkSkill.bulk_create_from_data(
+                        [data['character_owned_link_skill']])
+                    if owned_skills:
+                        defaults['character_owned_link_skill'] = owned_skills[0]
+
+                obj, created = self.model_class.objects.update_or_create(
+                    character=defaults['character'],
+                    date=defaults['date'],
+                    defaults=defaults
+                )
+
+                # 프리셋 처리
+                preset_fields = {
+                    'character_link_skill_preset_1': 'preset_1',
+                    'character_link_skill_preset_2': 'preset_2',
+                    'character_link_skill_preset_3': 'preset_3'
+                }
+
+                for field, related_name in preset_fields.items():
+                    if field in data and isinstance(data[field], list):
+                        getattr(obj, field).clear()
+                        skills = LinkSkill.bulk_create_from_data(data[field])
+                        if skills:
+                            getattr(obj, field).add(*skills)
+
+                # 프리셋 보유 링크 스킬 처리
+                preset_owned_fields = {
+                    'character_owned_link_skill_preset_1': 'owned_preset_1',
+                    'character_owned_link_skill_preset_2': 'owned_preset_2',
+                    'character_owned_link_skill_preset_3': 'owned_preset_3'
+                }
+
+                for field, related_name in preset_owned_fields.items():
+                    if field in data and isinstance(data[field], dict):
+                        skills = LinkSkill.bulk_create_from_data([data[field]])
+                        if skills:
+                            setattr(obj, field, skills[0])
+                            obj.save()
+
+            elif self.model_class == CharacterVMatrix:
+                defaults.update({
+                    'character_class': data.get('character_class'),
+                    'character_v_matrix_remain_slot_upgrade_point': data.get('character_v_matrix_remain_slot_upgrade_point', 0)
+                })
+
+                obj, created = self.model_class.objects.update_or_create(
+                    character=defaults['character'],
+                    date=defaults['date'],
+                    defaults=defaults
+                )
+
+                # V코어 장비 처리
+                if 'character_v_core_equipment' in data and data['character_v_core_equipment']:
+                    obj.character_v_core_equipment.clear()
+                    cores = VCore.bulk_create_from_data(
+                        data['character_v_core_equipment'])
+                    if cores:
+                        obj.character_v_core_equipment.add(*cores)
+
             # 나머지 모델들에 대한 처리
             else:
                 # 기본 필드 업데이트
@@ -202,14 +402,27 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 
                 # ManyToMany 관계 처리
                 for field in self.model_class._meta.many_to_many:
-                    if field.name in data:
+                    # 데이터가 있는 경우에만 처리
+                    if field.name in data and data[field.name]:
                         related_manager = getattr(obj, field.name)
                         related_manager.clear()
                         for item in data[field.name]:
-                            related_model = field.related_model
-                            related_obj, _ = related_model.objects.get_or_create(
-                                **item)
-                            related_manager.add(related_obj)
+                            if item:  # 아이템이 비어있지 않은 경우에만 처리
+                                try:
+                                    # 빈 리스트인 필드 제거
+                                    item_copy = item.copy()
+                                    for key, value in item.items():
+                                        if isinstance(value, list) and not value:
+                                            del item_copy[key]
+
+                                    related_model = field.related_model
+                                    related_obj, _ = related_model.objects.get_or_create(
+                                        **item_copy)
+                                    related_manager.add(related_obj)
+                                except Exception as e:
+                                    logger.warning(
+                                        f"ManyToMany 관계 처리 중 오류 발생: {str(e)}, 필드: {field.name}, 데이터: {item}")
+                                    continue
 
             logger.info(
                 f"{self.model_class.__name__} 데이터 저장 완료: {'생성됨' if created else '업데이트됨'}")
@@ -256,7 +469,8 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
         try:
             data = self.get_api_data(
                 self.api_url, {'ocid': ocid} if ocid else None)
-
+            if data.get('date') is None:
+                data['date'] = timezone.now()
             # 데이터베이스에 저장
             self.save_to_database(data, ocid)
 
@@ -374,6 +588,17 @@ class CharacterLinkSkillView(BaseCharacterView):
     api_url = CHARACTER_LINK_SKILL_URL
     related_name = 'link_skills'
 
+    def save_to_database(self, data, ocid=None):
+        try:
+            if not self.model_class:
+                return
+
+            character = CharacterBasic.objects.get(ocid=ocid)
+            return CharacterLinkSkill.create_from_data(character, data)
+        except Exception as e:
+            logger.error(f"데이터베이스 저장 중 오류 발생: {str(e)}")
+            return None
+
 
 @swagger_auto_schema(tags=['캐릭터 스킬'])
 class CharacterSkillView(BaseCharacterView):
@@ -450,3 +675,123 @@ class CharacterHyperStatView(BaseCharacterView):
     model_class = CharacterHyperStat
     api_url = CHARACTER_HYPER_STAT_URL
     related_name = 'hyper_stats'
+
+
+@swagger_auto_schema(tags=['캐릭터 전체 정보'])
+class CharacterAllDataView(BaseCharacterView):
+    """캐릭터의 모든 정보를 조회하는 뷰"""
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'ocid',
+                openapi.IN_PATH,
+                description='캐릭터 식별자',
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'force_refresh',
+                openapi.IN_QUERY,
+                description='캐시 무시하고 새로운 데이터 조회',
+                type=openapi.TYPE_BOOLEAN,
+                default=False
+            )
+        ],
+        responses={
+            200: "성공",
+            400: "잘못된 요청",
+            404: "찾을 수 없음",
+            500: "서버 에러"
+        }
+    )
+    def get(self, request, ocid):
+        try:
+            # API 엔드포인트와 뷰 클래스 매핑
+            api_endpoints = {
+                CHARACTER_BASIC_URL: CharacterBasicView,
+                CHARACTER_POPULARITY_URL: CharacterPopularityView,
+                CHARACTER_STAT_URL: CharacterStatView,
+                CHARACTER_ABILITY_URL: CharacterAbilityView,
+                CHARACTER_ITEM_EQUIPMENT_URL: CharacterItemEquipmentView,
+                CHARACTER_CASHITEM_EQUIPMENT_URL: CharacterCashItemEquipmentView,
+                CHARACTER_SYMBOL_URL: CharacterSymbolView,
+                CHARACTER_LINK_SKILL_URL: CharacterLinkSkillView,
+                CHARACTER_SKILL_URL: CharacterSkillView,
+                CHARACTER_HEXAMATRIX_URL: CharacterHexaMatrixView,
+                CHARACTER_HEXAMATRIX_STAT_URL: CharacterHexaMatrixStatView,
+                CHARACTER_VMATRIX_URL: CharacterVMatrixView,
+                CHARACTER_DOJANG_URL: CharacterDojangView,
+                CHARACTER_SET_EFFECT_URL: CharacterSetEffectView,
+                CHARACTER_BEAUTY_EQUIPMENT_URL: CharacterBeautyEquipmentView,
+                CHARACTER_ANDROID_EQUIPMENT_URL: CharacterAndroidEquipmentView,
+                CHARACTER_PET_EQUIPMENT_URL: CharacterPetEquipmentView,
+                CHARACTER_PROPENSITY_URL: CharacterPropensityView,
+                CHARACTER_HYPER_STAT_URL: CharacterHyperStatView,
+            }
+
+            all_data = {}
+
+            @rate_limited(max_calls=500)
+            async def fetch_api_data(session, url, params):
+                try:
+                    headers = {'x-nxopen-api-key': APIKEY}
+                    async with session.get(url, params=params, headers=headers) as response:
+                        return url, await response.json()
+                except Exception as e:
+                    logger.error(f"API 호출 실패 ({url}): {str(e)}")
+                    return url, None
+
+            async def fetch_all_data():
+                async with aiohttp.ClientSession() as session:
+                    urls = list(api_endpoints.keys())
+                    semaphore = asyncio.Semaphore(20)  # 동시에 최대 5개의 요청만 허용
+
+                    async def fetch_with_semaphore(url):
+                        async with semaphore:  # 세마포어로 동시 실행 제한
+                            return await fetch_api_data(session, url, {'ocid': ocid})
+
+                    tasks = [fetch_with_semaphore(url) for url in urls]
+                    return await asyncio.gather(*tasks)
+
+            # 비동기 호출 실행
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            results = loop.run_until_complete(fetch_all_data())
+            loop.close()
+
+            now = timezone.now()
+            # 결과 처리 및 데이터베이스 저장
+            for url, result in results:
+                if result:
+                    if result.get('date') is None:
+                        result['date'] = now
+                    view_class = api_endpoints[url]
+                    view_instance = view_class()
+                    view_instance.save_to_database(result, ocid)
+                    endpoint_name = url.split('/')[-1]  # URL에서 엔드포인트 이름 추출
+                    all_data[endpoint_name] = result
+
+            return Response(all_data)
+
+        except Exception as e:
+            logger.error(f"전체 데이터 조회 중 오류 발생: {str(e)}")
+            return Response(
+                {'error': f'데이터 조회 중 오류가 발생했습니다: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class RedisHealthCheckView(APIView):
+    def get(self, request):
+        try:
+            # Redis 연결 테스트
+            redis_client.ping()
+            return Response({
+                "status": "success",
+                "message": "Redis 서버에 정상적으로 연결되었습니다."
+            })
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"Redis 서버 연결 실패: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

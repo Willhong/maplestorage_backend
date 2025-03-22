@@ -9,6 +9,7 @@ from datetime import timedelta, datetime
 from django.db import models
 
 from define.define import APIKEY
+from characters.models import *
 from .exceptions import MapleAPIError
 
 logger = logging.getLogger('maple_api')
@@ -217,130 +218,52 @@ class APIViewMixin(APIView):
             Response or None: 캐시된 데이터가 있으면 Response 객체, 없으면 None
         """
         try:
-            character_name = request.query_params.get('character_name')
-            force_refresh = request.query_params.get(
-                'force_refresh', 'false').lower() == 'true'
+            # OCID 가져오기
+            ocid = request.query_params.get('ocid')
+            if not ocid:
+                return None
 
-            if not force_refresh:
-                cached_data, related_data = self.get_cached_data(
-                    character_name,
-                    model_class,
-                    related_name
-                )
+            # 1시간 전 시간 계산
+            one_hour_ago = timezone.now() - timezone.timedelta(hours=1)
 
-                if cached_data:
-                    # 데이터 직렬화
-                    if serializer_class:
-                        serialized_data = serializer_class(cached_data).data
-                    elif schema_class and related_data is not None:
-                        # 스키마 클래스가 있고 관련 데이터가 있는 경우
-                        if isinstance(related_data, models.Manager):
-                            # ManyToMany 또는 역참조 관계인 경우
-                            related_data = list(related_data.all())
+            # CharacterBasic 모델이 아닌 경우 character 관계를 통해 조회
+            if model_class != CharacterBasic:
+                try:
+                    character = CharacterBasic.objects.get(ocid=ocid)
+                    cached_data = model_class.objects.filter(
+                        character=character,
+                        date__gte=one_hour_ago
+                    ).order_by('-date').first()
+                except CharacterBasic.DoesNotExist:
+                    return None
+            else:
+                # CharacterBasic 모델인 경우 직접 조회
+                cached_data = model_class.objects.filter(
+                    ocid=ocid,
+                    date__gte=one_hour_ago
+                ).order_by('-date').first()
 
-                        # 관련 데이터를 딕셔너리로 변환
-                        related_data_list = []
-                        for item in related_data:
-                            if hasattr(item, '__dict__'):
-                                item_dict = item.__dict__.copy()
-                                # '_state' 등 Django 내부 필드 제거
-                                item_dict.pop('_state', None)
-                                # 날짜 필드 ISO 형식으로 변환
-                                for key, value in item_dict.items():
-                                    if isinstance(value, datetime):
-                                        item_dict[key] = value.isoformat()
-                                    # ManyToMany 필드 처리
-                                    elif hasattr(value, 'all'):
-                                        item_dict[key] = [i.__dict__.copy()
-                                                          for i in value.all()]
-                                        for sub_dict in item_dict[key]:
-                                            sub_dict.pop('_state', None)
-                                related_data_list.append(item_dict)
+            if not cached_data:
+                return None
 
-                        # 스키마에 맞는 형태로 데이터 구성
-                        schema_data = {
-                            'date': cached_data.date.isoformat(),
-                            'character_class': getattr(cached_data, 'character_class', None)
-                        }
+            # 시리얼라이저가 제공된 경우 직렬화
+            if serializer_class:
+                serialized_data = serializer_class(cached_data).data
+                return Response(serialized_data)
 
-                        # HexaMatrix 특별 처리
-                        if related_name == 'hexa_matrix':
-                            schema_data['character_hexa_core_equipment'] = []
-                            for item in related_data:
-                                for core in item.character_hexa_core_equipment.all():
-                                    # linked_skill 처리
-                                    linked_skills = []
-                                    for skill in core.linked_skill.all():
-                                        linked_skills.append({
-                                            'hexa_skill_id': skill.hexa_skill_id
-                                        })
+            # 스키마가 제공된 경우 스키마 변환
+            if schema_class:
+                schema = schema_class()
+                return Response(schema.dump(cached_data))
 
-                                    core_dict = {
-                                        'hexa_core_name': core.hexa_core_name,
-                                        'hexa_core_level': core.hexa_core_level,
-                                        'hexa_core_type': core.hexa_core_type,
-                                        'linked_skill': linked_skills
-                                    }
-                                    schema_data['character_hexa_core_equipment'].append(
-                                        core_dict)
-                        # CashItemEquipment 특별 처리
-                        elif related_name == 'cash_equipments':
-                            for item in related_data:
-                                schema_data.update({
-                                    'character_gender': item.character_gender,
-                                    'character_look_mode': item.character_look_mode,
-                                    'preset_no': item.preset_no,
-                                    'cash_item_equipment_base': [],
-                                    'cash_item_equipment_preset_1': [],
-                                    'cash_item_equipment_preset_2': [],
-                                    'cash_item_equipment_preset_3': []
-                                })
-
-                                # 기본 장비 처리
-                                for cash_item in item.cash_item_equipment_base.all():
-                                    cash_item_dict = {
-                                        'cash_item_equipment_part': cash_item.cash_item_equipment_part,
-                                        'cash_item_equipment_slot': cash_item.cash_item_equipment_slot,
-                                        'cash_item_name': cash_item.cash_item_name,
-                                        'cash_item_icon': cash_item.cash_item_icon,
-                                        'cash_item_description': cash_item.cash_item_description,
-                                        'date_expire': cash_item.date_expire.isoformat() if cash_item.date_expire else None,
-                                        'date_option_expire': cash_item.date_option_expire.isoformat() if cash_item.date_option_expire else None,
-                                        'cash_item_label': cash_item.cash_item_label,
-                                        'cash_item_coloring_prism': cash_item.cash_item_coloring_prism,
-                                        'item_gender': cash_item.item_gender,
-                                        'cash_item_option': []
-                                    }
-                                    # 옵션 처리
-                                    for option in cash_item.cash_item_option.all():
-                                        cash_item_dict['cash_item_option'].append({
-                                            'option_type': option.option_type,
-                                            'option_value': option.option_value
-                                        })
-                                    schema_data['cash_item_equipment_base'].append(
-                                        cash_item_dict)
-                        else:
-                            schema_data[related_name] = related_data_list if related_data_list else [
-                            ]
-
-                        # 스키마 검증 전 로깅
-                        logger.info(f"스키마 검증 전 데이터: {schema_data}")
-
-                        # 스키마 검증
-                        serialized_data = schema_class(
-                            **schema_data).model_dump()
-                    else:
-                        serialized_data = cached_data
-
-                    return Response(self.format_response_data(
-                        serialized_data,
-                        "캐시된 데이터를 반환합니다."
-                    ))
-
-            return None
+            # 기본 응답
+            return Response({
+                'date': cached_data.date,
+                'data': cached_data.__dict__
+            })
 
         except Exception as e:
-            logger.error(f"캐시 데이터 확인 중 오류 발생: {str(e)}")
+            logger.error(f"캐시된 데이터 조회 중 오류 발생: {str(e)}")
             return None
 
 
