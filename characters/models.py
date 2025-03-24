@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from django.db import transaction
 
 
 class CharacterBasic(models.Model):
@@ -8,7 +10,6 @@ class CharacterBasic(models.Model):
     character_gender = models.CharField(max_length=10)
     character_class = models.CharField(max_length=255)
     last_updated = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
 
     class Meta:
         indexes = [
@@ -30,6 +31,8 @@ class CharacterBasicHistory(models.Model):
     character_level = models.IntegerField()
     character_exp = models.BigIntegerField()
     character_exp_rate = models.CharField(max_length=10)
+    character_guild_name = models.CharField(
+        max_length=255, null=True, blank=True)
     character_image = models.TextField()
     character_date_create = models.DateTimeField(null=True, blank=True)
     access_flag = models.BooleanField()
@@ -187,6 +190,19 @@ class Title(models.Model):
         )
 
 
+class MedalShape(models.Model):
+    medal_shape_name = models.CharField(max_length=255)
+    medal_shape_icon = models.TextField()
+    medal_shape_description = models.TextField()
+    medal_shape_changed_name = models.CharField(
+        max_length=255, null=True, blank=True)
+    medal_shape_changed_icon = models.TextField(null=True, blank=True)
+    medal_shape_changed_description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.medal_shape_name
+
+
 class CharacterItemEquipment(models.Model):
     character = models.ForeignKey(
         CharacterBasic, on_delete=models.CASCADE, related_name='equipments')
@@ -204,10 +220,63 @@ class CharacterItemEquipment(models.Model):
         'ItemEquipment', related_name='character_preset_3')
     title = models.ForeignKey(
         'Title', on_delete=models.SET_NULL, null=True, blank=True)
+    medal_shape = models.OneToOneField(
+        'MedalShape', on_delete=models.SET_NULL, null=True, blank=True, related_name='character_medal_shape')
     dragon_equipment = models.ManyToManyField(
         'ItemEquipment', related_name='character_dragon_equipment', blank=True)
     mechanic_equipment = models.ManyToManyField(
         'ItemEquipment', related_name='character_mechanic_equipment', blank=True)
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 장비 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterItemEquipment: 생성된 장비 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            item_equipment = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_gender=data.get('character_gender'),
+                character_class=data.get('character_class'),
+                preset_no=data.get('preset_no')
+            )
+
+            # Title 처리
+            if 'title' in data and data['title']:
+                title = Title.create_from_data(data['title'])
+                item_equipment.title = title
+                item_equipment.save()
+
+            # 각 장비 세트 처리
+            equipment_fields = [
+                'item_equipment',
+                'item_equipment_preset_1',
+                'item_equipment_preset_2',
+                'item_equipment_preset_3',
+                'dragon_equipment',
+                'mechanic_equipment'
+            ]
+
+            for field in equipment_fields:
+                if field in data and data[field]:
+                    # ItemEquipment의 bulk_create_from_data 활용
+                    created_equipments = ItemEquipment.bulk_create_from_data(
+                        data[field])
+                    if created_equipments:
+                        getattr(item_equipment, field).add(*created_equipments)
+
+            return item_equipment
+
+        except Exception as e:
+            raise Exception(f"장비 정보 생성 중 오류 발생: {str(e)}")
 
 
 class ItemEquipment(models.Model):
@@ -255,7 +324,7 @@ class ItemEquipment(models.Model):
     golden_hammer_flag = models.CharField(max_length=10, null=True, blank=True)
     scroll_resilience_count = models.CharField(
         max_length=10, null=True, blank=True)
-    scroll_upgradeable_count = models.CharField(
+    scroll_upgradable_count = models.CharField(
         max_length=10, null=True, blank=True)
     soul_name = models.CharField(max_length=255, null=True, blank=True)
     soul_option = models.CharField(max_length=255, null=True, blank=True)
@@ -273,6 +342,7 @@ class ItemEquipment(models.Model):
         return f"{self.item_name}"
 
     @classmethod
+    @transaction.atomic
     def bulk_create_from_data(cls, equipment_data_list):
         """여러 장비 데이터를 한 번에 생성"""
         if not equipment_data_list:
@@ -290,18 +360,18 @@ class ItemEquipment(models.Model):
         created_equipments = []
 
         for equip_data in equipment_data_list:
-            # 각 옵션 객체들을 개별적으로 생성
+            equip_data_copy = equip_data.copy()
             option_objects = {}
+
+            # 각 옵션 객체 생성
             for option_name, model in option_models.items():
-                if option_name in equip_data and equip_data[option_name]:
+                if option_name in equip_data_copy and equip_data_copy[option_name]:
                     option_objects[option_name] = model.objects.create(
-                        **equip_data[option_name])
-                    del equip_data[option_name]
+                        **equip_data_copy[option_name])
+                    del equip_data_copy[option_name]
 
-            # 장비 객체 생성
-            equipment = cls.objects.create(**equip_data)
-
-            # 생성된 옵션 객체들을 장비에 연결
+            # 장비 객체 생성 시 옵션 객체들을 함께 설정
+            equipment = cls(**equip_data_copy)
             for option_name, option_obj in option_objects.items():
                 setattr(equipment, option_name, option_obj)
             equipment.save()
@@ -317,6 +387,8 @@ class CharacterStat(models.Model):
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
     remain_ap = models.IntegerField(default=0)
+    final_stat = models.ManyToManyField(
+        'StatDetail', related_name='character_final_stat', blank=True)
 
     def __str__(self):
         return f"{self.character_class} Stats on {self.date}"
@@ -324,7 +396,7 @@ class CharacterStat(models.Model):
 
 class StatDetail(models.Model):
     character_stat = models.ForeignKey(
-        CharacterStat, related_name='final_stat', on_delete=models.CASCADE)
+        CharacterStat, related_name='stat_details', on_delete=models.CASCADE)
     stat_name = models.CharField(max_length=255)
     stat_value = models.CharField(max_length=255, null=True, blank=True)
 
@@ -375,7 +447,7 @@ class CashItemEquipment(models.Model):
     cash_item_equipment_part = models.CharField(max_length=50)
     cash_item_equipment_slot = models.CharField(max_length=50)
     cash_item_name = models.CharField(max_length=255)
-    cash_item_icon = models.URLField()
+    cash_item_icon = models.TextField()
     cash_item_description = models.TextField(null=True, blank=True)
     cash_item_option = models.ManyToManyField(CashItemOption)
     date_expire = models.DateTimeField(null=True, blank=True)
@@ -384,6 +456,9 @@ class CashItemEquipment(models.Model):
     cash_item_coloring_prism = models.OneToOneField(
         CashItemColoringPrism, on_delete=models.CASCADE, null=True, blank=True)
     item_gender = models.CharField(max_length=10, null=True, blank=True)
+    android_item_gender = models.CharField(
+        max_length=10, null=True, blank=True)
+    skill = models.JSONField(null=True, blank=True)  # 스킬 정보를 저장하기 위한 필드 추가
 
 
 class CharacterCashItemEquipment(models.Model):
@@ -410,6 +485,82 @@ class CharacterCashItemEquipment(models.Model):
         CashItemEquipment, related_name='additional_preset_2')
     additional_cash_item_equipment_preset_3 = models.ManyToManyField(
         CashItemEquipment, related_name='additional_preset_3')
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 캐시 장비 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterCashItemEquipment: 생성된 캐시 장비 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            cash_equipment = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_gender=data.get('character_gender'),
+                character_class=data.get('character_class'),
+                character_look_mode=data.get('character_look_mode'),
+                preset_no=data.get('preset_no', 1)
+            )
+
+            # 캐시 장비 처리 함수
+            def process_cash_items(items_data):
+                if not items_data:
+                    return []
+
+                cash_items = []
+                for item_data in items_data:
+                    # 캐시 아이템 옵션 데이터 분리
+                    cash_item_option_data = item_data.pop(
+                        'cash_item_option', [])
+                    cash_item_coloring_prism_data = item_data.pop(
+                        'cash_item_coloring_prism', None)
+
+                    # CashItemEquipment 생성
+                    cash_item = CashItemEquipment.objects.create(**item_data)
+
+                    # CashItemOption 처리
+                    for option_data in cash_item_option_data:
+                        option = CashItemOption.objects.create(**option_data)
+                        cash_item.cash_item_option.add(option)
+
+                    # CashItemColoringPrism 처리
+                    if cash_item_coloring_prism_data:
+                        coloring_prism = CashItemColoringPrism.objects.create(
+                            **cash_item_coloring_prism_data)
+                        cash_item.cash_item_coloring_prism = coloring_prism
+                        cash_item.save()
+
+                    cash_items.append(cash_item)
+                return cash_items
+
+            # 각 장비 세트 처리
+            equipment_fields = {
+                'cash_item_equipment_base': 'cash_item_equipment_base',
+                'cash_item_equipment_preset_1': 'cash_item_equipment_preset_1',
+                'cash_item_equipment_preset_2': 'cash_item_equipment_preset_2',
+                'cash_item_equipment_preset_3': 'cash_item_equipment_preset_3',
+                'additional_cash_item_equipment_base': 'additional_cash_item_equipment_base',
+                'additional_cash_item_equipment_preset_1': 'additional_cash_item_equipment_preset_1',
+                'additional_cash_item_equipment_preset_2': 'additional_cash_item_equipment_preset_2',
+                'additional_cash_item_equipment_preset_3': 'additional_cash_item_equipment_preset_3'
+            }
+
+            for field_name, attr_name in equipment_fields.items():
+                if field_name in data and data[field_name]:
+                    cash_items = process_cash_items(data[field_name])
+                    getattr(cash_equipment, attr_name).add(*cash_items)
+
+            return cash_equipment
+
+        except Exception as e:
+            raise Exception(f"캐시 장비 정보 생성 중 오류 발생: {str(e)}")
 
 
 class Symbol(models.Model):
@@ -444,22 +595,24 @@ class CharacterSymbolEquipment(models.Model):
         return f"{self.character.character_name}의 심볼 장착 정보"
 
 
-class CharacterSkillGrade(models.Model):
+class Skill(models.Model):
     skill_name = models.CharField(max_length=255)
     skill_description = models.TextField()
     skill_level = models.IntegerField()
     skill_effect = models.TextField()
     skill_effect_next = models.TextField(null=True, blank=True)
-    skill_icon = models.URLField()
+    skill_icon = models.TextField()
 
 
 class CharacterSkill(models.Model):
     character = models.ForeignKey(
         CharacterBasic, on_delete=models.CASCADE, related_name='skills')
     date = models.DateTimeField(null=True, blank=True)
-    character_class = models.CharField(max_length=255)
-    character_skill_grade = models.CharField(max_length=50)
-    character_skill = models.ManyToManyField(CharacterSkillGrade)
+    character_class = models.CharField(max_length=255, null=True, blank=True)
+    character_skill_grade = models.CharField(
+        max_length=50, null=True, blank=True)
+    character_skill = models.ManyToManyField(
+        Skill)
 
 
 class LinkSkill(models.Model):
@@ -477,16 +630,15 @@ class LinkSkill(models.Model):
 
         skills = []
         for data in data_list:
-            if isinstance(data, dict):
-                skill = cls.objects.create(
-                    skill_name=data.get('skill_name', ''),
-                    skill_description=data.get('skill_description', ''),
-                    skill_level=data.get('skill_level', 0),
-                    skill_effect=data.get('skill_effect', ''),
-                    skill_effect_next=data.get('skill_effect_next'),
-                    skill_icon=data.get('skill_icon', '')
-                )
-                skills.append(skill)
+            skill = cls.objects.create(
+                skill_name=data.get('skill_name', ''),
+                skill_description=data.get('skill_description', ''),
+                skill_level=data.get('skill_level', 0),
+                skill_effect=data.get('skill_effect', ''),
+                skill_effect_next=data.get('skill_effect_next'),
+                skill_icon=data.get('skill_icon', '')
+            )
+            skills.append(skill)
 
         return skills
 
@@ -496,9 +648,8 @@ class CharacterLinkSkill(models.Model):
         CharacterBasic, on_delete=models.CASCADE, related_name='link_skills')
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
-    preset_no = models.IntegerField(null=True, blank=True)
-    character_link_skill = models.OneToOneField(
-        LinkSkill, on_delete=models.CASCADE, null=True, blank=True, related_name='main_link')
+    character_link_skill = models.ManyToManyField(
+        LinkSkill, related_name='main_link', blank=True)
     character_link_skill_preset_1 = models.ManyToManyField(
         LinkSkill, related_name='preset_1')
     character_link_skill_preset_2 = models.ManyToManyField(
@@ -506,7 +657,7 @@ class CharacterLinkSkill(models.Model):
     character_link_skill_preset_3 = models.ManyToManyField(
         LinkSkill, related_name='preset_3')
     character_owned_link_skill = models.OneToOneField(
-        LinkSkill, on_delete=models.CASCADE, null=True, blank=True, related_name='owned_link')
+        LinkSkill, on_delete=models.CASCADE, null=True, related_name='owned_link', blank=True)
     character_owned_link_skill_preset_1 = models.OneToOneField(
         LinkSkill, on_delete=models.CASCADE, null=True, blank=True, related_name='owned_preset_1')
     character_owned_link_skill_preset_2 = models.OneToOneField(
@@ -516,47 +667,47 @@ class CharacterLinkSkill(models.Model):
 
     @classmethod
     def create_from_data(cls, character, data):
+        """
+        캐릭터 링크 스킬 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterLinkSkill: 생성된 링크 스킬 정보 객체
+        """
         try:
-            # 1. 기본 객체 생성 (OneToOne 필드 제외)
-            link_skill = cls.objects.create(
+            # 기존 데이터가 있으면 업데이트, 없으면 생성
+            link_skill, created = cls.objects.get_or_create(
                 character=character,
                 date=data.get('date'),
-                character_class=data.get('character_class'),
-                preset_no=data.get('preset_no', 1)
+                defaults={
+                    'character_class': data.get('character_class')
+                }
             )
 
-            # 2. 기본 링크 스킬 처리
-            if data.get('character_link_skill'):
-                main_skills = LinkSkill.bulk_create_from_data(
-                    [data['character_link_skill']])
-                if main_skills:
-                    link_skill.character_link_skill = main_skills[0]
-                    link_skill.save()  # 즉시 저장
+            if not created:
+                link_skill.character_class = data.get('character_class')
+                link_skill.save()
 
-            # 3. 보유 링크 스킬 처리
-            if data.get('character_owned_link_skill'):
+            # 기본 링크 스킬 처리
+            if 'character_link_skill' in data and data['character_link_skill']:
+                link_skill.character_link_skill.clear()
+                skills = LinkSkill.bulk_create_from_data(
+                    data['character_link_skill'])
+                if skills:
+                    link_skill.character_link_skill.add(*skills)
+
+            # 보유 링크 스킬 처리
+            if 'character_owned_link_skill' in data and data['character_owned_link_skill']:
                 owned_skills = LinkSkill.bulk_create_from_data(
                     [data['character_owned_link_skill']])
                 if owned_skills:
                     link_skill.character_owned_link_skill = owned_skills[0]
-                    link_skill.save()  # 즉시 저장
+                    link_skill.save()
 
-            # 4. 프리셋 보유 링크 스킬 처리
-            preset_owned_mapping = {
-                'character_owned_link_skill_preset_1': 'character_owned_link_skill_preset_1',
-                'character_owned_link_skill_preset_2': 'character_owned_link_skill_preset_2',
-                'character_owned_link_skill_preset_3': 'character_owned_link_skill_preset_3'
-            }
-
-            for field_name, attr_name in preset_owned_mapping.items():
-                if data.get(field_name):
-                    skills = LinkSkill.bulk_create_from_data(
-                        [data[field_name]])
-                    if skills:
-                        setattr(link_skill, attr_name, skills[0])
-                        link_skill.save()  # 각 설정 후 즉시 저장
-
-            # 5. ManyToMany 필드 처리
+            # 프리셋 처리
             preset_fields = {
                 'character_link_skill_preset_1': 'character_link_skill_preset_1',
                 'character_link_skill_preset_2': 'character_link_skill_preset_2',
@@ -564,15 +715,31 @@ class CharacterLinkSkill(models.Model):
             }
 
             for field_name, attr_name in preset_fields.items():
-                if isinstance(data.get(field_name), list):
+                if field_name in data and isinstance(data[field_name], list):
+                    getattr(link_skill, attr_name).clear()
                     skills = LinkSkill.bulk_create_from_data(data[field_name])
                     if skills:
                         getattr(link_skill, attr_name).add(*skills)
 
+            # 프리셋 보유 링크 스킬 처리
+            preset_owned_fields = {
+                'character_owned_link_skill_preset_1': 'character_owned_link_skill_preset_1',
+                'character_owned_link_skill_preset_2': 'character_owned_link_skill_preset_2',
+                'character_owned_link_skill_preset_3': 'character_owned_link_skill_preset_3'
+            }
+
+            for field_name, attr_name in preset_owned_fields.items():
+                if field_name in data and data[field_name]:
+                    skills = LinkSkill.bulk_create_from_data(
+                        [data[field_name]])
+                    if skills:
+                        setattr(link_skill, attr_name, skills[0])
+                        link_skill.save()
+
             return link_skill
 
         except Exception as e:
-            raise e
+            raise Exception(f"링크 스킬 정보 생성 중 오류 발생: {str(e)}")
 
 
 class VCore(models.Model):
@@ -638,29 +805,59 @@ class HexaCore(models.Model):
     def __str__(self):
         return f"{self.hexa_core_name} Lv.{self.hexa_core_level}"
 
-    @classmethod
-    def create_from_data(cls, core_data):
-        # 기본 HexaCore 객체 생성
-        core = cls.objects.create(
-            hexa_core_name=core_data.get('hexa_core_name'),
-            hexa_core_level=core_data.get('hexa_core_level'),
-            hexa_core_type=core_data.get('hexa_core_type')
-        )
-
-        # linked_skill 처리
-        if 'linked_skill' in core_data:
-            for skill_data in core_data['linked_skill']:
-                skill = HexaSkill.get_or_create_from_data(skill_data)
-                core.linked_skill.add(skill)
-
-        return core
-
 
 class CharacterHexaMatrix(models.Model):
     character = models.ForeignKey(
         CharacterBasic, on_delete=models.CASCADE, related_name='hexa_matrix')
     date = models.DateTimeField(null=True, blank=True)
     character_hexa_core_equipment = models.ManyToManyField(HexaCore)
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 헥사 매트릭스 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterHexaMatrix: 생성된 헥사 매트릭스 정보 객체
+        """
+        try:
+            # 기존 데이터가 있으면 업데이트, 없으면 생성
+            hexa_matrix, created = cls.objects.get_or_create(
+                character=character,
+                date=data.get('date')
+            )
+
+            # 헥사 코어 장비 처리
+            if 'character_hexa_core_equipment' in data:
+                # 기존 데이터 삭제
+                hexa_matrix.character_hexa_core_equipment.clear()
+
+                for core_data in data['character_hexa_core_equipment']:
+                    # 헥사 코어 생성
+                    core = HexaCore.objects.create(
+                        hexa_core_name=core_data.get('hexa_core_name'),
+                        hexa_core_level=core_data.get('hexa_core_level'),
+                        hexa_core_type=core_data.get('hexa_core_type')
+                    )
+
+                    # linked_skill 처리
+                    if 'linked_skill' in core_data:
+                        for skill_data in core_data['linked_skill']:
+                            skill = HexaSkill.objects.create(
+                                hexa_skill_id=skill_data.get('hexa_skill_id')
+                            )
+                            core.linked_skill.add(skill)
+
+                    hexa_matrix.character_hexa_core_equipment.add(core)
+
+            return hexa_matrix
+
+        except Exception as e:
+            raise Exception(f"헥사 매트릭스 정보 생성 중 오류 발생: {str(e)}")
 
 
 class HexaStatCore(models.Model):
@@ -695,6 +892,67 @@ class CharacterHexaMatrixStat(models.Model):
     def __str__(self):
         return f"{self.character.character_name}의 헥사 스탯 코어 정보"
 
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 헥사 스탯 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterHexaMatrixStat: 생성된 헥사 스탯 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            hexa_matrix_stat = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_class=data.get('character_class')
+            )
+
+            # 헥사 스탯 코어 처리 함수
+            def process_hexa_stat_cores(core_list):
+                cores = []
+                if not core_list:
+                    return cores
+
+                for core_data in core_list:
+                    core = HexaStatCore.objects.create(
+                        slot_id=core_data.get('slot_id'),
+                        main_stat_name=core_data.get('main_stat_name'),
+                        sub_stat_name_1=core_data.get('sub_stat_name_1'),
+                        sub_stat_name_2=core_data.get('sub_stat_name_2'),
+                        main_stat_level=core_data.get('main_stat_level'),
+                        sub_stat_level_1=core_data.get('sub_stat_level_1'),
+                        sub_stat_level_2=core_data.get('sub_stat_level_2'),
+                        stat_grade=core_data.get('stat_grade')
+                    )
+                    cores.append(core)
+                return cores
+
+            # 각 코어 타입별 처리
+            core_fields = [
+                'character_hexa_stat_core',
+                'character_hexa_stat_core_2',
+                'character_hexa_stat_core_3',
+                'preset_hexa_stat_core',
+                'preset_hexa_stat_core_2',
+                'preset_hexa_stat_core_3'
+            ]
+
+            for field in core_fields:
+                if field in data and data[field]:
+                    cores = process_hexa_stat_cores(data[field])
+                    if cores:
+                        getattr(hexa_matrix_stat, field).add(*cores)
+
+            return hexa_matrix_stat
+
+        except Exception as e:
+            raise Exception(f"헥사 스탯 정보 생성 중 오류 발생: {str(e)}")
+
 
 class CharacterDojang(models.Model):
     character = models.ForeignKey(
@@ -705,6 +963,33 @@ class CharacterDojang(models.Model):
     dojang_best_floor = models.IntegerField()
     date_dojang_record = models.DateTimeField(null=True, blank=True)
     dojang_best_time = models.IntegerField()
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 무릉도장 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterDojang: 생성된 무릉도장 정보 객체
+        """
+        try:
+            dojang = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_class=data.get('character_class'),
+                world_name=data.get('world_name'),
+                dojang_best_floor=data.get('dojang_best_floor'),
+                date_dojang_record=data.get('date_dojang_record'),
+                dojang_best_time=data.get('dojang_best_time')
+            )
+            return dojang
+
+        except Exception as e:
+            raise Exception(f"무릉도장 정보 생성 중 오류 발생: {str(e)}")
 
 
 class CharacterSetEffect(models.Model):
@@ -717,20 +1002,26 @@ class CharacterSetEffect(models.Model):
         return f"{self.character.character_name}의 세트 효과"
 
 
-class BeautyEquipment(models.Model):
-    beauty_equipment_part = models.CharField(max_length=50)
-    beauty_equipment_slot = models.CharField(max_length=50)
-    beauty_name = models.CharField(max_length=255)
-    beauty_icon = models.URLField()
-    beauty_description = models.TextField(null=True, blank=True)
-    date_expire = models.DateTimeField(null=True, blank=True)
-    date_option_expire = models.DateTimeField(null=True, blank=True)
-    shape_name = models.CharField(max_length=255, null=True, blank=True)
-    shape_icon = models.URLField(null=True, blank=True)
+class Hair(models.Model):
+    hair_name = models.CharField(max_length=255, null=True, blank=True)
     base_color = models.CharField(max_length=50, null=True, blank=True)
     mix_color = models.CharField(max_length=50, null=True, blank=True)
     mix_rate = models.IntegerField(null=True, blank=True)
-    hair_color = models.CharField(max_length=50, null=True, blank=True)
+
+
+class Face(models.Model):
+    face_name = models.CharField(max_length=255, null=True, blank=True)
+    base_color = models.CharField(max_length=50, null=True, blank=True)
+    mix_color = models.CharField(max_length=50, null=True, blank=True)
+    mix_rate = models.IntegerField(null=True, blank=True)
+
+
+class Skin(models.Model):
+    skin_name = models.CharField(max_length=255, null=True, blank=True)
+    color_style = models.CharField(max_length=50, null=True, blank=True)
+    hue = models.IntegerField(null=True, blank=True)
+    saturation = models.IntegerField(null=True, blank=True)
+    brightness = models.IntegerField(null=True, blank=True)
 
 
 class CharacterBeautyEquipment(models.Model):
@@ -739,49 +1030,165 @@ class CharacterBeautyEquipment(models.Model):
     date = models.DateTimeField(null=True, blank=True)
     character_gender = models.CharField(max_length=10)
     character_class = models.CharField(max_length=255)
-    beauty_equipment = models.ManyToManyField(BeautyEquipment)
+    character_hair = models.OneToOneField(
+        Hair, on_delete=models.SET_NULL, null=True, blank=True, related_name='character_hair')
+    character_face = models.OneToOneField(
+        Face, on_delete=models.SET_NULL, null=True, blank=True, related_name='character_face')
+    character_skin = models.OneToOneField(
+        Skin, on_delete=models.SET_NULL, null=True, blank=True, related_name='character_skin')
+    additional_character_hair = models.OneToOneField(
+        Hair, on_delete=models.SET_NULL, null=True, blank=True, related_name='additional_character_hair')
+    additional_character_face = models.OneToOneField(
+        Face, on_delete=models.SET_NULL, null=True, blank=True, related_name='additional_character_face')
+    additional_character_skin = models.OneToOneField(
+        Skin, on_delete=models.SET_NULL, null=True, blank=True, related_name='additional_character_skin')
 
     def __str__(self):
         return f"{self.character.character_name}의 성형/헤어 정보"
 
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 성형/헤어 정보를 생성하는 클래스 메서드
 
-class AndroidEquipment(models.Model):
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterBeautyEquipment: 생성된 성형/헤어 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            beauty_equipment = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_gender=data.get('character_gender'),
+                character_class=data.get('character_class')
+            )
+
+            # Hair, Face, Skin 객체 생성 및 연결
+            if data.get('character_hair'):
+                hair = Hair.objects.create(**data['character_hair'])
+                beauty_equipment.character_hair = hair
+
+            if data.get('character_face'):
+                face = Face.objects.create(**data['character_face'])
+                beauty_equipment.character_face = face
+
+            if data.get('character_skin'):
+                skin = Skin.objects.create(**data['character_skin'])
+                beauty_equipment.character_skin = skin
+
+            # 추가 Hair, Face, Skin 객체 생성 및 연결
+            if data.get('additional_character_hair'):
+                additional_hair = Hair.objects.create(
+                    **data['additional_character_hair'])
+                beauty_equipment.additional_character_hair = additional_hair
+
+            if data.get('additional_character_face'):
+                additional_face = Face.objects.create(
+                    **data['additional_character_face'])
+                beauty_equipment.additional_character_face = additional_face
+
+            if data.get('additional_character_skin'):
+                additional_skin = Skin.objects.create(
+                    **data['additional_character_skin'])
+                beauty_equipment.additional_character_skin = additional_skin
+
+            beauty_equipment.save()
+            return beauty_equipment
+
+        except Exception as e:
+            raise Exception(f"성형/헤어 정보 생성 중 오류 발생: {str(e)}")
+
+
+class AndroidEquipmentPreset(models.Model):
     android_name = models.CharField(max_length=255)
     android_nickname = models.CharField(max_length=255)
-    android_icon = models.URLField()
+    android_icon = models.TextField()
     android_description = models.TextField(null=True, blank=True)
+    android_gender = models.CharField(max_length=50, null=True, blank=True)
     android_grade = models.CharField(max_length=50, null=True, blank=True)
-    android_skin_name = models.CharField(max_length=255, null=True, blank=True)
     android_hair = models.OneToOneField(
-        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_hair')
+        Hair, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_android_hair')
     android_face = models.OneToOneField(
-        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_face')
-    android_ear = models.OneToOneField(
-        BeautyEquipment, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_ear')
-    android_equipment = models.ManyToManyField(ItemEquipment)
-    date_expire = models.DateTimeField(null=True, blank=True)
+        Face, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_android_face')
+    android_skin = models.OneToOneField(
+        Skin, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_android_skin')
+    android_ear_sensor_clip_flag = models.CharField(
+        max_length=50, null=True, blank=True)
+    android_non_humanoid_flag = models.CharField(
+        max_length=50, null=True, blank=True)
+    android_shop_usable_flag = models.CharField(
+        max_length=50, null=True, blank=True)
 
 
-class CharacterAndroidEquipment(models.Model):
+class AndroidEquipment(models.Model):
     character = models.ForeignKey(
         CharacterBasic, on_delete=models.CASCADE, related_name='android_equipments')
     date = models.DateTimeField(null=True, blank=True)
-    android_equipment = models.ManyToManyField(AndroidEquipment)
+    android_name = models.CharField(max_length=255)
+    android_nickname = models.CharField(max_length=255)
+    android_icon = models.TextField()
+    android_description = models.TextField(null=True, blank=True)
+    android_hair = models.OneToOneField(
+        Hair, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_hair')
+    android_face = models.OneToOneField(
+        Face, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_face')
+    android_skin = models.OneToOneField(
+        Skin, on_delete=models.SET_NULL, null=True, blank=True, related_name='android_skin')
+    android_cash_item_equipment = models.ManyToManyField(CashItemEquipment)
+    android_ear_sensor_clip_flag = models.CharField(
+        max_length=50, null=True, blank=True)
+    android_gender = models.CharField(max_length=50, null=True, blank=True)
+    android_grade = models.CharField(max_length=50, null=True, blank=True)
+    android_non_humanoid_flag = models.CharField(
+        max_length=50, null=True, blank=True)
+    android_shop_usable_flag = models.CharField(
+        max_length=50, null=True, blank=True)
+    preset_no = models.IntegerField(default=1)
+    android_preset_1 = models.ForeignKey(
+        AndroidEquipmentPreset, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_1')
+    android_preset_2 = models.ForeignKey(
+        AndroidEquipmentPreset, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_2')
+    android_preset_3 = models.ForeignKey(
+        AndroidEquipmentPreset, on_delete=models.SET_NULL, null=True, blank=True, related_name='preset_3')
 
     def __str__(self):
         return f"{self.character.character_name}의 안드로이드 정보"
 
 
+class PetItemEquipment(models.Model):
+    item_name = models.CharField(max_length=255)
+    item_icon = models.TextField()
+    item_description = models.TextField(null=True, blank=True)
+    item_option = models.JSONField(null=True, blank=True)
+    item_shape = models.CharField(max_length=50, null=True, blank=True)
+    item_shape_icon = models.TextField(null=True, blank=True)
+
+
+class PetAutoSkill(models.Model):
+    skill_1 = models.CharField(max_length=255)
+    skill_1_icon = models.TextField(null=True, blank=True)
+    skill_2 = models.CharField(max_length=255)
+    skill_2_icon = models.TextField(null=True, blank=True)
+
+
 class PetEquipment(models.Model):
     pet_name = models.CharField(max_length=255)
     pet_nickname = models.CharField(max_length=255)
-    pet_icon = models.URLField()
+    pet_icon = models.TextField()
     pet_description = models.TextField(null=True, blank=True)
-    pet_equipment = models.ManyToManyField(ItemEquipment)
-    pet_auto_skill = models.JSONField(null=True, blank=True)
+    pet_equipment = models.OneToOneField(
+        PetItemEquipment, on_delete=models.SET_NULL, null=True, blank=True)
+    pet_auto_skill = models.OneToOneField(
+        PetAutoSkill, on_delete=models.SET_NULL, null=True, blank=True)
     pet_pet_type = models.CharField(max_length=50, null=True, blank=True)
-    date_expire = models.DateTimeField(null=True, blank=True)
-    date_option_expire = models.DateTimeField(null=True, blank=True)
+    pet_skill = models.JSONField(null=True, blank=True)
+    pet_date_expire = models.DateTimeField(null=True, blank=True)
+    pet_appearance = models.CharField(max_length=50, null=True, blank=True)
+    pet_appearance_icon = models.TextField(null=True, blank=True)
 
 
 class CharacterPetEquipment(models.Model):
@@ -792,6 +1199,79 @@ class CharacterPetEquipment(models.Model):
 
     def __str__(self):
         return f"{self.character.character_name}의 펫 정보"
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 펫 장비 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterPetEquipment: 생성된 펫 장비 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            pet_equipment = cls.objects.create(
+                character=character,
+                date=data.get('date')
+            )
+
+            # 펫 1~3 처리
+            for i in range(1, 4):
+                prefix = f'pet_{i}'
+
+                # 필수 필드가 없으면 건너뛰기
+                if f'{prefix}_name' not in data:
+                    continue
+
+                # PetItemEquipment 생성
+                pet_item_equipment = None
+                if f'{prefix}_equipment' in data and data[f'{prefix}_equipment']:
+                    pet_item_data = data[f'{prefix}_equipment']
+                    pet_item_equipment = PetItemEquipment.objects.create(
+                        item_name=pet_item_data.get('item_name'),
+                        item_icon=pet_item_data.get('item_icon'),
+                        item_description=pet_item_data.get('item_description'),
+                        item_option=pet_item_data.get('item_option'),
+                        item_shape=pet_item_data.get('item_shape'),
+                        item_shape_icon=pet_item_data.get('item_shape_icon')
+                    )
+
+                # PetAutoSkill 생성 (자동 스킬 정보가 있는 경우)
+                pet_auto_skill = None
+                if f'{prefix}_auto_skill' in data and data[f'{prefix}_auto_skill']:
+                    auto_skill_data = data[f'{prefix}_auto_skill']
+                    pet_auto_skill = PetAutoSkill.objects.create(
+                        skill_1=auto_skill_data.get('skill_1'),
+                        skill_1_icon=auto_skill_data.get('skill_1_icon'),
+                        skill_2=auto_skill_data.get('skill_2'),
+                        skill_2_icon=auto_skill_data.get('skill_2_icon')
+                    )
+
+                # PetEquipment 생성
+                pet = PetEquipment.objects.create(
+                    pet_name=data.get(f'{prefix}_name'),
+                    pet_nickname=data.get(f'{prefix}_nickname'),
+                    pet_icon=data.get(f'{prefix}_icon'),
+                    pet_description=data.get(f'{prefix}_description'),
+                    pet_equipment=pet_item_equipment,
+                    pet_auto_skill=pet_auto_skill,
+                    pet_pet_type=data.get(f'{prefix}_pet_type'),
+                    pet_skill=data.get(f'{prefix}_skill'),
+                    pet_date_expire=data.get(f'{prefix}_date_expire'),
+                    pet_appearance=data.get(f'{prefix}_appearance'),
+                    pet_appearance_icon=data.get(f'{prefix}_appearance_icon')
+                )
+
+                pet_equipment.pet_equipment.add(pet)
+
+            return pet_equipment
+
+        except Exception as e:
+            raise Exception(f"펫 장비 정보 생성 중 오류 발생: {str(e)}")
 
 
 class CharacterPropensity(models.Model):
@@ -809,7 +1289,7 @@ class CharacterPropensity(models.Model):
         return f"{self.character.character_name}의 성향 정보"
 
 
-class HyperStat(models.Model):
+class HyperStatPreset(models.Model):
     stat_type = models.CharField(max_length=50)
     stat_point = models.IntegerField(
         null=True, blank=True, default=0)  # NULL 허용
@@ -827,18 +1307,81 @@ class CharacterHyperStat(models.Model):
     date = models.DateTimeField(null=True, blank=True)
     character_class = models.CharField(max_length=255)
     use_preset_no = models.IntegerField(null=True, blank=True)
+    use_available_hyper_stat = models.IntegerField(null=True, blank=True)
     hyper_stat_preset_1 = models.ManyToManyField(
-        HyperStat, related_name='preset_1')
+        HyperStatPreset, related_name='preset_1')
     hyper_stat_preset_2 = models.ManyToManyField(
-        HyperStat, related_name='preset_2')
+        HyperStatPreset, related_name='preset_2')
     hyper_stat_preset_3 = models.ManyToManyField(
-        HyperStat, related_name='preset_3')
+        HyperStatPreset, related_name='preset_3')
     hyper_stat_preset_1_remain_point = models.IntegerField()
     hyper_stat_preset_2_remain_point = models.IntegerField()
     hyper_stat_preset_3_remain_point = models.IntegerField()
 
     def __str__(self):
         return f"{self.character.character_name}의 하이퍼스탯 정보"
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 하이퍼스탯 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterHyperStat: 생성된 하이퍼스탯 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            hyper_stat = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_class=data.get('character_class'),
+                use_preset_no=data.get('use_preset_no'),
+                use_available_hyper_stat=data.get('use_available_hyper_stat'),
+                hyper_stat_preset_1_remain_point=data.get(
+                    'hyper_stat_preset_1_remain_point', 0),
+                hyper_stat_preset_2_remain_point=data.get(
+                    'hyper_stat_preset_2_remain_point', 0),
+                hyper_stat_preset_3_remain_point=data.get(
+                    'hyper_stat_preset_3_remain_point', 0)
+            )
+
+            # 하이퍼스탯 프리셋 처리 함수
+            def process_hyper_stat_preset(preset_data):
+                if not preset_data:
+                    return []
+
+                presets = []
+                for stat_data in preset_data:
+                    preset = HyperStatPreset.objects.create(
+                        stat_type=stat_data.get('stat_type'),
+                        stat_point=stat_data.get('stat_point', 0),
+                        stat_level=stat_data.get('stat_level', 0),
+                        stat_increase=stat_data.get('stat_increase')
+                    )
+                    presets.append(preset)
+                return presets
+
+            # 각 프리셋 처리
+            preset_fields = {
+                'hyper_stat_preset_1': 'hyper_stat_preset_1',
+                'hyper_stat_preset_2': 'hyper_stat_preset_2',
+                'hyper_stat_preset_3': 'hyper_stat_preset_3'
+            }
+
+            for field_name, attr_name in preset_fields.items():
+                if field_name in data and data[field_name]:
+                    presets = process_hyper_stat_preset(data[field_name])
+                    if presets:
+                        getattr(hyper_stat, attr_name).add(*presets)
+
+            return hyper_stat
+
+        except Exception as e:
+            raise Exception(f"하이퍼스탯 정보 생성 중 오류 발생: {str(e)}")
 
 
 class Account(models.Model):

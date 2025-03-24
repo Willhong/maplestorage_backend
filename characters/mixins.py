@@ -148,12 +148,12 @@ class APIViewMixin(APIView):
         """요청 로깅"""
         print(f"{action} 요청 - 캐릭터: {character_name}")
 
-    def get_cached_data(self, character_name, model_class, related_name=None, hours=1):
+    def get_cached_data(self, ocid, model_class, related_name=None, hours=1):
         """
         캐시된 데이터 조회를 위한 공통 메서드
 
         Args:
-            character_name (str): 캐릭터 이름
+            ocid (str): 캐릭터 식별자
             model_class: 조회할 모델 클래스
             related_name (str): 관련 데이터 필드명 (있는 경우)
             hours (int): 캐시 유효 시간 (기본 1시간)
@@ -164,107 +164,190 @@ class APIViewMixin(APIView):
         try:
             # 현재 시간에서 지정된 시간 전 계산
             cache_time = timezone.now() - timedelta(hours=hours)
-            print(f"현재 시간: {timezone.now()}, {hours}시간 전: {cache_time}")
+            logger.info(f"현재 시간: {timezone.now()}, {hours}시간 전: {cache_time}")
 
-            # 캐릭터 이름과 시간으로 필터링하여 최신 데이터 반환
+            # 먼저 CharacterBasic에서 캐릭터 정보 조회
+            character = CharacterBasic.objects.filter(ocid=ocid).first()
+            if not character:
+                logger.info(f"캐릭터 기본 정보 없음: {ocid}")
+                return None, None
+
+            # 모델 클래스가 CharacterBasic인 경우 바로 반환
+            if model_class == CharacterBasic:
+                if character.last_updated >= cache_time:
+                    logger.info(
+                        f"캐시된 기본 데이터 찾음: {ocid}, 날짜: {character.last_updated}")
+                    return character, None
+                else:
+                    logger.info(
+                        f"기본 데이터 캐시 만료: {ocid}, 날짜: {character.last_updated}")
+                    return None, None
+
+            # related_name이 있는 경우 역참조를 통해 데이터 조회
+            if related_name and hasattr(character, related_name):
+                related_manager = getattr(character, related_name)
+
+                if hasattr(related_manager, 'filter'):
+                    # QuerySet인 경우 (Many 관계)
+                    cached_data = related_manager.filter(
+                        date__gte=cache_time
+                    ).order_by('-date').first()
+
+                    if cached_data:
+                        logger.info(
+                            f"캐시된 관련 데이터 찾음: {character.character_name}, 날짜: {cached_data.date}")
+                        # 추가 관련 데이터가 있는 경우 함께 반환
+                        additional_related = None
+                        if hasattr(cached_data, related_name):
+                            additional_manager = getattr(
+                                cached_data, related_name)
+                            if hasattr(additional_manager, 'all'):
+                                additional_related = additional_manager.all()
+                            else:
+                                additional_related = additional_manager
+                        return cached_data, additional_related
+                    else:
+                        # 시간 필터링 없이 다시 조회
+                        any_data = related_manager.order_by(
+                            '-date').first()
+                        if any_data:
+                            logger.info(
+                                f"관련 데이터 있으나 {hours}시간 초과: {character.character_name}, 날짜: {any_data.date}")
+                        else:
+                            logger.info(
+                                f"관련 데이터 없음: {character.character_name}")
+                        return None, None
+                else:
+                    # 단일 객체인 경우 (One 관계)
+                    cached_data = related_manager
+                    if cached_data and hasattr(cached_data, 'date') and cached_data.date >= cache_time:
+                        logger.info(
+                            f"캐시된 단일 관련 데이터 찾음: {character.character_name}, 날짜: {cached_data.date}")
+                        return cached_data, None
+                    else:
+                        logger.info(
+                            f"단일 관련 데이터 없거나 만료됨: {character.character_name}")
+                        return None, None
+
+            # related_name이 없는 경우 character_name으로 필터링
             cached_data = model_class.objects.filter(
-                character_name=character_name,
+                character_name=character.character_name,
                 date__gte=cache_time
             ).order_by('-date').first()
 
             if cached_data:
-                print(f"캐시된 데이터 찾음: {character_name}, 날짜: {cached_data.date}")
-
-                # 관련 데이터가 있는 경우 함께 반환
-                related_data = None
-                if related_name and hasattr(cached_data, related_name):
-                    related_manager = getattr(cached_data, related_name)
-                    if hasattr(related_manager, 'all'):
-                        related_data = related_manager.all()
-                    else:
-                        related_data = related_manager
-
-                return cached_data, related_data
+                logger.info(
+                    f"캐시된 데이터 찾음: {character.character_name}, 날짜: {cached_data.date}")
+                return cached_data, None
             else:
                 # 시간 필터링 없이 다시 조회
                 any_data = model_class.objects.filter(
-                    character_name=character_name
+                    character_name=character.character_name
                 ).order_by('-date').first()
 
                 if any_data:
-                    print(
-                        f"캐시된 데이터 있으나 {hours}시간 초과: {character_name}, 날짜: {any_data.date}")
+                    logger.info(
+                        f"캐시된 데이터 있으나 {hours}시간 초과: {character.character_name}, 날짜: {any_data.date}")
                 else:
-                    print(f"캐시된 데이터 없음: {character_name}")
+                    logger.info(f"캐시된 데이터 없음: {character.character_name}")
 
                 return None, None
 
         except Exception as e:
-            print(f"캐시된 데이터 조회 중 오류 발생: {str(e)}")
+            logger.error(f"캐시된 데이터 조회 중 오류 발생: {str(e)}")
             return None, None
 
-    def check_and_return_cached_data(self, request, model_class, related_name=None, serializer_class=None, schema_class=None):
+    def check_and_return_cached_data(self, request, model_class, ocid=None, related_name=None, serializer_class=None):
         """
         캐시된 데이터 확인 및 반환을 위한 공통 메서드
 
         Args:
             request: HTTP 요청 객체
             model_class: 조회할 모델 클래스
+            ocid: 캐릭터 식별자
             related_name (str): 관련 데이터 필드명 (있는 경우)
-            serializer_class: 직렬화에 사용할 시리얼라이저 클래스
-            schema_class: 데이터 검증에 사용할 스키마 클래스
+            serializer_class: 사용할 시리얼라이저 클래스 (있는 경우)
 
         Returns:
             Response or None: 캐시된 데이터가 있으면 Response 객체, 없으면 None
         """
         try:
-            # OCID 가져오기
-            ocid = request.query_params.get('ocid')
+            # force_refresh 파라미터 확인
+            force_refresh = request.query_params.get(
+                'force_refresh', 'false').lower() == 'true'
+            if force_refresh:
+                return None
+
+            # 캐릭터 기본 정보 조회
             if not ocid:
                 return None
 
-            # 1시간 전 시간 계산
-            one_hour_ago = timezone.now() - timezone.timedelta(hours=1)
+            # 캐시된 데이터 조회
+            cached_data, related_data = self.get_cached_data(
+                ocid, model_class, related_name)
 
-            # CharacterBasic 모델이 아닌 경우 character 관계를 통해 조회
-            if model_class != CharacterBasic:
-                try:
-                    character = CharacterBasic.objects.get(ocid=ocid)
-                    cached_data = model_class.objects.filter(
-                        character=character,
-                        date__gte=one_hour_ago
-                    ).order_by('-date').first()
-                except CharacterBasic.DoesNotExist:
-                    return None
-            else:
-                # CharacterBasic 모델인 경우 직접 조회
-                cached_data = model_class.objects.filter(
-                    ocid=ocid,
-                    date__gte=one_hour_ago
-                ).order_by('-date').first()
+            if cached_data:
+                # serializer_class가 제공된 경우 해당 serializer 사용
+                if serializer_class:
+                    if related_data and isinstance(related_data, (list, models.QuerySet)):
+                        # Many 관계인 경우
+                        serializer = serializer_class(
+                            cached_data, context={'request': request})
+                    else:
+                        # One 관계이거나 관련 데이터가 없는 경우
+                        serializer = serializer_class(
+                            cached_data, context={'request': request})
+                    return Response(self.format_response_data(serializer.data))
 
-            if not cached_data:
-                return None
+                # serializer가 없는 경우 기존 로직 사용
+                response_data = {}
 
-            # 시리얼라이저가 제공된 경우 직렬화
-            if serializer_class:
-                serialized_data = serializer_class(cached_data).data
-                return Response(serialized_data)
+                # 모델 인스턴스의 필드를 딕셔너리로 변환
+                for field in cached_data._meta.fields:
+                    # CharacterBasic이 아닌 경우 character 관련 필드 제외
+                    if model_class != CharacterBasic and field.name in ['character', 'id']:
+                        continue
+                    # CharacterBasic인 경우 id만 제외
+                    elif model_class == CharacterBasic and field.name == 'id':
+                        continue
 
-            # 스키마가 제공된 경우 스키마 변환
-            if schema_class:
-                schema = schema_class()
-                return Response(schema.dump(cached_data))
+                    value = getattr(cached_data, field.name)
+                    if isinstance(value, timezone.datetime):
+                        value = value.isoformat()
+                    response_data[field.name] = value
 
-            # 기본 응답
-            return Response({
-                'date': cached_data.date,
-                'data': cached_data.__dict__
-            })
+                # 관련 데이터가 있는 경우 처리
+                if related_data:
+                    if isinstance(related_data, models.QuerySet):
+                        related_list = []
+                        for item in related_data:
+                            item_dict = {}
+                            for field in item._meta.fields:
+                                # character와 id 필드 제외
+                                if field.name not in ['character', 'id']:
+                                    value = getattr(item, field.name)
+                                    if isinstance(value, timezone.datetime):
+                                        value = value.isoformat()
+                                    item_dict[field.name] = value
+                            related_list.append(item_dict)
+                        response_data[related_name] = related_list
+                    else:
+                        related_dict = {}
+                        for field in related_data._meta.fields:
+                            # character와 id 필드 제외
+                            if field.name not in ['character', 'id']:
+                                value = getattr(related_data, field.name)
+                                if isinstance(value, timezone.datetime):
+                                    value = value.isoformat()
+                                related_dict[field.name] = value
+                        response_data[related_name] = related_dict
+
+                return Response(self.format_response_data(response_data))
 
         except Exception as e:
-            logger.error(f"캐시된 데이터 조회 중 오류 발생: {str(e)}")
-            return None
+            logger.error(f"캐시된 데이터 확인 중 오류 발생: {str(e)}")
+
+        return None
 
 
 class CharacterDataMixin:

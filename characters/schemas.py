@@ -1,10 +1,11 @@
 # schemas.py
+from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional, Any
 
 
 class CharacterBasicSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_name: str
     world_name: str
     character_gender: str
@@ -21,14 +22,14 @@ class CharacterBasicSchema(BaseModel):
 
 
 class CharacterPopularitySchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     popularity: int
 
 
 class ItemTotalOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -47,9 +48,9 @@ class ItemTotalOptionSchema(BaseModel):
 
 
 class ItemBaseOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -67,9 +68,9 @@ class ItemBaseOptionSchema(BaseModel):
 
 
 class ItemExceptionalOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -79,9 +80,9 @@ class ItemExceptionalOptionSchema(BaseModel):
 
 
 class ItemAddOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -97,9 +98,9 @@ class ItemAddOptionSchema(BaseModel):
 
 
 class ItemEtcOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -111,9 +112,9 @@ class ItemEtcOptionSchema(BaseModel):
 
 
 class ItemStarforceOptionSchema(BaseModel):
-    str: Optional[str]
+    strength: Optional[str] = Field(None, alias='str')
     dex: Optional[str]
-    int: Optional[str]
+    intelligence: Optional[str] = Field(None, alias='int')
     luk: Optional[str]
     max_hp: Optional[str]
     max_mp: Optional[str]
@@ -174,7 +175,7 @@ class TitleSchema(BaseModel):
 
 
 class CharacterItemEquipmentSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_gender: str
     character_class: str
     preset_no: int
@@ -193,7 +194,7 @@ class StatInfoSchema(BaseModel):
 
 
 class CharacterStatSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     final_stat: List[StatInfoSchema]
     remain_ap: int
@@ -211,7 +212,7 @@ class AbilityPresetSchema(BaseModel):
 
 
 class CharacterAbilitySchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     ability_grade: str
     ability_info: List[AbilityInfoSchema]
     remain_fame: int
@@ -222,8 +223,8 @@ class CharacterAbilitySchema(BaseModel):
 
 
 class CashItemOptionSchema(BaseModel):
-    option_type: str
-    option_value: str
+    option_type: Optional[str] = None
+    option_value: Optional[str] = None
 
 
 class CashItemColoringPrismSchema(BaseModel):
@@ -234,22 +235,21 @@ class CashItemColoringPrismSchema(BaseModel):
 
 
 class CashItemEquipmentSchema(BaseModel):
-    cash_item_equipment_part: str
-    cash_item_equipment_slot: str
-    cash_item_name: str
-    cash_item_icon: str
-    cash_item_description: Optional[str] = None
-    cash_item_option: List[CashItemOptionSchema]
-    date_expire: Optional[str] = None
-    date_option_expire: Optional[str] = None
-    cash_item_label: Optional[str] = None
+    cash_item_equipment_part: Optional[str]
+    cash_item_equipment_slot: Optional[str]
+    cash_item_name: Optional[str]
+    cash_item_icon: Optional[str]
+    cash_item_description: Optional[str]
+    cash_item_option: Optional[List[CashItemOptionSchema]] = []
+    date_expire: Optional[datetime]
     cash_item_coloring_prism: Optional[CashItemColoringPrismSchema] = None
-    item_gender: Optional[str] = None
-    skill: Optional[List[str]] = None
+    date_option_expire: Optional[datetime]
+    cash_item_label: Optional[str]
+    android_item_gender: Optional[str] = None
 
 
 class CharacterCashItemEquipmentSchema(BaseModel):
-    date: Optional[str] = None
+    date: Optional[datetime] = None
     character_gender: str
     character_class: str
     character_look_mode: str
@@ -270,7 +270,6 @@ class SymbolSchema(BaseModel):
     symbol_description: str
     symbol_force: str
     symbol_level: int
-    symbol_str: Optional[str]
     symbol_dex: Optional[str]
     symbol_int: Optional[str]
     symbol_luk: Optional[str]
@@ -283,13 +282,12 @@ class SymbolSchema(BaseModel):
 
 
 class CharacterSymbolSchema(BaseModel):
-    date: Optional[str]
     character_class: str
     symbol: List[SymbolSchema]
 
 
 class CharacterSymbolEquipmentSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     symbol: List[SymbolSchema]
 
@@ -304,10 +302,10 @@ class CharacterSkillGradeSchema(BaseModel):
 
 
 class CharacterSkillSchema(BaseModel):
-    date: Optional[str]
-    character_class: str
-    character_skill_grade: str
-    character_skill: List[CharacterSkillGradeSchema]
+    date: Optional[datetime]
+    character_class: Optional[str] = None
+    character_skill_grade: Optional[str] = None
+    character_skill: Optional[List[CharacterSkillGradeSchema]] = None
 
 
 class LinkSkillSchema(BaseModel):
@@ -319,7 +317,7 @@ class LinkSkillSchema(BaseModel):
 
 
 class CharacterLinkSkillSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     character_link_skill: List[LinkSkillSchema] = []
     character_link_skill_preset_1: List[LinkSkillSchema]
@@ -334,16 +332,16 @@ class CharacterLinkSkillSchema(BaseModel):
 class VCoreSchema(BaseModel):
     slot_id: str
     slot_level: int
-    v_core_name: str
-    v_core_type: str
+    v_core_name: Optional[str]
+    v_core_type: Optional[str]
     v_core_level: int
-    v_core_skill_1: str
+    v_core_skill_1: Optional[str]
     v_core_skill_2: Optional[str]
     v_core_skill_3: Optional[str]
 
 
 class CharacterVMatrixSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     character_v_core_equipment: List[VCoreSchema] = []
     character_v_matrix_remain_slot_upgrade_point: int = 0
@@ -363,7 +361,7 @@ class HexaCoreSchema(BaseModel):
 
 
 class CharacterHexaMatrixSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_hexa_core_equipment: List[HexaCoreSchema]
 
 
@@ -379,7 +377,7 @@ class HexaStatCoreSchema(BaseModel):
 
 
 class CharacterHexaStatSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     character_hexa_stat_core: List[HexaStatCoreSchema]
     character_hexa_stat_core_2: List[HexaStatCoreSchema]
@@ -388,7 +386,7 @@ class CharacterHexaStatSchema(BaseModel):
 
 
 class CharacterHexaMatrixStatSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     character_hexa_stat_core: List[HexaStatCoreSchema]
     character_hexa_stat_core_2: List[HexaStatCoreSchema]
@@ -397,9 +395,175 @@ class CharacterHexaMatrixStatSchema(BaseModel):
 
 
 class CharacterDojangSchema(BaseModel):
-    date: Optional[str]
+    date: Optional[datetime]
     character_class: str
     world_name: str
     dojang_best_floor: int
     date_dojang_record: Optional[str]
     dojang_best_time: int
+
+
+class CharacterSetEffectSchema(BaseModel):
+    date: Optional[datetime]
+    set_effect: List[Dict[str, Any]]
+
+
+class BeautyEquipmentSchema(BaseModel):
+    hair_name: Optional[str] = None
+    face_name: Optional[str] = None
+    skin_name: Optional[str] = None
+    base_color: Optional[str] = None
+    mix_color: Optional[str] = None
+    mix_rate: Optional[str] = None
+
+
+class HairSchema(BaseModel):
+    hair_name: Optional[str]
+    base_color: Optional[str]
+    mix_color: Optional[str]
+    mix_rate: Optional[str]
+
+
+class FaceSchema(BaseModel):
+    face_name: Optional[str]
+    base_color: Optional[str]
+    mix_color: Optional[str]
+    mix_rate: Optional[str]
+
+
+class SkinSchema(BaseModel):
+    skin_name: Optional[str]
+    color_style: Optional[str]
+    hue: Optional[int]
+    saturation: Optional[int]
+    brightness: Optional[int]
+
+
+class CharacterBeautyEquipmentSchema(BaseModel):
+    date: Optional[datetime]
+    character_gender: str
+    character_class: str
+    character_hair: HairSchema
+    character_face: FaceSchema
+    character_skin: SkinSchema
+
+
+class AndroidEquipmentPresetSchema(BaseModel):
+    android_name: Optional[str] = ''
+    android_nickname: Optional[str] = ''
+    android_icon: Optional[str] = ''
+    android_description: Optional[str] = None
+    android_gender: Optional[str] = None
+    android_grade: Optional[str] = None
+    android_skin: Optional[SkinSchema] = None
+    android_hair: Optional[HairSchema] = None
+    android_face: Optional[FaceSchema] = None
+    android_ear_sensor_clip_flag: Optional[str] = None
+    android_non_humanoid_flag: Optional[str] = None
+    android_shop_usable_flag: Optional[str] = None
+
+
+class AndroidEquipmentSchema(BaseModel):
+    date: Optional[datetime]
+    android_name: Optional[str] = ''
+    android_nickname: Optional[str] = ''
+    android_icon: Optional[str] = ''
+    android_description: Optional[str] = None
+    android_hair: Optional[HairSchema] = None
+    android_face: Optional[FaceSchema] = None
+    android_skin: Optional[SkinSchema] = None
+    android_cash_item_equipment: Optional[List[CashItemEquipmentSchema]] = []
+    android_ear_sensor_clip_flag: Optional[str]
+    android_gender: Optional[str]
+    android_grade: Optional[str]
+    android_non_humanoid_flag: Optional[str]
+    android_shop_usable_flag: Optional[str]
+    preset_no: Optional[int] = 1
+    android_preset_1: Optional[AndroidEquipmentPresetSchema] = None
+    android_preset_2: Optional[AndroidEquipmentPresetSchema] = None
+    android_preset_3: Optional[AndroidEquipmentPresetSchema] = None
+
+
+class PetSkillSchema(BaseModel):
+    skill_name: str
+
+
+class PetEquipmentSchema(BaseModel):
+    item_name: str
+    item_icon: str
+    item_description: Optional[str] = None
+
+
+class CharacterPetEquipmentSchema(BaseModel):
+    date: Optional[datetime]
+    pet_1_name: Optional[str]
+    pet_1_nickname: Optional[str]
+    pet_1_icon: Optional[str]
+    pet_1_description: Optional[str]
+    pet_1_equipment: Optional[PetEquipmentSchema]
+    pet_1_skill: Optional[List[str]]
+    pet_1_pet_type: Optional[str]
+    pet_1_date_expire: Optional[str]
+
+    pet_2_name: Optional[str]
+    pet_2_nickname: Optional[str]
+    pet_2_icon: Optional[str]
+    pet_2_description: Optional[str]
+    pet_2_equipment: Optional[PetEquipmentSchema]
+    pet_2_skill: Optional[List[str]]
+    pet_2_pet_type: Optional[str]
+    pet_2_date_expire: Optional[str]
+
+    pet_3_name: Optional[str]
+    pet_3_nickname: Optional[str]
+    pet_3_icon: Optional[str]
+    pet_3_description: Optional[str]
+    pet_3_equipment: Optional[PetEquipmentSchema]
+    pet_3_skill: Optional[List[str]]
+    pet_3_pet_type: Optional[str]
+    pet_3_date_expire: Optional[str]
+
+
+class CharacterPropensitySchema(BaseModel):
+    date: Optional[datetime]
+    charisma_level: int
+    sensibility_level: int
+    insight_level: int
+    willingness_level: int
+    handicraft_level: int
+    charm_level: int
+
+
+class CharacterHyperStatSchema(BaseModel):
+    date: Optional[datetime]
+    character_class: str
+    use_preset_no: str
+    use_available_hyper_stat: int
+    hyper_stat_preset_1: List[Dict[str, Any]]
+    hyper_stat_preset_1_remain_point: int
+    hyper_stat_preset_2: List[Dict[str, Any]]
+    hyper_stat_preset_2_remain_point: int
+    hyper_stat_preset_3: List[Dict[str, Any]]
+    hyper_stat_preset_3_remain_point: int
+
+
+class CharacterAllDataSchema(BaseModel):
+    basic: Optional[CharacterBasicSchema]
+    popularity: Optional[CharacterPopularitySchema]
+    stat: Optional[CharacterStatSchema]
+    ability: Optional[CharacterAbilitySchema]
+    item_equipment: Optional[CharacterItemEquipmentSchema]
+    cashitem_equipment: Optional[CharacterCashItemEquipmentSchema]
+    symbol: Optional[CharacterSymbolSchema]
+    link_skill: Optional[CharacterLinkSkillSchema]
+    skill: Optional[CharacterSkillSchema]
+    hexamatrix: Optional[CharacterHexaMatrixSchema]
+    hexamatrix_stat: Optional[CharacterHexaMatrixStatSchema]
+    vmatrix: Optional[CharacterVMatrixSchema]
+    dojang: Optional[CharacterDojangSchema]
+    set_effect: Optional[CharacterSetEffectSchema]
+    beauty_equipment: Optional[CharacterBeautyEquipmentSchema]
+    android_equipment: Optional[AndroidEquipmentSchema]
+    pet_equipment: Optional[CharacterPetEquipmentSchema]
+    propensity: Optional[CharacterPropensitySchema]
+    hyper_stat: Optional[CharacterHyperStatSchema]
