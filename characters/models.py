@@ -58,6 +58,28 @@ class CharacterPopularity(models.Model):
     def __str__(self):
         return f"Popularity: {self.popularity} on {self.date}"
 
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 인기도 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterPopularity: 생성된 인기도 정보 객체
+        """
+        try:
+            popularity = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                popularity=data.get('popularity', 0)
+            )
+            return popularity
+        except Exception as e:
+            raise Exception(f"인기도 정보 생성 중 오류 발생: {str(e)}")
+
 
 class ItemTotalOption(models.Model):
     str = models.CharField(max_length=50, null=True, blank=True)
@@ -393,6 +415,52 @@ class CharacterStat(models.Model):
     def __str__(self):
         return f"{self.character_class} Stats on {self.date}"
 
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 스탯 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterStat: 생성된 스탯 정보 객체
+        """
+        try:
+            # 기존 데이터가 있으면 업데이트, 없으면 생성
+            stat_info, created = cls.objects.get_or_create(
+                character=character,
+                date=data.get('date'),
+                defaults={
+                    'character_class': data.get('character_class'),
+                    'remain_ap': data.get('remain_ap', 0)
+                }
+            )
+
+            if not created:
+                stat_info.character_class = data.get('character_class')
+                stat_info.remain_ap = data.get('remain_ap', 0)
+                stat_info.save()
+
+            # 기존 스탯 정보 삭제
+            stat_info.final_stat.all().delete()
+
+            # 새로운 스탯 정보 생성
+            if 'final_stat' in data:
+                for stat in data['final_stat']:
+                    stat_detail = StatDetail.objects.create(
+                        character_stat=stat_info,
+                        stat_name=stat.get('stat_name'),
+                        stat_value=stat.get('stat_value')
+                    )
+                    stat_info.final_stat.add(stat_detail)
+
+            return stat_info
+
+        except Exception as e:
+            raise Exception(f"스탯 정보 생성 중 오류 발생: {str(e)}")
+
 
 class StatDetail(models.Model):
     character_stat = models.ForeignKey(
@@ -594,12 +662,52 @@ class CharacterSymbolEquipment(models.Model):
     def __str__(self):
         return f"{self.character.character_name}의 심볼 장착 정보"
 
+    @classmethod
+    def create_from_data(cls, character, data):
+        try:
+            # 기본 객체 생성
+            obj, created = cls.objects.get_or_create(
+                character=character,
+                date=data.get('date'),
+                defaults={
+                    'character_class': data.get('character_class')
+                }
+            )
+
+            # 심볼 데이터가 있는 경우 처리
+            if data.get('symbol'):
+                for symbol_data in data['symbol']:
+                    symbol, _ = Symbol.objects.get_or_create(
+                        symbol_name=symbol_data.get('symbol_name'),
+                        defaults={
+                            'symbol_icon': symbol_data.get('symbol_icon'),
+                            'symbol_description': symbol_data.get('symbol_description'),
+                            'symbol_force': symbol_data.get('symbol_force'),
+                            'symbol_level': symbol_data.get('symbol_level'),
+                            'symbol_dex': symbol_data.get('symbol_dex'),
+                            'symbol_int': symbol_data.get('symbol_int'),
+                            'symbol_luk': symbol_data.get('symbol_luk'),
+                            'symbol_hp': symbol_data.get('symbol_hp'),
+                            'symbol_drop_rate': symbol_data.get('symbol_drop_rate'),
+                            'symbol_meso_rate': symbol_data.get('symbol_meso_rate'),
+                            'symbol_exp_rate': symbol_data.get('symbol_exp_rate'),
+                            'symbol_growth_count': symbol_data.get('symbol_growth_count'),
+                            'symbol_require_growth_count': symbol_data.get('symbol_require_growth_count')
+                        }
+                    )
+                    obj.symbol.add(symbol)
+
+            return obj
+
+        except Exception as e:
+            raise Exception(f"심볼 데이터 생성 중 오류 발생: {str(e)}")
+
 
 class Skill(models.Model):
     skill_name = models.CharField(max_length=255)
     skill_description = models.TextField()
     skill_level = models.IntegerField()
-    skill_effect = models.TextField()
+    skill_effect = models.TextField(null=True, blank=True)
     skill_effect_next = models.TextField(null=True, blank=True)
     skill_icon = models.TextField()
 
@@ -613,6 +721,45 @@ class CharacterSkill(models.Model):
         max_length=50, null=True, blank=True)
     character_skill = models.ManyToManyField(
         Skill)
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 스킬 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterSkill: 생성된 스킬 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            skill_info = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_class=data.get('character_class'),
+                character_skill_grade=data.get('character_skill_grade')
+            )
+
+            # 스킬 처리
+            if 'character_skill' in data and data['character_skill']:
+                for skill_data in data['character_skill']:
+                    skill = Skill.objects.create(
+                        skill_name=skill_data.get('skill_name'),
+                        skill_description=skill_data.get('skill_description'),
+                        skill_level=skill_data.get('skill_level'),
+                        skill_effect=skill_data.get('skill_effect'),
+                        skill_effect_next=skill_data.get('skill_effect_next'),
+                        skill_icon=skill_data.get('skill_icon')
+                    )
+                    skill_info.character_skill.add(skill)
+
+            return skill_info
+
+        except Exception as e:
+            raise Exception(f"스킬 정보 생성 중 오류 발생: {str(e)}")
 
 
 class LinkSkill(models.Model):
@@ -782,6 +929,40 @@ class CharacterVMatrix(models.Model):
     character_class = models.CharField(max_length=255)
     character_v_core_equipment = models.ManyToManyField(VCore)
     character_v_matrix_remain_slot_upgrade_point = models.IntegerField()
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 V매트릭스 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterVMatrix: 생성된 V매트릭스 정보 객체
+        """
+        try:
+            # 기본 객체 생성
+            v_matrix = cls.objects.create(
+                character=character,
+                date=data.get('date'),
+                character_class=data.get('character_class'),
+                character_v_matrix_remain_slot_upgrade_point=data.get(
+                    'character_v_matrix_remain_slot_upgrade_point', 0)
+            )
+
+            # V코어 장비 처리
+            if 'character_v_core_equipment' in data and data['character_v_core_equipment']:
+                cores = VCore.bulk_create_from_data(
+                    data['character_v_core_equipment'])
+                if cores:
+                    v_matrix.character_v_core_equipment.add(*cores)
+
+            return v_matrix
+
+        except Exception as e:
+            raise Exception(f"V매트릭스 정보 생성 중 오류 발생: {str(e)}")
 
 
 class HexaSkill(models.Model):
@@ -1000,6 +1181,38 @@ class CharacterSetEffect(models.Model):
 
     def __str__(self):
         return f"{self.character.character_name}의 세트 효과"
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        """
+        캐릭터 세트 효과 정보를 생성하는 클래스 메서드
+
+        Args:
+            character (CharacterBasic): 캐릭터 객체
+            data (dict): API로부터 받은 데이터
+
+        Returns:
+            CharacterSetEffect: 생성된 세트 효과 객체
+        """
+        try:
+            # 기본 객체 생성 또는 업데이트
+            obj, created = cls.objects.get_or_create(
+                character=character,
+                date=data.get('date'),
+                defaults={
+                    'set_effect': data.get('set_effect', {})
+                }
+            )
+
+            # 이미 존재하는 객체인 경우 set_effect 업데이트
+            if not created and data.get('set_effect'):
+                obj.set_effect = data['set_effect']
+                obj.save()
+
+            return obj
+
+        except Exception as e:
+            raise Exception(f"세트 효과 정보 생성 중 오류 발생: {str(e)}")
 
 
 class Hair(models.Model):
@@ -1287,6 +1500,27 @@ class CharacterPropensity(models.Model):
 
     def __str__(self):
         return f"{self.character.character_name}의 성향 정보"
+
+    @classmethod
+    def create_from_data(cls, character, data):
+        try:
+            obj, created = cls.objects.get_or_create(
+                character=character,
+                date=data.get('date'),
+                defaults={
+                    'charisma_level': data.get('charisma_level', 0),
+                    'sensibility_level': data.get('sensibility_level', 0),
+                    'insight_level': data.get('insight_level', 0),
+                    'willingness_level': data.get('willingness_level', 0),
+                    'handicraft_level': data.get('handicraft_level', 0),
+                    'charm_level': data.get('charm_level', 0)
+                }
+            )
+
+            return obj
+
+        except Exception as e:
+            raise Exception(f"CharacterPropensity 데이터 생성 중 오류 발생: {str(e)}")
 
 
 class HyperStatPreset(models.Model):

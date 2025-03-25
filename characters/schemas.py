@@ -296,7 +296,7 @@ class CharacterSkillGradeSchema(BaseModel):
     skill_name: str
     skill_description: str
     skill_level: int
-    skill_effect: str
+    skill_effect: Optional[str]
     skill_effect_next: Optional[str]
     skill_icon: str
 

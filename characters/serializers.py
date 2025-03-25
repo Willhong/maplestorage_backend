@@ -10,7 +10,9 @@ from .models import (
     ItemExceptionalOption, ItemAddOption, ItemEtcOption, ItemStarforceOption,
     Title, ItemEquipment, CharacterItemEquipment,
     LinkSkill, CharacterLinkSkill, PetItemEquipment, PetAutoSkill,
-    PetEquipment, CharacterPetEquipment
+    PetEquipment, CharacterPetEquipment, CharacterPopularity, CharacterPropensity,
+    CharacterSetEffect, Skill, CharacterSkill, StatDetail, CharacterStat,
+    Symbol, CharacterSymbolEquipment, VCore, CharacterVMatrix
 )
 
 
@@ -357,4 +359,103 @@ class CharacterPetEquipmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CharacterPetEquipment
+        exclude = ['id', 'character']
+
+
+class CharacterPopularitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterPopularity
+        fields = ['date', 'popularity']
+
+
+class CharacterPropensitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterPropensity
+        fields = [
+            'date',
+            'charisma_level',
+            'sensibility_level',
+            'insight_level',
+            'willingness_level',
+            'handicraft_level',
+            'charm_level'
+        ]
+
+
+class CharacterSetEffectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharacterSetEffect
+        fields = ['date', 'set_effect']
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ['skill_name', 'skill_description', 'skill_level',
+                  'skill_effect', 'skill_effect_next', 'skill_icon']
+
+
+class CharacterSkillSerializer(serializers.ModelSerializer):
+    character_skill = SkillSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CharacterSkill
+        fields = ['date', 'character_class',
+                  'character_skill_grade', 'character_skill']
+
+
+class StatDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StatDetail
+        fields = ['stat_name', 'stat_value']
+
+
+class CharacterStatSerializer(serializers.ModelSerializer):
+    final_stat = StatDetailSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CharacterStat
+        exclude = ['id', 'character']
+
+
+class SymbolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Symbol
+        fields = [
+            'symbol_name',
+            'symbol_icon',
+            'symbol_description',
+            'symbol_force',
+            'symbol_level',
+            'symbol_dex',
+            'symbol_int',
+            'symbol_luk',
+            'symbol_hp',
+            'symbol_drop_rate',
+            'symbol_meso_rate',
+            'symbol_exp_rate',
+            'symbol_growth_count',
+            'symbol_require_growth_count'
+        ]
+
+
+class CharacterSymbolEquipmentSerializer(serializers.ModelSerializer):
+    symbol = SymbolSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CharacterSymbolEquipment
+        fields = ['date', 'character_class', 'symbol']
+
+
+class VCoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VCore
+        exclude = ['id']
+
+
+class CharacterVMatrixSerializer(serializers.ModelSerializer):
+    character_v_core_equipment = VCoreSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CharacterVMatrix
         exclude = ['id', 'character']

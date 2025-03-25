@@ -25,7 +25,7 @@ from .mixins import MapleAPIClientMixin, APIViewMixin, CharacterDataMixin
 from .models import *
 from .schemas import (
     AndroidEquipmentSchema, CharacterBasicSchema, CharacterPopularitySchema, CharacterStatSchema,
-    CharacterAbilitySchema, CharacterItemEquipmentSchema, CharacterCashItemEquipmentSchema,
+    CharacterAbilitySchema, CharacterItemEquipmentSchema, CharacterCashItemEquipmentSchema, CharacterSymbolEquipmentSchema,
     CharacterSymbolSchema, CharacterLinkSkillSchema, CharacterSkillSchema,
     CharacterHexaMatrixSchema, CharacterHexaMatrixStatSchema, CharacterVMatrixSchema,
     CharacterDojangSchema, CharacterSetEffectSchema, CharacterBeautyEquipmentSchema,
@@ -38,7 +38,9 @@ from .serializers import (
     CharacterBeautyEquipmentSerializer, CharacterCashItemEquipmentSerializer,
     CharacterDojangSerializer, CharacterHexaMatrixStatSerializer,
     CharacterHexaMatrixSerializer, CharacterHyperStatSerializer,
-    CharacterItemEquipmentSerializer, CharacterLinkSkillSerializer, CharacterPetEquipmentSerializer
+    CharacterItemEquipmentSerializer, CharacterLinkSkillSerializer, CharacterPetEquipmentSerializer,
+    CharacterPopularitySerializer, CharacterPropensitySerializer,
+    CharacterSetEffectSerializer, CharacterSkillSerializer, CharacterStatSerializer, CharacterSymbolEquipmentSerializer, CharacterVMatrixSerializer
 )
 
 logger = logging.getLogger('maple_api')
@@ -160,25 +162,6 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
                     defaults=defaults
                 )
 
-            elif self.model_class == CharacterStat:
-                defaults.update({
-                    'character_class': validated_data.get('character_class'),
-                    'remain_ap': validated_data.get('remain_ap', 0)
-                })
-                obj, created = self.model_class.objects.update_or_create(
-                    character=defaults['character'],
-                    date=defaults['date'],
-                    defaults=defaults
-                )
-
-                # StatDetail 처리
-                if 'final_stat' in validated_data:
-                    for stat in validated_data['final_stat']:
-                        obj.final_stat.create(
-                            stat_name=stat.get('stat_name'),
-                            stat_value=stat.get('stat_value')
-                        )
-
             elif self.model_class == CharacterAbility:
                 # 기본 어빌리티 정보 저장
                 defaults.update({
@@ -246,26 +229,6 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
                         obj.ability_info.add(ability_obj)
 
                 obj.save()
-
-            elif self.model_class == CharacterVMatrix:
-                defaults.update({
-                    'character_class': validated_data.get('character_class'),
-                    'character_v_matrix_remain_slot_upgrade_point': validated_data.get('character_v_matrix_remain_slot_upgrade_point', 0)
-                })
-
-                obj, created = self.model_class.objects.update_or_create(
-                    character=defaults['character'],
-                    date=defaults['date'],
-                    defaults=defaults
-                )
-
-                # V코어 장비 처리
-                if 'character_v_core_equipment' in validated_data and validated_data['character_v_core_equipment']:
-                    obj.character_v_core_equipment.clear()
-                    cores = VCore.bulk_create_from_data(
-                        validated_data['character_v_core_equipment'])
-                    if cores:
-                        obj.character_v_core_equipment.add(*cores)
 
             elif self.model_class == AndroidEquipment:
                 try:
@@ -549,6 +512,7 @@ class CharacterPopularityView(BaseCharacterView):
     api_url = CHARACTER_POPULARITY_URL
     related_name = 'popularity'
     schema_class = CharacterPopularitySchema
+    serializer_class = CharacterPopularitySerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 스탯'])
@@ -557,6 +521,7 @@ class CharacterStatView(BaseCharacterView):
     api_url = CHARACTER_STAT_URL
     related_name = 'stats'
     schema_class = CharacterStatSchema
+    serializer_class = CharacterStatSerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 어빌리티'])
@@ -591,7 +556,8 @@ class CharacterSymbolView(BaseCharacterView):
     model_class = CharacterSymbolEquipment
     api_url = CHARACTER_SYMBOL_URL
     related_name = 'symbols'
-    schema_class = CharacterSymbolSchema
+    schema_class = CharacterSymbolEquipmentSchema
+    serializer_class = CharacterSymbolEquipmentSerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 링크 스킬'])
@@ -609,6 +575,77 @@ class CharacterSkillView(BaseCharacterView):
     api_url = CHARACTER_SKILL_URL
     related_name = 'skills'
     schema_class = CharacterSkillSchema
+    serializer_class = CharacterSkillSerializer
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'ocid',
+                openapi.IN_PATH,
+                description='캐릭터 식별자',
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'character_skill_grade',
+                openapi.IN_QUERY,
+                description='스킬 전직 차수',
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'force_refresh',
+                openapi.IN_QUERY,
+                description='캐시 무시하고 새로운 데이터 조회',
+                type=openapi.TYPE_BOOLEAN,
+                default=False
+            )
+        ],
+        responses={
+            200: "성공",
+            400: "잘못된 요청",
+            404: "찾을 수 없음",
+            500: "서버 에러"
+        }
+    )
+    def get(self, request, ocid=None):
+        character_skill_grade = request.query_params.get(
+            'character_skill_grade')
+        if not character_skill_grade:
+            return Response({'error': '스킬 전직 차수가 필요합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 캐시된 데이터 확인
+        cached_response = self.check_and_return_cached_data(
+            request,
+            self.model_class,
+            ocid,
+            self.related_name,
+            self.serializer_class
+        )
+        if cached_response:
+            return cached_response
+
+        # API 호출
+        try:
+            data = self.get_api_data(
+                self.api_url,
+                {
+                    'ocid': ocid,
+                    'character_skill_grade': character_skill_grade
+                } if ocid else None
+            )
+            if data.get('date') is None:
+                data['date'] = timezone.now()
+            # 데이터베이스에 저장
+            data = self.save_to_database(data, ocid)
+
+            if self.serializer_class:
+                serializer = self.serializer_class(
+                    data, context={'request': request})
+                return Response(self.format_response_data(serializer.data))
+
+            return Response(self.format_response_data(data))
+        except Exception as e:
+            return self.handle_exception(e)
 
 
 @swagger_auto_schema(tags=['캐릭터 HEXA 매트릭스'])
@@ -635,6 +672,7 @@ class CharacterVMatrixView(BaseCharacterView):
     api_url = CHARACTER_VMATRIX_URL
     related_name = 'v_matrix'
     schema_class = CharacterVMatrixSchema
+    serializer_class = CharacterVMatrixSerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 무릉도장'])
@@ -652,6 +690,7 @@ class CharacterSetEffectView(BaseCharacterView):
     api_url = CHARACTER_SET_EFFECT_URL
     related_name = 'set_effects'
     schema_class = CharacterSetEffectSchema
+    serializer_class = CharacterSetEffectSerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 성형/헤어'])
@@ -687,6 +726,7 @@ class CharacterPropensityView(BaseCharacterView):
     api_url = CHARACTER_PROPENSITY_URL
     related_name = 'propensities'
     schema_class = CharacterPropensitySchema
+    serializer_class = CharacterPropensitySerializer
 
 
 @swagger_auto_schema(tags=['캐릭터 하이퍼스탯'])
@@ -751,7 +791,6 @@ class CharacterAllDataView(BaseCharacterView):
                 CHARACTER_CASHITEM_EQUIPMENT_URL: ('cashitem_equipment', CharacterCashItemEquipmentView),
                 CHARACTER_SYMBOL_URL: ('symbol', CharacterSymbolView),
                 CHARACTER_LINK_SKILL_URL: ('link_skill', CharacterLinkSkillView),
-                # CHARACTER_SKILL_URL: ('skill', CharacterSkillView),
                 CHARACTER_HEXAMATRIX_URL: ('hexamatrix', CharacterHexaMatrixView),
                 CHARACTER_HEXAMATRIX_STAT_URL: ('hexamatrix_stat', CharacterHexaMatrixStatView),
                 CHARACTER_VMATRIX_URL: ('vmatrix', CharacterVMatrixView),

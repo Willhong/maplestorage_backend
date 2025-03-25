@@ -14381,3 +14381,273 @@ Traceback (most recent call last):
   File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 459, in get
     self.serializer_class
 AttributeError: 'CharacterPopularityView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:08:34,445 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/popularity/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 459, in get
+    self.serializer_class
+AttributeError: 'CharacterPopularityView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:11:42,993 log Internal Server Error: /characters/create_from_data/propensity/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 460, in get
+    self.serializer_class
+AttributeError: 'CharacterPropensityView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:11:49,685 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/propensity/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 460, in get
+    self.serializer_class
+AttributeError: 'CharacterPropensityView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:15:59,694 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/set-effect/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 460, in get
+    self.serializer_class
+AttributeError: 'CharacterSetEffectView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:19:51,580 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/skill/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 461, in get
+    self.serializer_class
+AttributeError: 'CharacterSkillView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:28:47,836 views CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:28:47,836 views 데이터베이스 저장 중 오류 발생: CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:29:19,011 views CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:29:19,011 views 데이터베이스 저장 중 오류 발생: CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:29:54,536 views CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:30:11,217 views 데이터베이스 저장 중 오류 발생: CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:32:12,564 views CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:32:12,565 views 데이터베이스 저장 중 오류 발생: CharacterSkill 데이터 검증 실패: 1 validation error for CharacterSkillSchema
+character_skill.0.skill_effect
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.10/v/string_type
+ERROR 2025-03-25 18:32:43,499 views 데이터베이스 저장 중 오류 발생: 스킬 정보 생성 중 오류 발생: (1048, "Column 'skill_effect' cannot be null")
+ERROR 2025-03-25 18:33:56,100 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/stat/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 461, in get
+    self.serializer_class
+AttributeError: 'CharacterStatView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 18:37:06,194 views 데이터베이스 저장 중 오류 발생: (1048, "Column 'character_stat_id' cannot be null")
+ERROR 2025-03-25 18:37:11,000 views 데이터베이스 저장 중 오류 발생: (1048, "Column 'character_stat_id' cannot be null")
+ERROR 2025-03-25 18:37:27,119 views 데이터베이스 저장 중 오류 발생: (1048, "Column 'character_stat_id' cannot be null")
+ERROR 2025-03-25 18:38:23,386 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/symbol/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\fields.py", line 437, in get_attribute
+    return get_attribute(instance, self.source_attrs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\fields.py", line 104, in get_attribute
+    instance = getattr(instance, attr)
+AttributeError: 'tuple' object has no attribute 'character_class'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 463, in get
+    return self.handle_exception(e)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 459, in get
+    return Response(self.format_response_data(serializer.data))
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\serializers.py", line 571, in data
+    ret = super().data
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\serializers.py", line 249, in data
+    self._data = self.to_representation(self.instance)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\serializers.py", line 525, in to_representation
+    attribute = field.get_attribute(instance)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\fields.py", line 470, in get_attribute
+    raise type(exc)(msg)
+AttributeError: Got AttributeError when attempting to get a value for field `character_class` on serializer `CharacterSymbolEquipmentSerializer`.
+The serializer field might be named incorrectly and not match any attribute or key on the `tuple` instance.
+Original exception text was: 'tuple' object has no attribute 'character_class'.
+ERROR 2025-03-25 18:40:12,694 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/vmatrix/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 442, in get
+    self.serializer_class
+AttributeError: 'CharacterVMatrixView' object has no attribute 'serializer_class'
+ERROR 2025-03-25 21:13:06,595 log Internal Server Error: /characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/vmatrix/
+Traceback (most recent call last):
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 126, in handle_exception
+    return super().handle_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "c:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 442, in get
+    self.serializer_class
+AttributeError: 'CharacterVMatrixView' object has no attribute 'serializer_class'
