@@ -21,6 +21,7 @@ dependencies = [
     "inflection==0.5.1",
     "mysqlclient>=2.2.7",
     "packaging==24.2",
+    "psycopg2-binary>=2.9.10",
     "pydantic==2.10.4",
     "pydantic-core==2.27.2",
     "pyjwt==2.9.0",
@@ -37,4 +38,5 @@ dependencies = [
     "tzdata==2024.2",
     "uritemplate==4.1.1",
     "urllib3==2.2.3",
+    "waitress>=3.0.2",
 ]

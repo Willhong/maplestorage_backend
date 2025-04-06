@@ -459,3 +459,146 @@ class CharacterVMatrixSerializer(serializers.ModelSerializer):
     class Meta:
         model = CharacterVMatrix
         exclude = ['id', 'character']
+
+
+class CharacterAllDataSerializer(serializers.ModelSerializer):
+    basic = serializers.SerializerMethodField()
+    popularity = serializers.SerializerMethodField()
+    stats = serializers.SerializerMethodField()
+    abilities = serializers.SerializerMethodField()
+    equipments = serializers.SerializerMethodField()
+    cash_equipments = serializers.SerializerMethodField()
+    symbols = serializers.SerializerMethodField()
+    link_skills = serializers.SerializerMethodField()
+    skills = serializers.SerializerMethodField()
+    hexa_matrix = serializers.SerializerMethodField()
+    hexa_stats = serializers.SerializerMethodField()
+    v_matrix = serializers.SerializerMethodField()
+    dojang = serializers.SerializerMethodField()
+    set_effects = serializers.SerializerMethodField()
+    beauty_equipments = serializers.SerializerMethodField()
+    android_equipments = serializers.SerializerMethodField()
+    pet_equipments = serializers.SerializerMethodField()
+    propensities = serializers.SerializerMethodField()
+    hyper_stats = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CharacterBasic
+        fields = [
+            'basic', 'popularity', 'stats', 'abilities', 'equipments',
+            'cash_equipments', 'symbols', 'link_skills', 'skills',
+            'hexa_matrix', 'hexa_stats', 'v_matrix', 'dojang',
+            'set_effects', 'beauty_equipments', 'android_equipments',
+            'pet_equipments', 'propensities', 'hyper_stats'
+        ]
+
+    def get_basic(self, obj):
+        return CharacterBasicSerializer(obj).data
+
+    def get_popularity(self, obj):
+        popularity = obj.popularity.order_by('-date').first()
+        if popularity:
+            return CharacterPopularitySerializer(popularity).data
+        return None
+
+    def get_stats(self, obj):
+        stats = obj.stats.order_by('-date').first()
+        if stats:
+            return CharacterStatSerializer(stats).data
+        return None
+
+    def get_abilities(self, obj):
+        abilities = obj.abilities.order_by('-date').first()
+        if abilities:
+            return CharacterAbilitySerializer(abilities).data
+        return None
+
+    def get_equipments(self, obj):
+        equipments = obj.equipments.order_by('-date').first()
+        if equipments:
+            return CharacterItemEquipmentSerializer(equipments).data
+        return None
+
+    def get_cash_equipments(self, obj):
+        cash_equipments = obj.cash_equipments.order_by('-date').first()
+        if cash_equipments:
+            return CharacterCashItemEquipmentSerializer(cash_equipments).data
+        return None
+
+    def get_symbols(self, obj):
+        symbols = obj.symbols.order_by('-date').first()
+        if symbols:
+            return CharacterSymbolEquipmentSerializer(symbols).data
+        return None
+
+    def get_link_skills(self, obj):
+        link_skills = obj.link_skills.order_by('-date').first()
+        if link_skills:
+            return CharacterLinkSkillSerializer(link_skills).data
+        return None
+
+    def get_skills(self, obj):
+        skills = obj.skills.order_by('-date').first()
+        if skills:
+            return CharacterSkillSerializer(skills).data
+        return None
+
+    def get_hexa_matrix(self, obj):
+        hexa_matrix = obj.hexa_matrix.order_by('-date').first()
+        if hexa_matrix:
+            return CharacterHexaMatrixSerializer(hexa_matrix).data
+        return None
+
+    def get_hexa_stats(self, obj):
+        hexa_stats = obj.hexa_stats.order_by('-date').first()
+        if hexa_stats:
+            return CharacterHexaMatrixStatSerializer(hexa_stats).data
+        return None
+
+    def get_v_matrix(self, obj):
+        v_matrix = obj.v_matrix.order_by('-date').first()
+        if v_matrix:
+            return CharacterVMatrixSerializer(v_matrix).data
+        return None
+
+    def get_dojang(self, obj):
+        dojang = obj.dojang.order_by('-date').first()
+        if dojang:
+            return CharacterDojangSerializer(dojang).data
+        return None
+
+    def get_set_effects(self, obj):
+        set_effects = obj.set_effects.order_by('-date').first()
+        if set_effects:
+            return CharacterSetEffectSerializer(set_effects).data
+        return None
+
+    def get_beauty_equipments(self, obj):
+        beauty_equipments = obj.beauty_equipments.order_by('-date').first()
+        if beauty_equipments:
+            return CharacterBeautyEquipmentSerializer(beauty_equipments).data
+        return None
+
+    def get_android_equipments(self, obj):
+        android_equipments = obj.android_equipments.order_by('-date').first()
+        if android_equipments:
+            return AndroidEquipmentSerializer(android_equipments).data
+        return None
+
+    def get_pet_equipments(self, obj):
+        pet_equipments = obj.pet_equipments.order_by('-date').first()
+        if pet_equipments:
+            return CharacterPetEquipmentSerializer(pet_equipments).data
+        return None
+
+    def get_propensities(self, obj):
+        propensities = obj.propensities.order_by('-date').first()
+        if propensities:
+            return CharacterPropensitySerializer(propensities).data
+        return None
+
+    def get_hyper_stats(self, obj):
+        hyper_stats = obj.hyper_stats.order_by('-date').first()
+        if hyper_stats:
+            return CharacterHyperStatSerializer(hyper_stats).data
+        return None

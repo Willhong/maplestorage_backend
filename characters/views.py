@@ -1,3 +1,5 @@
+import datetime
+import json
 import requests
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +12,8 @@ import aiohttp
 from rest_framework.views import APIView
 from util.rate_limiter import rate_limited
 from util.redis_client import redis_client
+import time
+import pytz
 
 from define.define import (
     CHARACTER_ID_URL, CHARACTER_BASIC_URL, CHARACTER_POPULARITY_URL,
@@ -26,7 +30,7 @@ from .models import *
 from .schemas import (
     AndroidEquipmentSchema, CharacterBasicSchema, CharacterPopularitySchema, CharacterStatSchema,
     CharacterAbilitySchema, CharacterItemEquipmentSchema, CharacterCashItemEquipmentSchema, CharacterSymbolEquipmentSchema,
-    CharacterSymbolSchema, CharacterLinkSkillSchema, CharacterSkillSchema,
+    CharacterLinkSkillSchema, CharacterSkillSchema,
     CharacterHexaMatrixSchema, CharacterHexaMatrixStatSchema, CharacterVMatrixSchema,
     CharacterDojangSchema, CharacterSetEffectSchema, CharacterBeautyEquipmentSchema,
     CharacterPetEquipmentSchema, CharacterPropensitySchema,
@@ -40,7 +44,7 @@ from .serializers import (
     CharacterHexaMatrixSerializer, CharacterHyperStatSerializer,
     CharacterItemEquipmentSerializer, CharacterLinkSkillSerializer, CharacterPetEquipmentSerializer,
     CharacterPopularitySerializer, CharacterPropensitySerializer,
-    CharacterSetEffectSerializer, CharacterSkillSerializer, CharacterStatSerializer, CharacterSymbolEquipmentSerializer, CharacterVMatrixSerializer
+    CharacterSetEffectSerializer, CharacterSkillSerializer, CharacterStatSerializer, CharacterSymbolEquipmentSerializer, CharacterVMatrixSerializer, CharacterAllDataSerializer
 )
 
 logger = logging.getLogger('maple_api')
@@ -58,7 +62,7 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 
         try:
             validated_data = self.schema_class(**data)
-            logger.info(f"{self.model_class.__name__} 데이터 검증 성공")
+            # logger.info(f"{self.model_class.__name__} 데이터 검증 성공")
             return validated_data.model_dump(by_alias=True)
         except ValidationError as e:
             logger.error(f"{self.model_class.__name__} 데이터 검증 실패: {str(e)}")
@@ -88,7 +92,13 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
                 return obj
 
             # CharacterBasic 모델이 아닌 경우, character 관계 설정
-            if self.model_class != CharacterBasic:
+            if self.model_class == CharacterBasic:
+                validated_data['ocid'] = ocid
+                obj = self.model_class.create_from_data(
+                    validated_data)
+                if obj:
+                    created = True
+            else:
                 if not ocid:
                     logger.error("OCID가 필요한 모델에 OCID가 제공되지 않았습니다.")
                     return
@@ -96,298 +106,52 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
                 try:
                     character = CharacterBasic.objects.get(ocid=ocid)
                     defaults['character'] = character
+                    obj = self.model_class.create_from_data(
+                        character, validated_data)
+                    if obj:
+                        created = True
                 except CharacterBasic.DoesNotExist:
                     logger.error(
                         f"CharacterBasic 모델에서 OCID {ocid}를 찾을 수 없습니다.")
                     return
 
-            # 모델별 특수 처리
-            if self.model_class == CharacterBasic:
-                # 기존 캐릭터 조회
-                try:
-                    character = self.model_class.objects.get(
-                        ocid=validated_data.get('ocid') or ocid)
-                except self.model_class.DoesNotExist:
-                    character = None
-
-                # 기본 정보 업데이트 또는 생성
-                basic_defaults = {
-                    'character_name': validated_data.get('character_name'),
-                    'world_name': validated_data.get('world_name'),
-                    'character_gender': validated_data.get('character_gender'),
-                    'character_class': validated_data.get('character_class'),
-                }
-
-                if character:
-                    for key, value in basic_defaults.items():
-                        setattr(character, key, value)
-                    character.save()
-                else:
-                    character = self.model_class.objects.create(
-                        ocid=validated_data.get('ocid') or ocid,
-                        **basic_defaults
-                    )
-
-                # 히스토리 저장
-                history_data = {
-                    # date가 없으면 현재 시간 사용
-                    'date': validated_data.get('date') or timezone.now(),
-                    'character_name': validated_data.get('character_name'),
-                    'character_class': validated_data.get('character_class'),
-                    'character_class_level': validated_data.get('character_class_level'),
-                    'character_level': validated_data.get('character_level'),
-                    'character_exp': validated_data.get('character_exp'),
-                    'character_exp_rate': validated_data.get('character_exp_rate'),
-                    'character_image': validated_data.get('character_image'),
-                    'character_date_create': validated_data.get('character_date_create'),
-                    'access_flag': True if validated_data.get('access_flag') == 'true' else False,
-                    'liberation_quest_clear_flag': True if validated_data.get('liberation_quest_clear_flag') == 'true' else False,
-                }
-                try:
-                    history_obj = CharacterBasicHistory.objects.create(
-                        character=character, **history_data)
-                except Exception as e:
-                    logger.error(
-                        f"CharacterBasicHistory 모델 생성 중 오류 발생: {str(e)}")
-                    return
-                return character
-
-            elif self.model_class == CharacterPopularity:
-                defaults.update({
-                    'popularity': validated_data.get('popularity')
-                })
-                obj, created = self.model_class.objects.update_or_create(
-                    character=defaults['character'],
-                    date=defaults['date'],
-                    defaults=defaults
-                )
-
-            elif self.model_class == CharacterAbility:
-                # 기본 어빌리티 정보 저장
-                defaults.update({
-                    'ability_grade': validated_data.get('ability_grade'),
-                    'remain_fame': validated_data.get('remain_fame'),
-                    'preset_no': validated_data.get('preset_no', 1)
-                })
-
-                # 프리셋 처리 함수
-                def create_ability_preset(preset_data):
-                    if not preset_data:
-                        return None
-
-                    preset = AbilityPreset.objects.create(
-                        ability_preset_grade=preset_data.get(
-                            'ability_preset_grade', '')
-                    )
-
-                    if 'ability_info' in preset_data:
-                        for ability in preset_data['ability_info']:
-                            ability_obj = AbilityInfo.objects.create(
-                                ability_no=ability.get('ability_no'),
-                                ability_grade=ability.get('ability_grade'),
-                                ability_value=ability.get('ability_value')
-                            )
-                            preset.ability_info.add(ability_obj)
-
-                    return preset
-
-                # 프리셋 1, 2, 3 먼저 생성
-                presets = {}
-                for i in range(1, 4):
-                    preset_key = f'ability_preset_{i}'
-                    if preset_key in validated_data:
-                        presets[preset_key] = create_ability_preset(
-                            validated_data[preset_key])
-                    else:
-                        # 프리셋이 없는 경우 빈 프리셋 생성
-                        presets[preset_key] = AbilityPreset.objects.create(
-                            ability_preset_grade='일반'
-                        )
-
-                # 모든 프리셋을 포함하여 CharacterAbility 객체 생성/업데이트
-                defaults.update({
-                    'ability_preset_1': presets['ability_preset_1'],
-                    'ability_preset_2': presets['ability_preset_2'],
-                    'ability_preset_3': presets['ability_preset_3']
-                })
-
-                obj, created = self.model_class.objects.update_or_create(
-                    character=defaults['character'],
-                    date=defaults['date'],
-                    defaults=defaults
-                )
-
-                # 기본 어빌리티 정보 처리
-                if 'ability_info' in validated_data:
-                    obj.ability_info.clear()
-                    for ability in validated_data['ability_info']:
-                        ability_obj = AbilityInfo.objects.create(
-                            ability_no=ability.get('ability_no'),
-                            ability_grade=ability.get('ability_grade'),
-                            ability_value=ability.get('ability_value')
-                        )
-                        obj.ability_info.add(ability_obj)
-
-                obj.save()
-
-            elif self.model_class == AndroidEquipment:
-                try:
-
-                    if validated_data:
-                        # 안드로이드 기본 정보로 AndroidEquipment 생성
-                        android = AndroidEquipment.objects.create(
-                            character=defaults['character'],
-                            date=defaults['date'],
-                            android_name=validated_data.get(
-                                'android_name', ''),
-                            android_nickname=validated_data.get(
-                                'android_nickname', ''),
-                            android_icon=validated_data.get(
-                                'android_icon', ''),
-                            android_description=validated_data.get(
-                                'android_description'),
-                            android_gender=validated_data.get(
-                                'android_gender'),
-                            android_grade=validated_data.get('android_grade'),
-                            android_non_humanoid_flag=validated_data.get(
-                                'android_non_humanoid_flag'),
-                            android_shop_usable_flag=validated_data.get(
-                                'android_shop_usable_flag'),
-                            preset_no=validated_data.get('preset_no'),
-
-                        )
-
-                        # 안드로이드 헤어/페이스 처리
-                        if validated_data.get('android_hair'):
-                            hair = Hair.objects.create(
-                                **validated_data['android_hair'])
-                            android.android_hair = hair
-
-                        if validated_data.get('android_face'):
-                            face = Face.objects.create(
-                                **validated_data['android_face'])
-                            android.android_face = face
-
-                        if validated_data.get('android_skin'):
-                            skin = Skin.objects.create(
-                                **validated_data['android_skin'])
-                            android.android_skin = skin
-
-                        # 안드로이드 캐시 장비 처리
-                        if validated_data.get('android_cash_item_equipment'):
-                            cash_items = []
-                            for item_data in validated_data['android_cash_item_equipment']:
-                                # 캐시 아이템 옵션 처리
-                                cash_item_option_data = item_data.pop(
-                                    'cash_item_option', None)
-                                # android_item_gender 삭제
-                                item_data.pop('android_item_gender', None)
-                                item = CashItemEquipment.objects.create(
-                                    **item_data)
-
-                                # 캐시 아이템 옵션 설정
-                                if cash_item_option_data:
-                                    cash_item_option = CashItemOption.objects.create(
-                                        **cash_item_option_data)
-                                    item.cash_item_option.add(cash_item_option)
-
-                                cash_items.append(item)
-
-                            android.android_cash_item_equipment.add(
-                                *cash_items)
-
-                        # 프리셋 처리는 별도의 안드로이드 객체로 생성
-                        presets = {}
-                        for i in range(1, 4):
-                            preset_key = f'android_preset_{i}'
-                            if preset_key in validated_data and validated_data[preset_key]:
-                                preset_data = validated_data[preset_key]
-                                preset_android = AndroidEquipmentPreset.objects.create(
-                                    android_name=preset_data.get(
-                                        'android_name', ''),
-                                    android_nickname=preset_data.get(
-                                        'android_nickname', ''),
-                                    android_icon=preset_data.get(
-                                        'android_icon', ''),
-                                    android_description=preset_data.get(
-                                        'android_description'),
-                                    android_grade=preset_data.get(
-                                        'android_grade'),
-                                    android_gender=preset_data.get(
-                                        'android_gender'),
-                                    android_non_humanoid_flag=preset_data.get(
-                                        'android_non_humanoid_flag'),
-                                    android_shop_usable_flag=preset_data.get(
-                                        'android_shop_usable_flag'),
-                                )
-
-                                # 프리셋 헤어/페이스 처리
-                                if preset_data.get('android_hair'):
-                                    hair = Hair.objects.create(
-                                        **preset_data['android_hair'])
-                                    preset_android.android_hair = hair
-
-                                if preset_data.get('android_face'):
-                                    face = Face.objects.create(
-                                        **preset_data['android_face'])
-                                    preset_android.android_face = face
-
-                                if preset_data.get('android_skin'):
-                                    skin = Skin.objects.create(
-                                        **preset_data['android_skin'])
-                                    preset_android.android_skin = skin
-
-                                # 프리셋 캐시 장비 처리
-                                if preset_data.get('android_cash_item_equipment'):
-                                    cash_items = []
-                                    for item_data in preset_data['android_cash_item_equipment']:
-                                        # 캐시 아이템 옵션 처리
-                                        cash_item_option_data = item_data.pop(
-                                            'cash_item_option', None)
-                                        item = CashItemEquipment.objects.create(
-                                            **item_data)
-
-                                        # 캐시 아이템 옵션 설정
-                                        if cash_item_option_data:
-                                            cash_item_option = CashItemOption.objects.create(
-                                                **cash_item_option_data)
-                                            item.cash_item_option.add(
-                                                cash_item_option)
-
-                                        cash_items.append(item)
-
-                                    preset_android.android_cash_item_equipment.add(
-                                        *cash_items)
-
-                                preset_android.save()
-                                presets[preset_key] = preset_android
-
-                        # android에 preset 추가
-                        for preset_key, preset in presets.items():
-                            setattr(android, preset_key, preset)
-
-                        android.save()
-                        logger.info(
-                            f"{self.model_class.__name__} 데이터 저장 완료: 생성됨")
-                        return android
-                    return None
-                except Exception as e:
-                    logger.error(f"안드로이드 데이터 저장 중 오류 발생: {str(e)}")
-                    raise
-
-            else:
-                obj = self.model_class.create_from_data(
-                    character, validated_data)
-                if obj:
-                    created = True
-
-            logger.info(
-                f"{self.model_class.__name__} 데이터 저장 완료: {'생성됨' if created else '업데이트됨'}")
+            # logger.info(
+            #     f"{self.model_class.__name__} 데이터 저장 완료: {'생성됨' if created else '업데이트됨'}")
             return obj
 
         except Exception as e:
             logger.error(f"데이터베이스 저장 중 오류 발생: {str(e)}")
             return None
+
+    def _fetch_and_process_data(self, request, ocid=None):
+        # 캐시된 데이터 확인
+        cached_response = self.check_and_return_cached_data(
+            request,
+            self.model_class,
+            ocid,
+            self.related_name,
+            self.serializer_class
+        )
+        if cached_response:
+            return cached_response
+
+        # API 호출
+        try:
+            data = self.get_api_data(
+                self.api_url, {'ocid': ocid} if ocid else None)
+            if data.get('date') is None:
+                data['date'] = timezone.now()
+            # 데이터베이스에 저장
+            data = self.save_to_database(data, ocid)
+
+            if self.serializer_class:
+                serializer = self.serializer_class(
+                    data, context={'request': request})
+                return serializer.data
+
+            return data
+        except Exception as e:
+            raise e
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -413,31 +177,8 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
         }
     )
     def get(self, request, ocid=None):
-        # 캐시된 데이터 확인
-        cached_response = self.check_and_return_cached_data(
-            request,
-            self.model_class,
-            ocid,
-            self.related_name,
-            self.serializer_class
-        )
-        if cached_response:
-            return cached_response
-
-        # API 호출
         try:
-            data = self.get_api_data(
-                self.api_url, {'ocid': ocid} if ocid else None)
-            if data.get('date') is None:
-                data['date'] = timezone.now()
-            # 데이터베이스에 저장
-            data = self.save_to_database(data, ocid)
-
-            if self.serializer_class:
-                serializer = self.serializer_class(
-                    data, context={'request': request})
-                return Response(self.format_response_data(serializer.data))
-
+            data = self._fetch_and_process_data(request, ocid)
             return Response(self.format_response_data(data))
         except Exception as e:
             return self.handle_exception(e)
@@ -446,6 +187,43 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
 class CharacterIdView(BaseCharacterView):
     model_class = CharacterId
     api_url = CHARACTER_ID_URL
+
+    def _fetch_and_process_data(self, request):
+        char_name = request.query_params.get('character_name')
+        if not char_name:
+            raise ValueError('캐릭터 이름이 필요합니다.')
+
+        # 캐시된 데이터 확인
+        cached_response = self.check_and_return_cached_data(
+            request,
+            self.model_class,
+            None,
+            None,
+            None,
+            {'character_name': char_name}
+        )
+        if cached_response:
+            return cached_response
+
+        # OCID 조회
+        data = self.get_api_data(
+            CHARACTER_ID_URL, {'character_name': char_name})
+        if not data or 'ocid' not in data:
+            return Response({'error': '캐릭터를 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+        ocid = data.get('ocid')
+
+        # 데이터베이스에 저장
+        self.save_to_database(data, ocid)
+
+        self.model_class = CharacterBasic
+        self.api_url = CHARACTER_BASIC_URL
+        # 캐릭터 기본 정보 조회
+        basic_data = self.get_api_data(
+            CHARACTER_BASIC_URL, {'ocid': ocid})
+        if basic_data:
+            self.save_to_database(basic_data, ocid)
+
+        return data
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -472,28 +250,11 @@ class CharacterIdView(BaseCharacterView):
         }
     )
     def get(self, request):
-        char_name = request.query_params.get('character_name')
-        if not char_name:
-            return Response({'error': '캐릭터 이름이 필요합니다.'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            # OCID 조회
-            data = self.get_api_data(
-                CHARACTER_ID_URL, {'character_name': char_name})
-            ocid = data.get('ocid')
-
-            # 데이터베이스에 저장
-            self.save_to_database(data, ocid)
-
-            self.model_class = CharacterBasic
-            self.api_url = CHARACTER_BASIC_URL
-            # 캐릭터 기본 정보 조회
-            basic_data = self.get_api_data(
-                CHARACTER_BASIC_URL, {'ocid': ocid})
-            if basic_data:
-                self.save_to_database(basic_data, ocid)
-
+            data = self._fetch_and_process_data(request)
             return Response(self.format_response_data(data))
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return self.handle_exception(e)
 
@@ -619,7 +380,8 @@ class CharacterSkillView(BaseCharacterView):
             self.model_class,
             ocid,
             self.related_name,
-            self.serializer_class
+            self.serializer_class,
+            {'character_skill_grade': character_skill_grade}  # 추가 필터 전달
         )
         if cached_response:
             return cached_response
@@ -742,6 +504,7 @@ class CharacterHyperStatView(BaseCharacterView):
 class CharacterAllDataView(BaseCharacterView):
     """캐릭터의 모든 정보를 조회하는 뷰"""
     schema_class = CharacterAllDataSchema
+    serializer_class = CharacterAllDataSerializer
 
     def validate_and_save_data(self, endpoint_name: str, data: dict, ocid: str, view_class):
         """각 엔드포인트의 데이터를 검증하고 저장"""
@@ -759,10 +522,11 @@ class CharacterAllDataView(BaseCharacterView):
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
-                'ocid',
-                openapi.IN_PATH,
-                description='캐릭터 식별자',
-                type=openapi.TYPE_STRING
+                'character_name',
+                openapi.IN_QUERY,
+                description='캐릭터 이름',
+                type=openapi.TYPE_STRING,
+                required=True
             ),
             openapi.Parameter(
                 'force_refresh',
@@ -779,9 +543,55 @@ class CharacterAllDataView(BaseCharacterView):
             500: "서버 에러"
         }
     )
-    def get(self, request, ocid):
+    def get(self, request):
+        start_time = time.time()  # 시작 시간 기록
+        ocid = None  # ocid 변수 초기화 (에러 로깅 시 사용 위함)
+        character_name = request.query_params.get(
+            'character_name')  # character_name 먼저 가져오기
+
         try:
-            # API 엔드포인트와 뷰 클래스 매핑
+            # character_name = request.query_params.get('character_name') # 위치 이동
+            if not character_name:
+                # 이름 없으면 바로 리턴하므로 여기서 시간 로깅
+                total_duration = time.time() - start_time
+                logger.warning(f"캐릭터 이름 누락 - 총 소요시간: {total_duration:.2f}초")
+                return Response({'error': '캐릭터 이름이 필요합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # CharacterIdView를 사용하여 OCID 조회 및 기본 정보 저장 시도
+            ocid_data = CharacterIdView()._fetch_and_process_data(request)
+            ocid = ocid_data.get('ocid')  # ocid 할당
+
+            if not ocid:
+                total_duration = time.time() - start_time
+                # ocid_data가 오류 응답일 수 있으므로 확인
+                if isinstance(ocid_data, Response):
+                    logger.error(
+                        f"OCID 조회 실패 (응답 반환) - 캐릭터명: {character_name}, 총 소요시간: {total_duration:.2f}초")
+                    return ocid_data  # 이미 Response 객체이므로 그대로 반환
+                logger.error(
+                    f"OCID 조회 실패 - 캐릭터명: {character_name}, 총 소요시간: {total_duration:.2f}초")
+                return Response({'error': 'OCID를 조회할 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # --- 캐시 확인 로직 수정 ---
+            force_refresh = request.query_params.get(
+                'force_refresh', 'false').lower() == 'true'
+            if not force_refresh:
+                cache_key = f"character_data:{ocid}:all_data"
+                cached_data = redis_client.get(cache_key)
+                if cached_data:
+                    try:
+                        response_data = json.loads(cached_data)
+                        total_duration = time.time() - start_time  # 캐시 반환 전 시간 측정
+                        logger.info(
+                            f"캐시된 전체 데이터 반환 - OCID: {ocid}, 총 소요시간: {total_duration:.2f}초")
+                        return Response({'data': response_data})  # 캐시 데이터 반환
+                    except json.JSONDecodeError:
+                        logger.warning(
+                            f"캐시된 데이터 JSON 파싱 오류 - Key: {cache_key}")
+                        # 파싱 오류 시 캐시 무시하고 새로 조회 (아래 로직으로 진행)
+            # --- 캐시 확인 로직 끝 ---
+
+            # API 엔드포인트와 뷰 클래스 매핑 (변경 없음)
             api_endpoints = {
                 CHARACTER_BASIC_URL: ('basic', CharacterBasicView),
                 CHARACTER_POPULARITY_URL: ('popularity', CharacterPopularityView),
@@ -791,6 +601,7 @@ class CharacterAllDataView(BaseCharacterView):
                 CHARACTER_CASHITEM_EQUIPMENT_URL: ('cashitem_equipment', CharacterCashItemEquipmentView),
                 CHARACTER_SYMBOL_URL: ('symbol', CharacterSymbolView),
                 CHARACTER_LINK_SKILL_URL: ('link_skill', CharacterLinkSkillView),
+                CHARACTER_SKILL_URL: ('skill', CharacterSkillView),
                 CHARACTER_HEXAMATRIX_URL: ('hexamatrix', CharacterHexaMatrixView),
                 CHARACTER_HEXAMATRIX_STAT_URL: ('hexamatrix_stat', CharacterHexaMatrixStatView),
                 CHARACTER_VMATRIX_URL: ('vmatrix', CharacterVMatrixView),
@@ -803,56 +614,227 @@ class CharacterAllDataView(BaseCharacterView):
                 CHARACTER_HYPER_STAT_URL: ('hyper_stat', CharacterHyperStatView),
             }
 
-            all_data = {}
-
-            @rate_limited(max_calls=500)
-            async def fetch_api_data(session, url, params):
-                try:
-                    headers = {'x-nxopen-api-key': APIKEY}
-                    async with session.get(url, params=params, headers=headers) as response:
-                        return url, await response.json()
-                except Exception as e:
-                    logger.error(f"API 호출 실패 ({url}): {str(e)}")
-                    return url, None
-
-            async def fetch_all_data():
-                async with aiohttp.ClientSession() as session:
-                    urls = list(api_endpoints.keys())
-                    semaphore = asyncio.Semaphore(20)  # 동시에 최대 20개의 요청만 허용
-
-                    async def fetch_with_semaphore(url):
-                        async with semaphore:  # 세마포어로 동시 실행 제한
-                            return await fetch_api_data(session, url, {'ocid': ocid})
-
-                    tasks = [fetch_with_semaphore(url) for url in urls]
-                    return await asyncio.gather(*tasks)
-
             # 비동기 호출 실행
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            results = loop.run_until_complete(fetch_all_data())
-            loop.close()
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                results = loop.run_until_complete(
+                    self.fetch_all_data(ocid, api_endpoints, request))
+            finally:
+                loop.close()
 
-            now = timezone.now()
-            # 결과 처리 및 데이터베이스 저장
-            for url, result in results:
-                if result:
-                    if result.get('date') is None:
-                        result['date'] = now
-                    endpoint_name, view_class = api_endpoints[url]
-                    validated_data = self.validate_and_save_data(
-                        endpoint_name, result, ocid, view_class)
-                    if validated_data:
-                        all_data[endpoint_name] = validated_data
+            # --- 데이터 조회 및 직렬화/캐싱 로직 수정 ---
+            try:
+                character = CharacterBasic.objects.get(ocid=ocid)
+            except CharacterBasic.DoesNotExist:
+                total_duration = time.time() - start_time  # 실패 응답 전 시간 측정
+                logger.error(
+                    f"모든 데이터 조회 후 CharacterBasic 조회 실패 - OCID: {ocid}, 총 소요시간: {total_duration:.2f}초")
+                return Response({'error': '캐릭터 정보를 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
 
-            return Response(all_data)
+            serializer = self.serializer_class(
+                character, context={'request': request})
+            serialized_data = serializer.data
+
+            cache_key = f"character_data:{ocid}:all_data"
+            cache_ttl = 3600
+            redis_client.setex(cache_key, cache_ttl,
+                               json.dumps(serialized_data))
+            logger.info(f"전체 데이터 캐싱 완료 - Key: {cache_key}")
+
+            total_duration = time.time() - start_time  # 성공 응답 전 시간 측정
+            logger.info(
+                f"전체 데이터 조회 성공 응답 - OCID: {ocid}, 총 소요시간: {total_duration:.2f}초")
+            return Response(self.format_response_data(serialized_data))
+            # --- 데이터 조회 및 직렬화/캐싱 로직 끝 ---
 
         except Exception as e:
-            logger.error(f"전체 데이터 조회 중 오류 발생: {str(e)}")
+            total_duration = time.time() - start_time  # 예외 응답 전 시간 측정
+            logger.error(
+                f"전체 데이터 조회 중 오류 발생 - 캐릭터명: {character_name}, OCID: {ocid}, 총 소요시간: {total_duration:.2f}초, 오류: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
             return Response(
                 {'error': f'데이터 조회 중 오류가 발생했습니다: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    async def fetch_all_data(self, ocid, api_endpoints, request):
+        """비동기로 모든 API 데이터 조회"""
+        from asgiref.sync import sync_to_async
+        import time
+
+        total_start = time.time()
+        logger.info(f"전체 데이터 조회 시작 - OCID: {ocid}")
+
+        # # force_refresh 파라미터 확인
+        # force_refresh = request.query_params.get(
+        #     'force_refresh', 'false').lower() == 'true'
+
+        async with aiohttp.ClientSession() as session:
+            # CharacterSkillView 처럼 파라미터가 필요한 경우 처리 필요
+            tasks = []
+            semaphore = asyncio.Semaphore(20)  # 동시 요청 제한
+
+            # @rate_limited 데코레이터는 async 함수에 직접 적용하기 어려울 수 있음
+            # 필요하다면 asyncio-limiter 같은 라이브러리 사용 고려
+            @rate_limited(500)
+            async def fetch_with_semaphore(url, params):
+                async with semaphore:
+                    try:
+                        request_start = time.time()
+                        headers = {'x-nxopen-api-key': APIKEY}
+
+                        # --- 개별 데이터 캐시 확인 (선택 사항) ---
+                        # 만약 force_refresh가 아니고, 개별 데이터 캐시도 확인하고 싶다면 여기서 확인
+                        # view_instance = api_endpoints[url][1]()
+                        # cached_item = view_instance.check_and_return_cached_data(...)
+                        # if cached_item and not force_refresh:
+                        #     logger.info(f"개별 캐시 사용 ({url})")
+                        #     return url, cached_item # 또는 DB 저장을 스킵할 플래그 반환
+                        # --- 개별 캐시 확인 끝 ---
+
+                        api_start = time.time()
+                        async with session.get(url, params=params, headers=headers) as response:
+                            api_time = time.time() - api_start
+                            if response.status == 200:
+                                data = await response.json()
+                                logger.info(
+                                    f"API 요청 성공 ({url}) - 상태: {response.status}, 소요시간: {api_time:.2f}초")
+
+                                process_start = time.time()
+                                endpoint_name, view_class = api_endpoints[url]
+
+                                # --- 날짜 처리 로직 수정 ---
+                                raw_date = data.get('date')
+                                if raw_date:
+                                    try:
+                                        if isinstance(raw_date, datetime.datetime):
+                                            # 이미 datetime 객체인 경우 timezone 확인
+                                            if timezone.is_naive(raw_date):
+                                                logger.warning(
+                                                    f"API 응답에 naive datetime 포함 ({url}): {raw_date}. UTC로 가정.")
+                                                # Django 설정의 TIME_ZONE을 사용하거나 UTC로 명시적 설정
+                                                # data['date'] = timezone.make_aware(raw_date, timezone.get_current_timezone())
+                                                data['date'] = timezone.make_aware(
+                                                    raw_date, timezone.utc)
+                                            else:
+                                                # 이미 aware datetime이면 그대로 사용 (UTC로 변환하는 것을 고려할 수 있음)
+                                                data['date'] = raw_date.astimezone(
+                                                    timezone.utc)
+                                        elif isinstance(raw_date, str):
+                                            # 문자열인 경우 파싱 시도
+                                            # ISO 8601 형식 (YYYY-MM-DDTHH:MM:SS+HH:MM 또는 YYYY-MM-DDTHH:MM:SSZ)
+                                            date_str = raw_date.replace(
+                                                'Z', '+00:00')
+                                            dt_obj = datetime.datetime.fromisoformat(
+                                                date_str)
+                                            # Aware datetime 객체를 UTC로 변환하여 저장 일관성 확보
+                                            data['date'] = dt_obj.astimezone(
+                                                timezone.utc)
+                                        else:
+                                            # 예상치 못한 타입
+                                            logger.warning(
+                                                f"알 수 없는 날짜 타입 ({url}): {type(raw_date)}. 현재 시간(UTC) 사용.")
+                                            # UTC 반환
+                                            data['date'] = timezone.now()
+
+                                    except (ValueError, TypeError) as dt_error:
+                                        logger.warning(
+                                            f"날짜 문자열 파싱 실패 ({url}): '{raw_date}'. 오류: {dt_error}. 현재 시간(UTC) 사용.")
+                                        data['date'] = timezone.now()  # UTC 반환
+                                else:
+                                    # date 필드가 없거나 None인 경우 (예: ocid 응답)
+                                    logger.info(
+                                        f"API 응답에 'date' 필드 없음 ({url}). 현재 시간(UTC) 사용.")
+                                    data['date'] = timezone.now()  # UTC 반환
+                                # --- 날짜 처리 로직 끝 ---
+
+                                db_start = time.time()
+                                # sync_to_async로 DB 저장 호출
+                                # save_to_database는 이제 timezone-aware UTC datetime 객체를 받음
+                                view_instance = view_class()
+                                await sync_to_async(view_instance.save_to_database)(data, ocid)
+                                db_time = time.time() - db_start
+                                logger.info(
+                                    f"DB 저장 완료 ({endpoint_name}) - 소요시간: {db_time:.2f}초")
+
+                                process_time = time.time() - process_start - db_time
+                                logger.info(
+                                    f"데이터 처리 완료 ({endpoint_name}) - 소요시간: {process_time:.2f}초")
+
+                                total_request_time = time.time() - request_start
+                                logger.info(
+                                    f"요청 전체 처리 완료 ({url}) - 총 소요시간: {total_request_time:.2f}초")
+                                return url, data  # 성공 시 데이터 반환
+
+                            elif response.status == 400 and "INVALID_IDENTIFIER" in await response.text():
+                                logger.warning(
+                                    f"API 요청 실패 ({url}) - 잘못된 식별자(OCID): {ocid}, 상태: {response.status}, 소요시간: {api_time:.2f}초")
+                                # 특정 에러 구분
+                                return url, {'error': 'INVALID_IDENTIFIER'}
+                            else:
+                                error_text = await response.text()
+                                logger.error(
+                                    f"API 요청 실패 ({url}) - 상태: {response.status}, 내용: {error_text[:200]}, 소요시간: {api_time:.2f}초")
+                                # 실패 시 에러 정보 포함
+                                return url, {'error': f"API Error {response.status}"}
+
+                    except aiohttp.ClientError as e:
+                        logger.error(f"AIOHTTP ClientError ({url}): {str(e)}")
+                        return url, {'error': f'Client Connection Error: {str(e)}'}
+                    except asyncio.TimeoutError:
+                        logger.error(f"API 요청 시간 초과 ({url})")
+                        return url, {'error': 'Request Timeout'}
+                    except Exception as e:
+                        logger.error(f"API 호출/처리 중 예외 발생 ({url}): {str(e)}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        return url, {'error': f'Unexpected Error: {str(e)}'}
+
+            # 각 엔드포인트에 맞는 파라미터 설정하여 tasks 생성
+            for url, (endpoint_name, view_class) in api_endpoints.items():
+                params = {'ocid': ocid}
+                # CharacterSkillView 처럼 추가 파라미터가 필요한 경우 처리
+                if view_class == CharacterSkillView:
+                    # 가져올 스킬 차수 목록 (0차, 5차, 6차)
+                    skill_grades_to_fetch = ['0', '5', '6']
+                    for grade in skill_grades_to_fetch:
+                        # 각 차수별 파라미터 설정
+                        skill_params = {'ocid': ocid,
+                                        'character_skill_grade': grade}
+                        # 각 차수별로 비동기 작업 추가
+                        tasks.append(fetch_with_semaphore(url, skill_params))
+                        logger.info(
+                            f"CharacterSkillView 작업 추가 - Grade: {grade}, URL: {url}")
+                    # CharacterSkillView에 대한 기본 task 추가 방지
+                    continue  # 다음 api_endpoint로 넘어감
+                    # --- 기존 로직 주석 처리 또는 삭제 ---
+                    # logger.warning(
+                    #     f"CharacterSkillView는 전체 조회 시 파라미터 필요. 현재는 제외됨. URL: {url}")
+                    # continue  # CharacterSkillView는 일단 제외
+
+                # 다른 뷰들은 기존 로직대로 추가
+                tasks.append(fetch_with_semaphore(url, params))
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            total_time = time.time() - total_start
+            successful_fetches = sum(1 for r in results if isinstance(
+                r, tuple) and r[1] and not r[1].get('error'))
+            failed_fetches = len(results) - successful_fetches
+            logger.info(
+                f"전체 데이터 fetch_all_data 완료 - 총 소요시간: {total_time:.2f}초, 성공: {successful_fetches}, 실패: {failed_fetches}")
+
+            # 예외 처리 또는 실패 로깅
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.error(f"비동기 작업 중 예외 발생: {result}")
+                elif isinstance(result, tuple) and result[1] and result[1].get('error'):
+                    logger.warning(
+                        f"데이터 조회 실패 - URL: {result[0]}, 오류: {result[1]['error']}")
+
+            return results  # 결과 반환 (성공/실패 정보 포함)
 
 
 class RedisHealthCheckView(APIView):

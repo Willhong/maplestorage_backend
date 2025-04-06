@@ -10,6 +10,7 @@ from django.db import models
 
 from define.define import APIKEY
 from characters.models import *
+from util.rate_limiter import rate_limited
 from .exceptions import MapleAPIError
 
 logger = logging.getLogger('maple_api')
@@ -27,6 +28,7 @@ class MapleAPIClientMixin:
             "x-nxopen-api-key": APIKEY
         }
 
+    @rate_limited(500)
     def get_api_data(self, url, params=None):
         """
         API 호출 및 응답 데이터 반환
@@ -148,7 +150,7 @@ class APIViewMixin(APIView):
         """요청 로깅"""
         print(f"{action} 요청 - 캐릭터: {character_name}")
 
-    def get_cached_data(self, ocid, model_class, related_name=None, hours=1):
+    def get_cached_data(self, ocid, model_class, related_name=None, hours=1, additional_filters=None, additional_cache_key=None):
         """
         캐시된 데이터 조회를 위한 공통 메서드
 
@@ -157,6 +159,8 @@ class APIViewMixin(APIView):
             model_class: 조회할 모델 클래스
             related_name (str): 관련 데이터 필드명 (있는 경우)
             hours (int): 캐시 유효 시간 (기본 1시간)
+            additional_filters (dict): 추가 필터링 조건 (있는 경우)
+            additional_cache_key (str): 캐시 키에 추가할 구분자 (있는 경우)
 
         Returns:
             tuple: (캐시된 데이터, 관련 데이터)
@@ -164,7 +168,7 @@ class APIViewMixin(APIView):
         try:
             # 현재 시간에서 지정된 시간 전 계산
             cache_time = timezone.now() - timedelta(hours=hours)
-            logger.info(f"현재 시간: {timezone.now()}, {hours}시간 전: {cache_time}")
+            # logger.info(f"현재 시간: {timezone.now()}, {hours}시간 전: {cache_time}")
 
             # 먼저 CharacterBasic에서 캐릭터 정보 조회
             character = CharacterBasic.objects.filter(ocid=ocid).first()
@@ -175,8 +179,8 @@ class APIViewMixin(APIView):
             # 모델 클래스가 CharacterBasic인 경우 바로 반환
             if model_class == CharacterBasic:
                 if character.last_updated >= cache_time:
-                    logger.info(
-                        f"캐시된 기본 데이터 찾음: {ocid}, 날짜: {character.last_updated}")
+                    # logger.info(
+                    # f"캐시된 기본 데이터 찾음: {ocid}, 날짜: {character.last_updated}")
                     return character, None
                 else:
                     logger.info(
@@ -189,13 +193,19 @@ class APIViewMixin(APIView):
 
                 if hasattr(related_manager, 'filter'):
                     # QuerySet인 경우 (Many 관계)
+                    filter_kwargs = {'date__gte': cache_time}
+
+                    # 추가 필터가 있는 경우 적용
+                    if additional_filters:
+                        filter_kwargs.update(additional_filters)
+
                     cached_data = related_manager.filter(
-                        date__gte=cache_time
+                        **filter_kwargs
                     ).order_by('-date').first()
 
                     if cached_data:
-                        logger.info(
-                            f"캐시된 관련 데이터 찾음: {character.character_name}, 날짜: {cached_data.date}")
+                        # logger.info(
+                        #     f"캐시된 관련 데이터 찾음: {character.character_name}, 날짜: {cached_data.date}")
                         # 추가 관련 데이터가 있는 경우 함께 반환
                         additional_related = None
                         if hasattr(cached_data, related_name):
@@ -208,8 +218,14 @@ class APIViewMixin(APIView):
                         return cached_data, additional_related
                     else:
                         # 시간 필터링 없이 다시 조회
-                        any_data = related_manager.order_by(
-                            '-date').first()
+                        filter_kwargs = {}
+                        if additional_filters:
+                            filter_kwargs.update(additional_filters)
+
+                        any_data = related_manager.filter(
+                            **filter_kwargs
+                        ).order_by('-date').first()
+
                         if any_data:
                             logger.info(
                                 f"관련 데이터 있으나 {hours}시간 초과: {character.character_name}, 날짜: {any_data.date}")
@@ -230,9 +246,17 @@ class APIViewMixin(APIView):
                         return None, None
 
             # related_name이 없는 경우 character_name으로 필터링
+            filter_kwargs = {
+                'character_name': character.character_name,
+                'date__gte': cache_time
+            }
+
+            # 추가 필터가 있는 경우 적용
+            if additional_filters:
+                filter_kwargs.update(additional_filters)
+
             cached_data = model_class.objects.filter(
-                character_name=character.character_name,
-                date__gte=cache_time
+                **filter_kwargs
             ).order_by('-date').first()
 
             if cached_data:
@@ -241,8 +265,12 @@ class APIViewMixin(APIView):
                 return cached_data, None
             else:
                 # 시간 필터링 없이 다시 조회
+                filter_kwargs = {'character_name': character.character_name}
+                if additional_filters:
+                    filter_kwargs.update(additional_filters)
+
                 any_data = model_class.objects.filter(
-                    character_name=character.character_name
+                    **filter_kwargs
                 ).order_by('-date').first()
 
                 if any_data:
@@ -257,7 +285,7 @@ class APIViewMixin(APIView):
             logger.error(f"캐시된 데이터 조회 중 오류 발생: {str(e)}")
             return None, None
 
-    def check_and_return_cached_data(self, request, model_class, ocid=None, related_name=None, serializer_class=None):
+    def check_and_return_cached_data(self, request, model_class, ocid=None, related_name=None, serializer_class=None, additional_filters=None, additional_cache_key=None):
         """
         캐시된 데이터 확인 및 반환을 위한 공통 메서드
 
@@ -267,6 +295,8 @@ class APIViewMixin(APIView):
             ocid: 캐릭터 식별자
             related_name (str): 관련 데이터 필드명 (있는 경우)
             serializer_class: 사용할 시리얼라이저 클래스 (있는 경우)
+            additional_filters (dict): 추가 필터링 조건 (있는 경우)
+            additional_cache_key (str): 캐시 키에 추가할 구분자 (있는 경우)
 
         Returns:
             Response or None: 캐시된 데이터가 있으면 Response 객체, 없으면 None
@@ -284,7 +314,7 @@ class APIViewMixin(APIView):
 
             # 캐시된 데이터 조회
             cached_data, related_data = self.get_cached_data(
-                ocid, model_class, related_name)
+                ocid, model_class, related_name, additional_filters=additional_filters, additional_cache_key=additional_cache_key)
 
             if cached_data:
                 # serializer_class가 제공된 경우 해당 serializer 사용
@@ -307,47 +337,38 @@ class APIViewMixin(APIView):
                     # CharacterBasic이 아닌 경우 character 관련 필드 제외
                     if model_class != CharacterBasic and field.name in ['character', 'id']:
                         continue
-                    # CharacterBasic인 경우 id만 제외
-                    elif model_class == CharacterBasic and field.name == 'id':
-                        continue
-
-                    value = getattr(cached_data, field.name)
-                    if isinstance(value, timezone.datetime):
-                        value = value.isoformat()
-                    response_data[field.name] = value
+                    response_data[field.name] = getattr(
+                        cached_data, field.name)
 
                 # 관련 데이터가 있는 경우 처리
                 if related_data:
-                    if isinstance(related_data, models.QuerySet):
+                    if isinstance(related_data, (list, models.QuerySet)):
+                        # Many 관계인 경우
                         related_list = []
                         for item in related_data:
-                            item_dict = {}
+                            item_data = {}
                             for field in item._meta.fields:
-                                # character와 id 필드 제외
-                                if field.name not in ['character', 'id']:
-                                    value = getattr(item, field.name)
-                                    if isinstance(value, timezone.datetime):
-                                        value = value.isoformat()
-                                    item_dict[field.name] = value
-                            related_list.append(item_dict)
+                                if field.name not in ['id', 'character']:
+                                    item_data[field.name] = getattr(
+                                        item, field.name)
+                            related_list.append(item_data)
                         response_data[related_name] = related_list
                     else:
-                        related_dict = {}
+                        # One 관계인 경우
+                        related_data_dict = {}
                         for field in related_data._meta.fields:
-                            # character와 id 필드 제외
-                            if field.name not in ['character', 'id']:
-                                value = getattr(related_data, field.name)
-                                if isinstance(value, timezone.datetime):
-                                    value = value.isoformat()
-                                related_dict[field.name] = value
-                        response_data[related_name] = related_dict
+                            if field.name not in ['id', 'character']:
+                                related_data_dict[field.name] = getattr(
+                                    related_data, field.name)
+                        response_data[related_name] = related_data_dict
 
                 return Response(self.format_response_data(response_data))
 
+            return None
+
         except Exception as e:
             logger.error(f"캐시된 데이터 확인 중 오류 발생: {str(e)}")
-
-        return None
+            return None
 
 
 class CharacterDataMixin:

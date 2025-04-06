@@ -14,7 +14,7 @@ class CharacterBasicSchema(BaseModel):
     character_level: int
     character_exp: int
     character_exp_rate: str
-    character_guild_name: str
+    character_guild_name: Optional[str]
     character_image: str
     character_date_create: Optional[str]
     access_flag: str
@@ -250,10 +250,10 @@ class CashItemEquipmentSchema(BaseModel):
 
 class CharacterCashItemEquipmentSchema(BaseModel):
     date: Optional[datetime] = None
-    character_gender: str
-    character_class: str
-    character_look_mode: str
-    preset_no: int
+    character_gender: Optional[str] = None
+    character_class: Optional[str] = None
+    character_look_mode: Optional[str] = None
+    preset_no: Optional[int] = None
     cash_item_equipment_base: List[CashItemEquipmentSchema]
     cash_item_equipment_preset_1: List[CashItemEquipmentSchema]
     cash_item_equipment_preset_2: List[CashItemEquipmentSchema]
@@ -362,18 +362,18 @@ class HexaCoreSchema(BaseModel):
 
 class CharacterHexaMatrixSchema(BaseModel):
     date: Optional[datetime]
-    character_hexa_core_equipment: List[HexaCoreSchema]
+    character_hexa_core_equipment: Optional[List[HexaCoreSchema]] = None
 
 
 class HexaStatCoreSchema(BaseModel):
     slot_id: str
-    main_stat_name: str
-    sub_stat_name_1: str
-    sub_stat_name_2: str
-    main_stat_level: int
-    sub_stat_level_1: int
-    sub_stat_level_2: int
-    stat_grade: int
+    main_stat_name: Optional[str] = None
+    sub_stat_name_1: Optional[str] = None
+    sub_stat_name_2: Optional[str] = None
+    main_stat_level: Optional[int] = None
+    sub_stat_level_1: Optional[int] = None
+    sub_stat_level_2: Optional[int] = None
+    stat_grade: Optional[int] = None
 
 
 class CharacterHexaStatSchema(BaseModel):
@@ -387,11 +387,11 @@ class CharacterHexaStatSchema(BaseModel):
 
 class CharacterHexaMatrixStatSchema(BaseModel):
     date: Optional[datetime]
-    character_class: str
-    character_hexa_stat_core: List[HexaStatCoreSchema]
-    character_hexa_stat_core_2: List[HexaStatCoreSchema]
-    preset_hexa_stat_core: List[HexaStatCoreSchema]
-    preset_hexa_stat_core_2: List[HexaStatCoreSchema]
+    character_class: Optional[str] = None
+    character_hexa_stat_core: Optional[List[HexaStatCoreSchema]] = None
+    character_hexa_stat_core_2: Optional[List[HexaStatCoreSchema]] = None
+    preset_hexa_stat_core: Optional[List[HexaStatCoreSchema]] = None
+    preset_hexa_stat_core_2: Optional[List[HexaStatCoreSchema]] = None
 
 
 class CharacterDojangSchema(BaseModel):
@@ -489,8 +489,8 @@ class PetSkillSchema(BaseModel):
 
 
 class PetEquipmentSchema(BaseModel):
-    item_name: str
-    item_icon: str
+    item_name: Optional[str]
+    item_icon: Optional[str]
     item_description: Optional[str] = None
 
 

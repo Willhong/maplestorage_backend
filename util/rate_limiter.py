@@ -11,28 +11,23 @@ def check_rate_limit(max_calls: int = 500):
     레이트 리밋을 체크하는 함수
     1초당 max_calls를 넘으면, 다음 초까지 대기했다가 다시 시도.
     """
-    while True:
-        current_second = int(time.time())
-        key = f"rate_limit:{current_second}"
+    current_second = int(time.time())
+    key = f"rate_limit:{current_second}"
 
-        pipe = redis_client.pipeline()
-        pipe.incr(key)
-        pipe.expire(key, 2)  # 2초 후 만료 (안전장치)
-        current_count = pipe.execute()[0]  # INCR 결과값(현재 카운트)
+    # transaction=False로 성능 향상
+    with redis_client.pipeline(transaction=False) as pipe:
+        current_count = pipe.incr(key).expire(key, 2).execute()[0]
 
-        if current_count <= max_calls:
+        if current_count % 10 == 0:  # 10개 요청마다 한번만 로깅
             logger.info(
                 f"Rate limit check - Current count: {current_count}/{max_calls} at {current_second}"
             )
+
+        if current_count <= max_calls:
             return True
 
-        # 초과 시 -> 다음 초까지 대기 (혹은 정확히 남은 시간 계산)
-        logger.warning(
-            f"Rate limit exceeded. Waiting 1 second."
-        )
         time.sleep(1)
-        # 다시 while 루프 반복, current_second가 바뀌어서 새로운 키가 생성되고
-        # 카운터가 1부터 다시 시작됨
+        return check_rate_limit(max_calls)
 
 
 def rate_limited(max_calls: int = 500):
