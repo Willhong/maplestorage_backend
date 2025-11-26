@@ -10,6 +10,17 @@ class CharacterBasic(models.Model):
     world_name = models.CharField(max_length=255)
     character_gender = models.CharField(max_length=10)
     character_class = models.CharField(max_length=255)
+    character_info_url = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text='캐릭터 정보 페이지 URL (인벤토리 크롤링용)'
+    )
+    meso = models.BigIntegerField(
+        null=True,
+        blank=True,
+        help_text='캐릭터 보유 메소'
+    )
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -119,6 +130,11 @@ class CharacterBasicHistory(models.Model):
     character_date_create = models.DateTimeField(null=True, blank=True)
     access_flag = models.BooleanField()
     liberation_quest_clear_flag = models.BooleanField()
+    meso = models.BigIntegerField(
+        null=True,
+        blank=True,
+        help_text='캐릭터 보유 메소 (AC 2.5.4 히스토리 보관)'
+    )
 
     class Meta:
         ordering = ['-date']
@@ -2016,3 +2032,368 @@ class CharacterId(models.Model):
 
     def __str__(self):
         return self.ocid
+
+
+class Inventory(models.Model):
+    """
+    인벤토리 아이템 모델
+
+    캐릭터의 인벤토리에 있는 아이템 정보를 저장합니다.
+    크롤링을 통해 수집되며, crawled_at 타임스탬프로 히스토리를 보관합니다.
+    """
+    character_basic = models.ForeignKey(
+        CharacterBasic,
+        on_delete=models.CASCADE,
+        related_name='inventory_items',
+        help_text='연결된 캐릭터'
+    )
+    item_name = models.CharField(
+        max_length=255,
+        help_text='아이템 이름'
+    )
+    item_icon = models.URLField(
+        help_text='아이템 아이콘 URL'
+    )
+    quantity = models.IntegerField(
+        default=1,
+        help_text='아이템 수량'
+    )
+    item_options = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='아이템 옵션 (강화, 잠재능력 등)'
+    )
+    slot_position = models.IntegerField(
+        help_text='인벤토리 슬롯 위치'
+    )
+    expiry_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='기간제 아이템 만료 날짜'
+    )
+    crawled_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='크롤링된 시간'
+    )
+    detail_url = models.URLField(
+        null=True,
+        blank=True,
+        help_text='아이템 상세 페이지 URL'
+    )
+    has_detail = models.BooleanField(
+        default=False,
+        help_text='상세 정보 크롤링 완료 여부'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['character_basic', 'item_name']),
+            models.Index(fields=['expiry_date']),
+            models.Index(fields=['character_basic', '-crawled_at']),
+        ]
+        ordering = ['-crawled_at', 'slot_position']
+
+    def __str__(self):
+        return f"{self.character_basic.character_name} - {self.item_name} x{self.quantity}"
+
+    @property
+    def is_expirable(self):
+        """기간제 아이템 여부"""
+        return self.expiry_date is not None
+
+    @property
+    def days_until_expiry(self):
+        """만료까지 남은 일수 (D-day 계산)"""
+        if not self.expiry_date:
+            return None
+
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        delta = self.expiry_date - now
+        return delta.days
+
+
+class ItemDetail(models.Model):
+    """
+    아이템 상세 정보 모델
+
+    Inventory와 1:1 관계로 연결되며,
+    각 아이템의 상세 스탯과 옵션을 저장합니다.
+    """
+    inventory_item = models.OneToOneField(
+        'Inventory',
+        on_delete=models.CASCADE,
+        related_name='detail',
+        help_text='연결된 인벤토리 아이템'
+    )
+
+    # 장비 기본 정보
+    item_category = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text='장비 분류 (예: 무기, 방어구)'
+    )
+    required_level = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='착용 가능 레벨'
+    )
+    required_job = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='착용 가능 직업'
+    )
+
+    # 장비 스탯
+    attack_power = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='공격력'
+    )
+    magic_power = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='마력'
+    )
+    str_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='STR'
+    )
+    dex_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='DEX'
+    )
+    int_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='INT'
+    )
+    luk_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='LUK'
+    )
+    hp_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='HP'
+    )
+    mp_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='MP'
+    )
+    defense = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='방어력'
+    )
+    all_stat = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='올스탯'
+    )
+    boss_damage = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='보스 공격력 증가 (%)'
+    )
+    ignore_defense = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='방어율 무시 (%)'
+    )
+
+    # 강화 정보
+    upgrade_count = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='업그레이드 가능 횟수'
+    )
+    upgrades_used = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='사용한 업그레이드 횟수'
+    )
+
+    # 잠재능력
+    potential_grade = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        help_text='잠재능력 등급 (레어/에픽/유니크/레전드리)'
+    )
+    potential_option_1 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='잠재능력 옵션 1'
+    )
+    potential_option_2 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='잠재능력 옵션 2'
+    )
+    potential_option_3 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='잠재능력 옵션 3'
+    )
+
+    # 에디셔널 잠재능력
+    additional_potential_grade = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        help_text='에디셔널 잠재능력 등급'
+    )
+    additional_potential_option_1 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='에디셔널 잠재능력 옵션 1'
+    )
+    additional_potential_option_2 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='에디셔널 잠재능력 옵션 2'
+    )
+    additional_potential_option_3 = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='에디셔널 잠재능력 옵션 3'
+    )
+
+    # 소울 옵션
+    soul_name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='소울 이름'
+    )
+    soul_option = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text='소울 옵션'
+    )
+
+    # 메타 정보
+    crawled_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='상세 정보 크롤링 시간'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['inventory_item']),
+            models.Index(fields=['potential_grade']),
+            models.Index(fields=['additional_potential_grade']),
+        ]
+        ordering = ['-crawled_at']
+
+    def __str__(self):
+        return f"{self.inventory_item.item_name} - Detail"
+
+
+class Storage(models.Model):
+    """
+    창고 아이템 모델 (Story 2.4)
+
+    캐릭터의 창고(공유/개인)에 있는 아이템 정보를 저장합니다.
+    크롤링을 통해 수집되며, crawled_at 타임스탬프로 히스토리를 보관합니다.
+    """
+    STORAGE_TYPE_CHOICES = [
+        ('shared', 'Shared Storage'),
+        ('personal', 'Personal Storage'),
+    ]
+
+    character_basic = models.ForeignKey(
+        CharacterBasic,
+        on_delete=models.CASCADE,
+        related_name='storage_items',
+        help_text='연결된 캐릭터'
+    )
+    storage_type = models.CharField(
+        max_length=10,
+        choices=STORAGE_TYPE_CHOICES,
+        help_text='창고 유형 (shared/personal)'
+    )
+    item_name = models.CharField(
+        max_length=255,
+        help_text='아이템 이름'
+    )
+    item_icon = models.URLField(
+        help_text='아이템 아이콘 URL'
+    )
+    quantity = models.IntegerField(
+        default=1,
+        help_text='아이템 수량'
+    )
+    item_options = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='아이템 옵션 (강화, 잠재능력 등)'
+    )
+    slot_position = models.IntegerField(
+        help_text='창고 슬롯 위치'
+    )
+    expiry_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='기간제 아이템 만료 날짜'
+    )
+    meso = models.BigIntegerField(
+        null=True,
+        blank=True,
+        help_text='창고 메소 (크롤링 시점 기준)'
+    )
+    crawled_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='크롤링된 시간'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['character_basic', 'storage_type']),
+            models.Index(fields=['expiry_date']),
+            models.Index(fields=['character_basic', '-crawled_at']),
+        ]
+        ordering = ['-crawled_at', 'storage_type', 'slot_position']
+
+    def __str__(self):
+        return f"{self.character_basic.character_name} - {self.storage_type} - {self.item_name} x{self.quantity}"
+
+    @property
+    def is_expirable(self):
+        """기간제 아이템 여부"""
+        return self.expiry_date is not None
+
+    @property
+    def days_until_expiry(self):
+        """만료까지 남은 일수 (D-day 계산)"""
+        if not self.expiry_date:
+            return None
+
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        delta = self.expiry_date - now
+        return delta.days
+
+    @property
+    def is_shared(self):
+        """공유 창고 여부"""
+        return self.storage_type == 'shared'
+
+    @property
+    def is_personal(self):
+        """개인 창고 여부"""
+        return self.storage_type == 'personal'

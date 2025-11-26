@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MapleStoryAPIKey
+from .models import MapleStoryAPIKey, UserProfile, Character
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -82,3 +82,53 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['username'] = self.user.username
         data['email'] = self.user.email
         return data
+
+
+class GoogleLoginSerializer(serializers.Serializer):
+    """Google OAuth login serializer"""
+    access_token = serializers.CharField(required=True)
+
+    def validate_access_token(self, value):
+        """Validate Google OAuth access token"""
+        if not value:
+            raise serializers.ValidationError("Access token is required")
+        return value
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """User profile serializer for GET/PATCH /api/users/me/"""
+    email = serializers.EmailField(source='user.email', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['email', 'username', 'display_name', 'notification_enabled']
+        extra_kwargs = {
+            'display_name': {'required': False},
+            'notification_enabled': {'required': False}
+        }
+
+    def validate_display_name(self, value):
+        """Validate display_name length"""
+        if value and len(value) > 100:
+            raise serializers.ValidationError("표시 이름은 100자를 초과할 수 없습니다.")
+        return value
+
+
+class CharacterCreateSerializer(serializers.Serializer):
+    """Character registration request serializer (Story 1.7)"""
+    character_name = serializers.CharField(min_length=1, max_length=100)
+
+    def validate_character_name(self, value):
+        """Validate character name"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("캐릭터 이름은 필수입니다.")
+        return value.strip()
+
+
+class CharacterResponseSerializer(serializers.ModelSerializer):
+    """Character response serializer (Story 1.7)"""
+    class Meta:
+        model = Character
+        fields = ['id', 'ocid', 'character_name', 'world_name', 'character_class', 'character_level', 'created_at']
+        read_only_fields = ['id', 'ocid', 'world_name', 'character_class', 'character_level', 'created_at']

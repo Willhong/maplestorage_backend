@@ -33,8 +33,13 @@ from .schemas import (
 from .mixins import MapleAPIClientMixin, CharacterDataMixin
 from .utils import handle_api_exception, log_api_call
 from .exceptions import CharacterNotFoundError, DatabaseError, DataValidationError
+from util.rate_limiter import rate_limited
 
 logger = logging.getLogger(__name__)
+
+# Nexon API Rate Limit (개발 단계: 초당 5건, 1일 1000건)
+# 서비스 단계로 전환 시 NEXON_API_RATE_LIMIT = 500으로 변경
+NEXON_API_RATE_LIMIT = 5  # 개발 단계
 
 
 class MapleAPIService(CharacterDataMixin):
@@ -63,6 +68,7 @@ class MapleAPIService(CharacterDataMixin):
         }
 
     @staticmethod
+    @rate_limited(max_calls=NEXON_API_RATE_LIMIT)  # AC 2.2.5: Rate Limit 준수
     @handle_api_exception
     def get_ocid(character_name):
         """
@@ -104,6 +110,7 @@ class MapleAPIService(CharacterDataMixin):
         return ocid
 
     @staticmethod
+    @rate_limited(max_calls=NEXON_API_RATE_LIMIT)  # AC 2.2.5: Rate Limit 준수
     @handle_api_exception
     def get_character_data(endpoint_key, ocid, date=None, **kwargs):
         """
@@ -155,19 +162,10 @@ class MapleAPIService(CharacterDataMixin):
             character_basic, created = CharacterBasic.objects.update_or_create(
                 ocid=ocid,
                 defaults={
-                    'date': current_time,
                     'character_name': basic_data.get('character_name'),
                     'world_name': basic_data.get('world_name'),
                     'character_gender': basic_data.get('character_gender'),
-                    'character_class': basic_data.get('character_class'),
-                    'character_class_level': basic_data.get('character_class_level'),
-                    'character_level': basic_data.get('character_level'),
-                    'character_exp': basic_data.get('character_exp'),
-                    'character_exp_rate': basic_data.get('character_exp_rate'),
-                    'character_guild_name': basic_data.get('character_guild_name'),
-                    'character_image': basic_data.get('character_image'),
-                    'access_flag': True,
-                    'liberation_quest_clear_flag': True
+                    'character_class': basic_data.get('character_class')
                 }
             )
             return character_basic, current_time

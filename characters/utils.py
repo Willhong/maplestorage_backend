@@ -69,6 +69,12 @@ def handle_api_exception(func):
             logger.error(f"데이터베이스 오류: {str(e)}")
             raise DatabaseError(detail=str(e))
 
+        except (CharacterNotFoundError, APIRateLimitError, APIConnectionError,
+                APITimeoutError, InvalidParameterError, DataValidationError,
+                DatabaseError, MapleAPIError):
+            # 이미 처리된 커스텀 예외는 그대로 전파
+            raise
+
         except Exception as e:
             logger.error(f"예상치 못한 오류: {str(e)}\n{traceback.format_exc()}")
             raise MapleAPIError(
@@ -98,8 +104,9 @@ def api_exception_handler(exc, context):
             status=exc.status_code
         )
 
-    # 기본 DRF 예외 처리
-    return None
+    # 기본 DRF 예외 처리로 위임
+    from rest_framework.views import exception_handler as drf_exception_handler
+    return drf_exception_handler(exc, context)
 
 
 def log_api_call(api_name, params=None):

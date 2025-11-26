@@ -1,7 +1,7 @@
 # schemas.py
 from datetime import datetime
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Literal
 
 
 class CharacterBasicSchema(BaseModel):
@@ -567,3 +567,125 @@ class CharacterAllDataSchema(BaseModel):
     pet_equipment: Optional[CharacterPetEquipmentSchema]
     propensity: Optional[CharacterPropensitySchema]
     hyper_stat: Optional[CharacterHyperStatSchema]
+
+
+class InventoryItemSchema(BaseModel):
+    """
+    인벤토리 아이템 스키마
+
+    크롤링된 인벤토리 아이템 데이터를 검증합니다.
+    """
+    item_name: str = Field(..., min_length=1, max_length=255, description='아이템 이름')
+    item_icon: str = Field(..., pattern=r'^https?://.+', description='아이템 아이콘 URL')
+    quantity: int = Field(default=1, ge=1, description='아이템 수량 (1개 이상)')
+    item_options: Optional[Dict[str, Any]] = Field(None, description='아이템 옵션 (강화, 잠재능력 등)')
+    slot_position: int = Field(..., ge=0, description='슬롯 위치 (0부터 시작)')
+    expiry_date: Optional[datetime] = Field(None, description='기간제 아이템 만료 날짜')
+    detail_url: Optional[str] = Field(None, description='아이템 상세 페이지 URL (AC 2.3.8)')
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "item_name": "엘릭서",
+                "item_icon": "https://maplestory.io/api/item/2000005/icon",
+                "quantity": 100,
+                "slot_position": 0,
+                "item_options": {
+                    "enhancement": 0,
+                    "potential": None
+                },
+                "expiry_date": None
+            }
+        }
+
+
+class StorageItemSchema(BaseModel):
+    """
+    창고 아이템 스키마 (Story 2.4)
+
+    크롤링된 창고 아이템 데이터를 검증합니다.
+    """
+    storage_type: str = Field(default='storage', description='창고 유형')
+    item_name: str = Field(..., min_length=1, max_length=255, description='아이템 이름')
+    item_icon: str = Field(..., pattern=r'^https?://.+', description='아이템 아이콘 URL')
+    quantity: int = Field(default=1, ge=1, description='아이템 수량 (1개 이상)')
+    item_options: Optional[Dict[str, Any]] = Field(None, description='아이템 옵션 (강화, 잠재능력 등)')
+    slot_position: int = Field(..., ge=0, description='슬롯 위치 (0부터 시작)')
+    expiry_date: Optional[datetime] = Field(None, description='기간제 아이템 만료 날짜')
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "storage_type": "storage",
+                "item_name": "엘릭서",
+                "item_icon": "https://maplestory.io/api/item/2000005/icon",
+                "quantity": 200,
+                "slot_position": 0,
+                "item_options": None,
+                "expiry_date": None
+            }
+        }
+
+
+class ItemDetailSchema(BaseModel):
+    """
+    아이템 상세 정보 스키마
+
+    크롤링된 아이템 상세 정보를 검증합니다.
+    """
+    # 기본 정보
+    item_category: Optional[str] = Field(None, description='장비 분류')
+    required_level: Optional[int] = Field(None, ge=0, le=300, description='착용 가능 레벨')
+    required_job: Optional[str] = Field(None, description='착용 가능 직업')
+
+    # 스탯
+    attack_power: Optional[int] = Field(None, ge=0, description='공격력')
+    magic_power: Optional[int] = Field(None, ge=0, description='마력')
+    str_stat: Optional[int] = Field(None, ge=0, description='STR')
+    dex_stat: Optional[int] = Field(None, ge=0, description='DEX')
+    int_stat: Optional[int] = Field(None, ge=0, description='INT')
+    luk_stat: Optional[int] = Field(None, ge=0, description='LUK')
+    hp_stat: Optional[int] = Field(None, ge=0, description='HP')
+    mp_stat: Optional[int] = Field(None, ge=0, description='MP')
+    defense: Optional[int] = Field(None, ge=0, description='방어력')
+    all_stat: Optional[int] = Field(None, ge=0, description='올스탯')
+    boss_damage: Optional[int] = Field(None, ge=0, le=100, description='보스 공격력 증가 (%)')
+    ignore_defense: Optional[int] = Field(None, ge=0, le=100, description='방어율 무시 (%)')
+
+    # 강화
+    upgrade_count: Optional[int] = Field(None, ge=0, description='업그레이드 가능 횟수')
+    upgrades_used: Optional[int] = Field(None, ge=0, description='사용한 업그레이드 횟수')
+
+    # 잠재능력
+    potential_grade: Optional[str] = Field(None, description='잠재능력 등급')
+    potential_option_1: Optional[str] = Field(None, description='잠재능력 옵션 1')
+    potential_option_2: Optional[str] = Field(None, description='잠재능력 옵션 2')
+    potential_option_3: Optional[str] = Field(None, description='잠재능력 옵션 3')
+
+    # 에디셔널 잠재능력
+    additional_potential_grade: Optional[str] = Field(None, description='에디셔널 잠재능력 등급')
+    additional_potential_option_1: Optional[str] = Field(None, description='에디셔널 잠재능력 옵션 1')
+    additional_potential_option_2: Optional[str] = Field(None, description='에디셔널 잠재능력 옵션 2')
+    additional_potential_option_3: Optional[str] = Field(None, description='에디셔널 잠재능력 옵션 3')
+
+    # 소울
+    soul_name: Optional[str] = Field(None, description='소울 이름')
+    soul_option: Optional[str] = Field(None, description='소울 옵션')
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "item_category": "무기",
+                "required_level": 200,
+                "attack_power": 171,
+                "magic_power": 283,
+                "str_stat": 0,
+                "int_stat": 150,
+                "boss_damage": 30,
+                "ignore_defense": 15,
+                "potential_grade": "유니크",
+                "potential_option_1": "INT +9%",
+                "potential_option_2": "마력 +9%",
+                "potential_option_3": "보스 공격력 +30%"
+            }
+        }

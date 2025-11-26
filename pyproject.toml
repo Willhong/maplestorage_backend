@@ -21,6 +21,7 @@ dependencies = [
     "inflection==0.5.1",
     "mysqlclient>=2.2.7",
     "packaging==24.2",
+    "playwright>=1.56.0",
     "psycopg2-binary>=2.9.10",
     "pydantic==2.10.4",
     "pydantic-core==2.27.2",

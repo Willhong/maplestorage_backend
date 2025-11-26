@@ -1,5 +1,26 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+
+
+class GoogleLoginRequest(BaseModel):
+    """Google OAuth login request schema"""
+    access_token: str
+
+
+class UserSchema(BaseModel):
+    """User response schema"""
+    id: int
+    username: str
+    email: str
+    display_name: Optional[str] = None
+    notification_enabled: bool = True
+
+
+class LoginResponse(BaseModel):
+    """Login response schema"""
+    access_token: str
+    refresh_token: str
+    user: UserSchema
 
 
 class CharacterSchema(BaseModel):

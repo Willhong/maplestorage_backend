@@ -129,14 +129,22 @@ WSGI_APPLICATION = 'maplestorage_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'maplestory',  # 실제 데이터베이스 이름으로 변경
-        'USER': 'postgres',  # 실제 사용자 이름으로 변경
-        'PASSWORD': '1234',  # 실제 비밀번호로 변경
-        'HOST': 'localhost',  # 실제 호스트로 변경 (예: 127.0.0.1 또는 DB 서버 주소)
-        'PORT': '5432',      # 실제 포트로 변경 (PostgreSQL 기본 포트)
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# PostgreSQL (프로덕션 환경에서 사용)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'maplestory',
+#         'USER': 'postgres',
+#         'PASSWORD': '1234',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -223,22 +231,32 @@ LOGGING = {
 }
 
 # Redis 설정
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', '')
+
+# Redis URL 생성 (비밀번호가 있으면 포함)
+REDIS_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}' if REDIS_PASSWORD else f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
 # Celery 설정
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_BROKER_URL = f'{REDIS_URL}/0'
+CELERY_RESULT_BACKEND = f'{REDIS_URL}/1'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Seoul'
 
+# 테스트 환경에서는 Celery task를 동기로 실행
+import sys
+if 'test' in sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+
 # Redis Cache 설정
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+        'LOCATION': f'{REDIS_URL}/2',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }

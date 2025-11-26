@@ -6,16 +6,22 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 from define.define import BASE_URL
 
-from .models import MapleStoryAPIKey, Account, Character
+from .models import MapleStoryAPIKey, Account, Character, UserProfile
 from .serializers import (
     MapleStoryAPIKeySerializer, AccountSerializer,
     CharacterListSerializer, RegisterSerializer,
-    CustomTokenObtainPairSerializer
+    CustomTokenObtainPairSerializer, GoogleLoginSerializer,
+    UserProfileSerializer, CharacterCreateSerializer, CharacterResponseSerializer
 )
-from .schemas import CharacterListSchema, AccountSchema, CharacterSchema
+from .schemas import CharacterListSchema, AccountSchema, CharacterSchema, GoogleLoginRequest, LoginResponse, UserSchema
+from .services import CharacterService
 
 CACHE_DURATION = timedelta(hours=1)  # 캐시 유효 기간
 
@@ -145,3 +151,456 @@ class AccountListView(APIView):
                         'character_level': char_data.character_level
                     }
                 )
+
+
+class GoogleLoginView(APIView):
+    """
+    Google OAuth login endpoint
+    Validates Google OAuth access token and issues JWT tokens
+    AC #2, #3: "로그인 상태 유지" 옵션에 따라 Refresh Token 유효기간 조정
+    - remember_me=true → 30일
+    - remember_me=false → 7일 (기본)
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        # Validate request data
+        serializer = GoogleLoginSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        access_token = serializer.validated_data['access_token']
+        remember_me = request.data.get('remember_me', False)  # AC #2, #3
+
+        # Verify Google OAuth token
+        try:
+            google_user_info = self.verify_google_token(access_token)
+        except ValueError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Failed to verify Google token"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        google_id = google_user_info.get('sub')
+        email = google_user_info.get('email')
+        name = google_user_info.get('name', '')
+
+        if not google_id or not email:
+            return Response(
+                {"error": "Invalid Google token response"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get or create user
+        try:
+            user_profile = UserProfile.objects.get(google_id=google_id)
+            user = user_profile.user
+        except UserProfile.DoesNotExist:
+            # Create new user
+            username = email.split('@')[0]
+            # Ensure unique username
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+
+            user = User.objects.create(
+                username=username,
+                email=email,
+                first_name=name
+            )
+
+            # Create UserProfile
+            user_profile = UserProfile.objects.create(
+                user=user,
+                google_id=google_id,
+                display_name=name,
+                notification_enabled=True
+            )
+
+        # Generate JWT tokens with dynamic lifetime (AC #2, #3)
+        refresh = RefreshToken.for_user(user)
+
+        # Refresh Token 유효기간 설정
+        if remember_me:
+            # "로그인 상태 유지" 체크 시 30일
+            from datetime import timedelta
+            refresh.set_exp(lifetime=timedelta(days=30))
+        # 기본값은 settings.py의 REFRESH_TOKEN_LIFETIME (7일) 사용
+
+        # Prepare response using Pydantic schema
+        response_data = LoginResponse(
+            access_token=str(refresh.access_token),
+            refresh_token=str(refresh),
+            user=UserSchema(
+                id=user.id,
+                username=user.username,
+                email=user.email,
+                display_name=user_profile.display_name,
+                notification_enabled=user_profile.notification_enabled
+            )
+        )
+
+        return Response(response_data.model_dump(), status=status.HTTP_200_OK)
+
+    def verify_google_token(self, access_token):
+        """
+        Verify Google OAuth access token
+        Returns user info from Google
+        """
+        url = f"https://oauth2.googleapis.com/tokeninfo?access_token={access_token}"
+        response = requests.get(url, timeout=10)
+
+        if response.status_code != 200:
+            raise ValueError("Invalid Google access token")
+
+        data = response.json()
+
+        # Check if token is valid
+        if 'error' in data:
+            raise ValueError(f"Google token error: {data.get('error_description', 'Unknown error')}")
+
+        return data
+
+
+class UserProfileView(APIView):
+    """
+    User profile endpoint
+    GET /api/users/me/ - Get current user profile
+    PATCH /api/users/me/ - Update user profile (display_name, notification_enabled)
+    DELETE /api/users/me/ - Delete user account (AC 1.6)
+    AC #1: 현재 사용자 정보 표시
+    AC #2: display_name 수정
+    AC #3: notification_enabled 토글
+    AC #5: JWT 인증 필수
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Get current authenticated user's profile
+        AC #1: display_name과 notification_enabled 필드 확인 가능
+        """
+        try:
+            user_profile = request.user.profile
+        except UserProfile.DoesNotExist:
+            # Create profile if it doesn't exist
+            user_profile = UserProfile.objects.create(
+                user=request.user,
+                display_name=request.user.get_full_name() or request.user.username
+            )
+
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        """
+        Partially update user profile
+        AC #2: display_name 필드 수정 가능
+        AC #3: notification_enabled 토글 가능
+        AC #5: JWT 인증 없이 호출 시 401 응답
+        """
+        try:
+            user_profile = request.user.profile
+        except UserProfile.DoesNotExist:
+            # Create profile if it doesn't exist
+            user_profile = UserProfile.objects.create(
+                user=request.user,
+                display_name=request.user.get_full_name() or request.user.username
+            )
+
+        # Partial update (only provided fields will be updated)
+        serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # AC #2, #3: 잘못된 데이터 → 400 에러
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @method_decorator(ratelimit(key='user', rate='1/h', method='DELETE', block=True))
+    def delete(self, request):
+        """
+        Delete user account and all related data (CASCADE)
+        AC 1.6: 계정 삭제
+        AC 1.6.3: User 삭제 → UserProfile, Account, Character CASCADE 삭제
+        AC 1.6.5: Rate Limiting 시간당 1회 적용 (django-ratelimit)
+        """
+        user = request.user
+
+        # CASCADE 삭제: User 삭제 시 관련된 모든 데이터 자동 삭제
+        # - UserProfile: OneToOneField(on_delete=CASCADE)
+        # - Account: ForeignKey(on_delete=CASCADE)
+        # - Character: Account 삭제 시 CASCADE
+        # - MapleStoryAPIKey: ForeignKey(on_delete=CASCADE)
+
+        user.delete()
+
+        # AC 1.6.4: 204 No Content 응답
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CharacterCreateView(APIView):
+    """
+    GET /api/characters/ - 캐릭터 목록 조회 (Story 1.7: AC #1)
+    POST /api/characters/ - 캐릭터 등록 (Story 1.7)
+    AC 1.7.5: 캐릭터 이름 입력 → Nexon API OCID 조회
+    AC 1.7.6: OCID 획득 성공 → Character 모델 생성
+    AC 1.7.7: 404 에러 → 공개 설정 안내
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Get user's characters (Story 1.7: AC #1)"""
+        characters = Character.objects.filter(user=request.user).order_by('-created_at')
+        serializer = CharacterResponseSerializer(characters, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @method_decorator(ratelimit(key='user', rate='10/h', method='POST', block=True))
+    def post(self, request):
+        """캐릭터 등록 (Layered Architecture: View → Service → Model)"""
+        serializer = CharacterCreateSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        character_name = serializer.validated_data['character_name']
+
+        try:
+            # Service layer: Nexon API 호출 및 Character 생성
+            character = CharacterService.register_character(request.user, character_name)
+
+            # Response serializer
+            response_serializer = CharacterResponseSerializer(character)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+        except ValueError as e:
+            error_message = str(e)
+
+            # AC 1.7.7: 404 에러 처리 (공개 설정 안내)
+            if "공개 설정" in error_message:
+                return Response(
+                    {"error": "character_not_found", "message": error_message},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # 중복 등록 에러
+            if "이미 등록" in error_message:
+                return Response(
+                    {"error": "character_already_registered", "message": error_message},
+                    status=status.HTTP_409_CONFLICT
+                )
+
+            # 기타 에러 (API 타임아웃, 연결 오류 등)
+            return Response(
+                {"error": "service_unavailable", "message": error_message},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
+@method_decorator(ratelimit(key='user', rate='10/m', method='POST'), name='post')
+class CrawlStartView(APIView):
+    """크롤링 시작 API (Story 2.1: AC #1, #2, Story 2.7: AC #3)
+
+    Rate Limiting: 사용자당 분당 10회
+    """
+    permission_classes = [IsAuthenticated]
+
+    def _check_recently_crawled(self, character):
+        """
+        마지막 크롤링이 1시간 이내인지 확인 (Story 2.7: AC #3)
+
+        Args:
+            character: Character 객체
+
+        Returns:
+            bool: 1시간 이내 크롤링 여부
+        """
+        from characters.models import CharacterBasic, Inventory
+        from .models import CrawlTask
+        from datetime import timedelta
+
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+
+        # 1. CharacterBasic의 last_updated 확인
+        character_basic = CharacterBasic.objects.filter(
+            character_name=character.character_name
+        ).first()
+
+        if character_basic and character_basic.last_updated > one_hour_ago:
+            return True
+
+        # 2. Inventory의 최근 crawled_at 확인
+        recent_inventory = Inventory.objects.filter(
+            character_basic=character_basic,
+            crawled_at__gte=one_hour_ago
+        ).exists() if character_basic else False
+
+        if recent_inventory:
+            return True
+
+        # 3. CrawlTask의 최근 성공 작업 확인
+        recent_success = CrawlTask.objects.filter(
+            character_basic=character,
+            status='SUCCESS',
+            updated_at__gte=one_hour_ago
+        ).exists()
+
+        return recent_success
+
+    def post(self, request, ocid):
+        """
+        POST /api/characters/{ocid}/crawl/
+
+        Request body:
+        {
+            "crawl_types": ["inventory", "storage", "meso"],  # optional
+            "force_refresh": false  # optional
+        }
+
+        Response (202 Accepted):
+        {
+            "task_id": "abc123-def456",
+            "status": "PENDING",
+            "message": "크롤링 작업이 시작되었습니다",
+            "estimated_time": 30,
+            "recently_crawled": false  # Story 2.7: AC #3
+        }
+        """
+        from .tasks import crawl_character_data
+        from .models import CrawlTask
+
+        # CharacterBasic 존재 여부 확인
+        try:
+            character = Character.objects.get(ocid=ocid, user=request.user)
+        except Character.DoesNotExist:
+            return Response(
+                {"error": "character_not_found", "message": "캐릭터를 찾을 수 없습니다."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Request body 파싱 및 검증
+        VALID_CRAWL_TYPES = ['inventory', 'storage', 'meso']
+        crawl_types = request.data.get('crawl_types', VALID_CRAWL_TYPES)
+
+        # crawl_types 화이트리스트 검증 (Security: Input Validation)
+        if not isinstance(crawl_types, list):
+            return Response(
+                {"error": "invalid_crawl_types", "message": "crawl_types는 배열이어야 합니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not all(ct in VALID_CRAWL_TYPES for ct in crawl_types):
+            return Response(
+                {
+                    "error": "invalid_crawl_types",
+                    "message": f"유효한 crawl_types: {', '.join(VALID_CRAWL_TYPES)}"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(crawl_types) == 0:
+            return Response(
+                {"error": "empty_crawl_types", "message": "최소 1개의 crawl_type이 필요합니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        force_refresh = request.data.get('force_refresh', False)
+
+        # Story 2.7: AC #3 - 마지막 크롤링 시간 확인
+        recently_crawled = self._check_recently_crawled(character)
+
+        # Celery task 등록 (AC #1)
+        task = crawl_character_data.delay(character.id, crawl_types)
+        task_id = task.id
+
+        # CrawlTask 모델에 레코드 생성 (AC #2)
+        CrawlTask.objects.create(
+            task_id=task_id,
+            character_basic=character,
+            task_type=','.join(crawl_types),
+            status='PENDING',
+            progress=0
+        )
+
+        # 202 Accepted 응답 (AC #2, Story 2.7: AC #3)
+        return Response(
+            {
+                "task_id": task_id,
+                "status": "PENDING",
+                "message": "크롤링 작업이 시작되었습니다",
+                "estimated_time": 30,  # seconds
+                "recently_crawled": recently_crawled  # Story 2.7: AC #3
+            },
+            status=status.HTTP_202_ACCEPTED
+        )
+
+
+class CrawlStatusView(APIView):
+    """크롤링 상태 조회 API (Story 2.1: AC #5)"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, task_id):
+        """
+        GET /api/crawl-tasks/{task_id}/
+
+        Response (200 OK):
+        {
+            "task_id": "abc123",
+            "status": "STARTED",
+            "progress": 50,
+            "message": "인벤토리 수집 중...",
+            "created_at": "2025-11-23T10:00:00Z",
+            "updated_at": "2025-11-23T10:00:15Z"
+        }
+        """
+        from .services import TaskStatusService
+        from .models import CrawlTask
+
+        # CrawlTask 모델 조회
+        try:
+            crawl_task = CrawlTask.objects.get(task_id=task_id)
+        except CrawlTask.DoesNotExist:
+            return Response(
+                {"error": "task_not_found", "message": "작업을 찾을 수 없습니다."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Redis에서 실시간 상태 조회 (AC #5)
+        redis_status = TaskStatusService.get_task_status(task_id)
+
+        if redis_status:
+            # Redis 데이터가 있으면 Redis 우선
+            response_data = {
+                "task_id": task_id,
+                "status": redis_status.get('status'),
+                "progress": redis_status.get('progress', 0),
+                "message": redis_status.get('message', ''),
+                "created_at": crawl_task.created_at.isoformat(),
+                "updated_at": redis_status.get('updated_at')
+            }
+
+            if redis_status.get('error'):
+                response_data['error_message'] = redis_status.get('error')
+        else:
+            # Redis 데이터가 없으면 DB 데이터 사용
+            response_data = {
+                "task_id": task_id,
+                "status": crawl_task.status,
+                "progress": crawl_task.progress,
+                "message": "",
+                "created_at": crawl_task.created_at.isoformat(),
+                "updated_at": crawl_task.updated_at.isoformat()
+            }
+
+            if crawl_task.error_message:
+                response_data['error_message'] = crawl_task.error_message
+
+        return Response(response_data, status=status.HTTP_200_OK)
