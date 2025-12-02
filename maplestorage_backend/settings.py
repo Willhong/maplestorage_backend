@@ -254,9 +254,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Seoul'
 
-# 테스트/개발 환경에서는 Celery task를 동기로 실행
+# 테스트 환경에서만 Celery task를 동기로 실행 (DEBUG 모드에서는 비동기 유지)
 import sys
-if 'test' in sys.argv or DEBUG:
+if 'test' in sys.argv:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
 

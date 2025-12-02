@@ -515,6 +515,61 @@ class CharacterAllDataView(BaseCharacterView):
     schema_class = CharacterAllDataSchema
     serializer_class = CharacterAllDataSerializer
 
+    def _trigger_auto_crawl(self, ocid: str, character_basic):
+        """
+        API 조회 시 자동으로 크롤링 태스크 시작 (인벤토리/창고/메소)
+
+        - 최근 1시간 이내 크롤링 기록이 없으면 자동 시작
+        - Celery 태스크로 비동기 실행 (API 응답 지연 없음)
+        """
+        from datetime import timedelta
+        from accounts.models import CrawlTask
+
+        try:
+            one_hour_ago = timezone.now() - timedelta(hours=1)
+
+            # 최근 1시간 이내 성공한 크롤링이 있는지 확인
+            recent_crawl = CrawlTask.objects.filter(
+                character_basic=character_basic,
+                status='SUCCESS',
+                updated_at__gte=one_hour_ago
+            ).exists()
+
+            if recent_crawl:
+                logger.info(f"최근 크롤링 기록 있음, 자동 크롤링 스킵 - OCID: {ocid}")
+                return
+
+            # 현재 진행 중인 크롤링이 있는지 확인
+            pending_crawl = CrawlTask.objects.filter(
+                character_basic=character_basic,
+                status__in=['PENDING', 'STARTED']
+            ).exists()
+
+            if pending_crawl:
+                logger.info(f"진행 중인 크롤링 있음, 자동 크롤링 스킵 - OCID: {ocid}")
+                return
+
+            # Celery 태스크 시작
+            from accounts.tasks import crawl_character_data
+
+            crawl_types = ['inventory', 'storage', 'meso']
+            task = crawl_character_data.delay(ocid, crawl_types)
+
+            # CrawlTask 레코드 생성
+            CrawlTask.objects.create(
+                task_id=task.id,
+                character_basic=character_basic,
+                task_type=','.join(crawl_types),
+                status='PENDING',
+                progress=0
+            )
+
+            logger.info(f"자동 크롤링 시작됨 - OCID: {ocid}, Task ID: {task.id}")
+
+        except Exception as e:
+            # 크롤링 실패해도 API 응답에는 영향 없음
+            logger.warning(f"자동 크롤링 시작 실패 - OCID: {ocid}, 오류: {str(e)}")
+
     def validate_and_save_data(self, endpoint_name: str, data: dict, ocid: str, view_class):
         """각 엔드포인트의 데이터를 검증하고 저장"""
         try:
@@ -650,6 +705,10 @@ class CharacterAllDataView(BaseCharacterView):
             redis_client.setex(cache_key, cache_ttl,
                                json.dumps(serialized_data))
             logger.info(f"전체 데이터 캐싱 완료 - Key: {cache_key}")
+
+            # --- 자동 크롤링 시작 (인벤토리/창고/메소) ---
+            self._trigger_auto_crawl(ocid, character)
+            # --- 자동 크롤링 끝 ---
 
             total_duration = time.time() - start_time  # 성공 응답 전 시간 측정
             logger.info(

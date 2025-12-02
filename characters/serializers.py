@@ -515,6 +515,40 @@ class CharacterVMatrixSerializer(serializers.ModelSerializer):
         exclude = ['id', 'character']
 
 
+# =============================================================================
+# 크롤링 데이터 Serializers (인벤토리, 창고)
+# =============================================================================
+
+class InventoryItemSerializer(serializers.ModelSerializer):
+    """인벤토리 아이템 Serializer"""
+    days_until_expiry = serializers.ReadOnlyField()
+    is_expirable = serializers.ReadOnlyField()
+
+    class Meta:
+        from .models import Inventory
+        model = Inventory
+        fields = [
+            'id', 'item_name', 'item_icon', 'quantity', 'item_options',
+            'slot_position', 'expiry_date', 'crawled_at', 'detail_url',
+            'has_detail', 'is_expirable', 'days_until_expiry'
+        ]
+
+
+class StorageItemSerializer(serializers.ModelSerializer):
+    """창고 아이템 Serializer"""
+    days_until_expiry = serializers.ReadOnlyField()
+    is_expirable = serializers.ReadOnlyField()
+
+    class Meta:
+        from .models import Storage
+        model = Storage
+        fields = [
+            'id', 'storage_type', 'item_name', 'item_icon', 'quantity',
+            'item_options', 'slot_position', 'expiry_date', 'crawled_at',
+            'is_expirable', 'days_until_expiry'
+        ]
+
+
 class CharacterAllDataSerializer(serializers.ModelSerializer):
     basic = serializers.SerializerMethodField()
     popularity = serializers.SerializerMethodField()
@@ -535,6 +569,10 @@ class CharacterAllDataSerializer(serializers.ModelSerializer):
     pet_equipments = serializers.SerializerMethodField()
     propensities = serializers.SerializerMethodField()
     hyper_stats = serializers.SerializerMethodField()
+    # 크롤링 데이터 필드
+    inventory = serializers.SerializerMethodField()
+    storage = serializers.SerializerMethodField()
+    meso = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterBasic
@@ -543,7 +581,9 @@ class CharacterAllDataSerializer(serializers.ModelSerializer):
             'cash_equipments', 'symbols', 'link_skills', 'skills',
             'hexa_matrix', 'hexa_stats', 'v_matrix', 'dojang',
             'set_effects', 'beauty_equipments', 'android_equipments',
-            'pet_equipments', 'propensities', 'hyper_stats'
+            'pet_equipments', 'propensities', 'hyper_stats',
+            # 크롤링 데이터
+            'inventory', 'storage', 'meso'
         ]
 
     def get_basic(self, obj):
@@ -656,3 +696,50 @@ class CharacterAllDataSerializer(serializers.ModelSerializer):
         if hyper_stats:
             return CharacterHyperStatSerializer(hyper_stats).data
         return None
+
+    # 크롤링 데이터 get 메서드
+    def get_inventory(self, obj):
+        """최근 크롤링된 인벤토리 아이템 목록"""
+        # 가장 최근 크롤링 시점의 아이템들만 반환
+        latest_crawled = obj.inventory_items.order_by('-crawled_at').first()
+        if not latest_crawled:
+            return None
+
+        # 해당 크롤링 시점의 모든 아이템 반환
+        items = obj.inventory_items.filter(
+            crawled_at=latest_crawled.crawled_at
+        ).order_by('slot_position')
+
+        return {
+            'crawled_at': latest_crawled.crawled_at.isoformat(),
+            'items': InventoryItemSerializer(items, many=True).data,
+            'total_count': items.count()
+        }
+
+    def get_storage(self, obj):
+        """최근 크롤링된 창고 아이템 목록 (공유/개인 구분)"""
+        latest_crawled = obj.storage_items.order_by('-crawled_at').first()
+        if not latest_crawled:
+            return None
+
+        # 해당 크롤링 시점의 아이템들
+        items = obj.storage_items.filter(crawled_at=latest_crawled.crawled_at)
+
+        shared_items = items.filter(storage_type='shared').order_by('slot_position')
+        personal_items = items.filter(storage_type='personal').order_by('slot_position')
+
+        return {
+            'crawled_at': latest_crawled.crawled_at.isoformat(),
+            'shared': {
+                'items': StorageItemSerializer(shared_items, many=True).data,
+                'count': shared_items.count()
+            },
+            'personal': {
+                'items': StorageItemSerializer(personal_items, many=True).data,
+                'count': personal_items.count()
+            }
+        }
+
+    def get_meso(self, obj):
+        """캐릭터 보유 메소"""
+        return obj.meso
