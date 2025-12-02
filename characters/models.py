@@ -2079,7 +2079,6 @@ class Inventory(models.Model):
         help_text='기간제 아이템 만료 날짜'
     )
     crawled_at = models.DateTimeField(
-        auto_now_add=True,
         help_text='크롤링된 시간'
     )
     detail_url = models.URLField(
@@ -2364,7 +2363,6 @@ class Storage(models.Model):
         help_text='창고 메소 (크롤링 시점 기준)'
     )
     crawled_at = models.DateTimeField(
-        auto_now_add=True,
         help_text='크롤링된 시간'
     )
 

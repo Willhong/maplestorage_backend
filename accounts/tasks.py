@@ -6,15 +6,18 @@ from typing import List
 import logging
 import time
 import asyncio
+import pytz
+from django.utils import timezone
 from .services import TaskStatusService, MonitoringService
 from .models import Character, CrawlTask
+from .notifications import AlertService
 from .exceptions import (
     CrawlError, CharacterNotFoundError, NetworkError, MaintenanceError,
     ErrorType, classify_exception
 )
 from characters.services import MapleAPIService
-from characters.models import CharacterBasic, CharacterPopularity, CharacterStat, Inventory, Storage
-from characters.crawler_services import CrawlerService, CrawlingError, ParsingError, StorageParsingError
+from characters.models import CharacterBasic, CharacterBasicHistory, CharacterPopularity, CharacterStat, Inventory, Storage
+from characters.crawler_services import CrawlerService, CrawlingError, ParsingError, StorageParsingError, ItemDetailCrawler
 from characters.schemas import InventoryItemSchema, StorageItemSchema
 from pydantic import ValidationError
 
@@ -36,8 +39,6 @@ def check_crawl_success_rate():
 
     알림 중복 방지: 동일 임계치 알림은 1시간 내 중복 발송 안 함
     """
-    from .notifications import AlertService
-
     logger.info("Starting crawl success rate check...")
 
     # 최근 24시간 성공률 조회
@@ -252,6 +253,8 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                     # AC 2.3.3 - 2.3.5: 데이터 검증 및 저장
                     # AC 2.3.6: 이전 데이터는 히스토리로 보관 (덮어쓰지 않음)
                     saved_items = []
+                    # 모든 아이템에 동일한 crawled_at 적용
+                    crawl_timestamp = timezone.now()
                     for item_data in crawled_data['items']:
                         try:
                             # Pydantic 검증
@@ -267,7 +270,8 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                                 slot_position=validated_item.slot_position,
                                 expiry_date=validated_item.expiry_date,
                                 detail_url=validated_item.detail_url,
-                                has_detail=False  # 상세 정보는 아직 크롤링 안됨
+                                has_detail=False,  # 상세 정보는 아직 크롤링 안됨
+                                crawled_at=crawl_timestamp  # 동일한 타임스탬프
                             )
                             saved_items.append(inventory_item.id)
 
@@ -336,7 +340,6 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                             )
 
                         # ItemDetailCrawler로 크롤링
-                        from characters.crawler_services import ItemDetailCrawler
                         crawler = ItemDetailCrawler()
                         crawl_result = asyncio.run(
                             crawler.crawl_item_details(
@@ -370,11 +373,6 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                         message=f'창고 수집 중... ({base_progress}%)'  # Story 2.7: AC #2
                     )
 
-                    # AC 2.4.8: 공유 창고 중복 방지 체크 (Story 1.8: ocid 기반으로 변경)
-                    from django.core.cache import cache
-                    shared_cache_key = f'shared_storage:{ocid}'
-                    skip_shared = cache.get(shared_cache_key)
-
                     # character_info_url은 task 시작 시 미리 가져옴 (재사용)
                     crawler = CrawlerService()
                     crawled_data = asyncio.run(
@@ -382,65 +380,37 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                     )
 
                     # AC 2.4.6, 2.4.7: Pydantic 검증 및 DB 저장
-                    saved_shared = 0
-                    saved_personal = 0
+                    saved_count = 0
 
-                    # 크롤링 데이터 안전하게 가져오기
-                    shared_items = crawled_data.get('shared_items', [])
-                    personal_items = crawled_data.get('personal_items', [])
+                    # 크롤링 데이터 안전하게 가져오기 (storage는 shared/personal 구분 없음)
+                    storage_items = crawled_data.get('items', [])
 
-                    # 공유 창고 처리 (중복 방지 로직 적용)
-                    if not skip_shared and shared_items:
-                        for item_data in shared_items:
-                            try:
-                                validated_item = StorageItemSchema(**item_data)
-                                Storage.objects.create(
-                                    character_basic=character_basic,
-                                    storage_type=validated_item.storage_type,
-                                    item_name=validated_item.item_name,
-                                    item_icon=validated_item.item_icon,
-                                    quantity=validated_item.quantity,
-                                    item_options=validated_item.item_options,
-                                    slot_position=validated_item.slot_position,
-                                    expiry_date=validated_item.expiry_date,
-                                )
-                                saved_shared += 1
-                            except ValidationError as ve:
-                                logger.warning(f'Storage item validation failed: {ve}')
-                                continue
+                    # 모든 아이템에 동일한 crawled_at 적용
+                    crawl_timestamp = timezone.now()
 
-                        # AC 2.4.8: 공유 창고 캐시 설정 (1시간 TTL)
-                        cache.set(shared_cache_key, True, timeout=3600)
-                        logger.info(f'Shared storage cache set for ocid {ocid}')
-                    elif skip_shared:
-                        logger.info(f'Skipping shared storage crawl for ocid {ocid} (cached)')
-                        saved_shared = -1  # 캐시 사용 표시
-
-                    # 개인 창고 처리
-                    for item_data in personal_items:
+                    for item_data in storage_items:
                         try:
                             validated_item = StorageItemSchema(**item_data)
                             Storage.objects.create(
                                 character_basic=character_basic,
-                                storage_type=validated_item.storage_type,
+                                storage_type='storage',  # 단일 창고 타입
                                 item_name=validated_item.item_name,
                                 item_icon=validated_item.item_icon,
                                 quantity=validated_item.quantity,
                                 item_options=validated_item.item_options,
                                 slot_position=validated_item.slot_position,
                                 expiry_date=validated_item.expiry_date,
+                                crawled_at=crawl_timestamp,  # 동일한 타임스탬프
                             )
-                            saved_personal += 1
+                            saved_count += 1
                         except ValidationError as ve:
                             logger.warning(f'Storage item validation failed: {ve}')
                             continue
 
-                    logger.info(f'Storage crawling completed: {saved_shared} shared, {saved_personal} personal items')
+                    logger.info(f'Storage crawling completed: {saved_count} items saved')
                     results['storage'] = {
                         'status': 'success',
-                        'shared_items_saved': saved_shared,
-                        'personal_items_saved': saved_personal,
-                        'shared_from_cache': skip_shared is not None,
+                        'items_saved': saved_count,
                         'crawled_at': crawled_data.get('crawled_at')
                     }
 
@@ -486,10 +456,6 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                         logger.info(f'Updated CharacterBasic.meso: {meso_amount:,}')
 
                         # AC 2.5.4: 히스토리 보관 - CharacterBasicHistory에 기록
-                        from characters.models import CharacterBasicHistory
-                        from django.utils import timezone
-                        import pytz
-
                         kst = pytz.timezone('Asia/Seoul')
                         current_time = timezone.now().astimezone(kst)
 

@@ -717,27 +717,20 @@ class CharacterAllDataSerializer(serializers.ModelSerializer):
         }
 
     def get_storage(self, obj):
-        """최근 크롤링된 창고 아이템 목록 (공유/개인 구분)"""
+        """최근 크롤링된 창고 아이템 목록"""
         latest_crawled = obj.storage_items.order_by('-crawled_at').first()
         if not latest_crawled:
             return None
 
         # 해당 크롤링 시점의 아이템들
-        items = obj.storage_items.filter(crawled_at=latest_crawled.crawled_at)
-
-        shared_items = items.filter(storage_type='shared').order_by('slot_position')
-        personal_items = items.filter(storage_type='personal').order_by('slot_position')
+        items = obj.storage_items.filter(
+            crawled_at=latest_crawled.crawled_at
+        ).order_by('slot_position')
 
         return {
             'crawled_at': latest_crawled.crawled_at.isoformat(),
-            'shared': {
-                'items': StorageItemSerializer(shared_items, many=True).data,
-                'count': shared_items.count()
-            },
-            'personal': {
-                'items': StorageItemSerializer(personal_items, many=True).data,
-                'count': personal_items.count()
-            }
+            'items': StorageItemSerializer(items, many=True).data,
+            'total_count': items.count()
         }
 
     def get_meso(self, obj):
