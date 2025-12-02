@@ -127,8 +127,106 @@ class CharacterCreateSerializer(serializers.Serializer):
 
 
 class CharacterResponseSerializer(serializers.ModelSerializer):
-    """Character response serializer (Story 1.7)"""
+    """
+    Character response serializer (Story 1.7)
+    Story 2.8: last_crawled_at, last_crawl_status 필드 추가
+    """
+    last_crawled_at = serializers.SerializerMethodField()
+    last_crawl_status = serializers.SerializerMethodField()
+
     class Meta:
         model = Character
-        fields = ['id', 'ocid', 'character_name', 'world_name', 'character_class', 'character_level', 'created_at']
-        read_only_fields = ['id', 'ocid', 'world_name', 'character_class', 'character_level', 'created_at']
+        fields = [
+            'id', 'ocid', 'character_name', 'world_name',
+            'character_class', 'character_level', 'created_at',
+            'last_crawled_at', 'last_crawl_status'
+        ]
+        read_only_fields = [
+            'id', 'ocid', 'world_name', 'character_class',
+            'character_level', 'created_at'
+        ]
+
+    def get_last_crawled_at(self, obj):
+        """
+        마지막 크롤링 시간 조회 (Story 2.8: AC #1)
+        N+1 쿼리 방지: context에서 미리 조회된 데이터 사용
+
+        Returns:
+            str | None: ISO 8601 형식의 마지막 크롤링 시간 또는 None
+        """
+        # context에서 미리 조회된 데이터 사용 (N+1 방지)
+        character_basic_map = self.context.get('character_basic_map', {})
+        crawl_success_map = self.context.get('crawl_success_map', {})
+
+        if character_basic_map and crawl_success_map:
+            basic_id = character_basic_map.get(obj.ocid)
+            if basic_id:
+                last_updated = crawl_success_map.get(basic_id)
+                if last_updated:
+                    return last_updated.isoformat()
+            return None
+
+        # Fallback: 개별 조회 (context 없는 경우)
+        from characters.models import CharacterBasic
+        from .models import CrawlTask
+
+        try:
+            character_basic = CharacterBasic.objects.get(ocid=obj.ocid)
+        except CharacterBasic.DoesNotExist:
+            return None
+
+        last_task = CrawlTask.objects.filter(
+            character_basic=character_basic,
+            status='SUCCESS'
+        ).order_by('-updated_at').first()
+
+        if last_task:
+            return last_task.updated_at.isoformat()
+        return None
+
+    def get_last_crawl_status(self, obj):
+        """
+        마지막 크롤링 상태 조회 (Story 2.8: AC #5)
+        N+1 쿼리 방지: context에서 미리 조회된 데이터 사용
+
+        Returns:
+            str: 'SUCCESS' | 'FAILED' | 'NEVER_CRAWLED'
+        """
+        # context에서 미리 조회된 데이터 사용 (N+1 방지)
+        character_basic_map = self.context.get('character_basic_map', {})
+        crawl_status_map = self.context.get('crawl_status_map', {})
+
+        if character_basic_map and crawl_status_map:
+            basic_id = character_basic_map.get(obj.ocid)
+            if basic_id:
+                return crawl_status_map.get(basic_id, 'NEVER_CRAWLED')
+            return 'NEVER_CRAWLED'
+
+        # Fallback: 개별 조회 (context 없는 경우)
+        from characters.models import CharacterBasic
+        from .models import CrawlTask
+
+        try:
+            character_basic = CharacterBasic.objects.get(ocid=obj.ocid)
+        except CharacterBasic.DoesNotExist:
+            return 'NEVER_CRAWLED'
+
+        last_task = CrawlTask.objects.filter(
+            character_basic=character_basic
+        ).order_by('-updated_at').first()
+
+        if not last_task:
+            return 'NEVER_CRAWLED'
+
+        if last_task.status == 'SUCCESS':
+            return 'SUCCESS'
+        elif last_task.status in ('FAILURE', 'RETRY'):
+            return 'FAILED'
+        else:
+            previous_success = CrawlTask.objects.filter(
+                character_basic=character_basic,
+                status='SUCCESS'
+            ).exists()
+            if previous_success:
+                return 'SUCCESS'
+            return 'NEVER_CRAWLED'

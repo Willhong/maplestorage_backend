@@ -10,6 +10,7 @@ import logging
 import asyncio
 import aiohttp
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from util.rate_limiter import rate_limited
 from util.redis_client import redis_client
 import time
@@ -51,9 +52,14 @@ logger = logging.getLogger('maple_api')
 
 
 class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
+    """
+    캐릭터 조회 기본 뷰 클래스
+    Story 1.8 AC #8: 모든 조회 API는 인증 없이 접근 가능 (AllowAny)
+    """
     model_class = None
     related_name = None
     schema_class = None  # Pydantic 스키마 클래스
+    permission_classes = [AllowAny]  # Story 1.8: 게스트 모드 지원
 
     def validate_data(self, data):
         """API 응답 데이터를 Pydantic 스키마로 검증"""
@@ -178,8 +184,11 @@ class BaseCharacterView(MapleAPIClientMixin, APIViewMixin, CharacterDataMixin):
     )
     def get(self, request, ocid=None):
         try:
-            data = self._fetch_and_process_data(request, ocid)
-            return Response(self.format_response_data(data))
+            result = self._fetch_and_process_data(request, ocid)
+            # 캐시에서 반환된 경우 이미 Response 객체임
+            if isinstance(result, Response):
+                return result
+            return Response(self.format_response_data(result))
         except Exception as e:
             return self.handle_exception(e)
 

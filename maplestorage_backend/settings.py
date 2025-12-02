@@ -38,6 +38,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '20/minute',  # Story 1.8: 익명 사용자 IP 기반 20 req/min
+        'user': '100/minute',  # 인증된 사용자 100 req/min
+    },
     'EXCEPTION_HANDLER': 'characters.utils.api_exception_handler',
 }
 
@@ -246,9 +254,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Seoul'
 
-# 테스트 환경에서는 Celery task를 동기로 실행
+# 테스트/개발 환경에서는 Celery task를 동기로 실행
 import sys
-if 'test' in sys.argv:
+if 'test' in sys.argv or DEBUG:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
 
@@ -262,3 +270,19 @@ CACHES = {
         }
     }
 }
+
+# Story 2.10: Alert Settings
+# 알림 받을 관리자 이메일
+ALERT_EMAIL = os.getenv('ALERT_EMAIL', '')
+
+# Slack Webhook URL (긴급 알림용)
+SLACK_WEBHOOK_URL = os.getenv('SLACK_WEBHOOK_URL', '')
+
+# 이메일 설정 (기본값)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@maplestorage.com')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+
+# Sendgrid 설정 (선택)
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
+if SENDGRID_API_KEY:
+    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'

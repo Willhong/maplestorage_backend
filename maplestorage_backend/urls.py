@@ -5,7 +5,7 @@ from test.views import sampleview
 from accounts.views import (
     APIKeyView, AccountListView, RegisterView, CustomTokenObtainPairView,
     GoogleLoginView, UserProfileView, CharacterCreateView,
-    CrawlStartView, CrawlStatusView
+    CrawlStartView, CrawlStatusView, CrawlStatsAdminView
 )
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import (
@@ -46,6 +46,7 @@ urlpatterns = [
     path('api/characters/', CharacterCreateView.as_view(), name='character-create'),
     path('api/characters/<str:ocid>/crawl/', CrawlStartView.as_view(), name='crawl-start'),
     path('api/crawl-tasks/<str:task_id>/', CrawlStatusView.as_view(), name='crawl-status'),
+    path('api/admin/crawl-stats/', CrawlStatsAdminView.as_view(), name='crawl-stats-admin'),  # Story 2.10
     path('accounts/', AccountListView.as_view(), name='account-list'),
     path('characters/', include('characters.urls')),
     # Swagger UI URL 추가

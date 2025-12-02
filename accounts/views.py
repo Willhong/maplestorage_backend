@@ -3,7 +3,7 @@ from datetime import timedelta
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,7 +21,7 @@ from .serializers import (
     UserProfileSerializer, CharacterCreateSerializer, CharacterResponseSerializer
 )
 from .schemas import CharacterListSchema, AccountSchema, CharacterSchema, GoogleLoginRequest, LoginResponse, UserSchema
-from .services import CharacterService
+from .services import CharacterService, MonitoringService
 
 CACHE_DURATION = timedelta(hours=1)  # 캐시 유효 기간
 
@@ -358,9 +358,70 @@ class CharacterCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """Get user's characters (Story 1.7: AC #1)"""
+        """
+        Get user's characters (Story 1.7: AC #1)
+        Story 2.8: N+1 쿼리 방지를 위해 크롤링 상태 미리 조회
+        """
+        from characters.models import CharacterBasic
+        from .models import CrawlTask
+        from django.db.models import OuterRef, Subquery, Max
+
         characters = Character.objects.filter(user=request.user).order_by('-created_at')
-        serializer = CharacterResponseSerializer(characters, many=True)
+
+        # Story 2.8: 크롤링 상태 미리 조회 (N+1 쿼리 방지)
+        ocids = list(characters.values_list('ocid', flat=True))
+
+        # CharacterBasic ID 매핑
+        character_basic_map = {}
+        if ocids:
+            basics = CharacterBasic.objects.filter(ocid__in=ocids).values('ocid', 'id')
+            character_basic_map = {b['ocid']: b['id'] for b in basics}
+
+        # 마지막 성공 크롤링 시간 조회
+        crawl_success_map = {}
+        crawl_status_map = {}
+
+        if character_basic_map:
+            basic_ids = list(character_basic_map.values())
+
+            # 마지막 성공 크롤링 시간
+            success_tasks = CrawlTask.objects.filter(
+                character_basic_id__in=basic_ids,
+                status='SUCCESS'
+            ).values('character_basic_id').annotate(
+                last_updated=Max('updated_at')
+            )
+            for task in success_tasks:
+                crawl_success_map[task['character_basic_id']] = task['last_updated']
+
+            # 마지막 크롤링 상태
+            for basic_id in basic_ids:
+                last_task = CrawlTask.objects.filter(
+                    character_basic_id=basic_id
+                ).order_by('-updated_at').first()
+
+                if not last_task:
+                    crawl_status_map[basic_id] = 'NEVER_CRAWLED'
+                elif last_task.status == 'SUCCESS':
+                    crawl_status_map[basic_id] = 'SUCCESS'
+                elif last_task.status in ('FAILURE', 'RETRY'):
+                    crawl_status_map[basic_id] = 'FAILED'
+                else:
+                    if basic_id in crawl_success_map:
+                        crawl_status_map[basic_id] = 'SUCCESS'
+                    else:
+                        crawl_status_map[basic_id] = 'NEVER_CRAWLED'
+
+        # Serializer context에 크롤링 정보 전달
+        serializer = CharacterResponseSerializer(
+            characters,
+            many=True,
+            context={
+                'character_basic_map': character_basic_map,
+                'crawl_success_map': crawl_success_map,
+                'crawl_status_map': crawl_status_map
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @method_decorator(ratelimit(key='user', rate='10/h', method='POST', block=True))
@@ -405,50 +466,46 @@ class CharacterCreateView(APIView):
             )
 
 
-@method_decorator(ratelimit(key='user', rate='10/m', method='POST'), name='post')
+@method_decorator(ratelimit(key='ip', rate='10/m', method='POST'), name='post')
 class CrawlStartView(APIView):
     """크롤링 시작 API (Story 2.1: AC #1, #2, Story 2.7: AC #3)
 
-    Rate Limiting: 사용자당 분당 10회
+    Rate Limiting: IP 기반 분당 10회 (게스트 모드 지원 - Story 1.8)
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Story 1.8: 게스트 모드 지원
 
-    def _check_recently_crawled(self, character):
+    def _check_recently_crawled(self, character_basic):
         """
         마지막 크롤링이 1시간 이내인지 확인 (Story 2.7: AC #3)
 
         Args:
-            character: Character 객체
+            character_basic: CharacterBasic 객체
 
         Returns:
             bool: 1시간 이내 크롤링 여부
         """
-        from characters.models import CharacterBasic, Inventory
+        from characters.models import Inventory
         from .models import CrawlTask
         from datetime import timedelta
 
         one_hour_ago = timezone.now() - timedelta(hours=1)
 
         # 1. CharacterBasic의 last_updated 확인
-        character_basic = CharacterBasic.objects.filter(
-            character_name=character.character_name
-        ).first()
-
-        if character_basic and character_basic.last_updated > one_hour_ago:
+        if character_basic.last_updated and character_basic.last_updated > one_hour_ago:
             return True
 
         # 2. Inventory의 최근 crawled_at 확인
         recent_inventory = Inventory.objects.filter(
             character_basic=character_basic,
             crawled_at__gte=one_hour_ago
-        ).exists() if character_basic else False
+        ).exists()
 
         if recent_inventory:
             return True
 
         # 3. CrawlTask의 최근 성공 작업 확인
         recent_success = CrawlTask.objects.filter(
-            character_basic=character,
+            character_basic=character_basic,
             status='SUCCESS',
             updated_at__gte=one_hour_ago
         ).exists()
@@ -476,13 +533,14 @@ class CrawlStartView(APIView):
         """
         from .tasks import crawl_character_data
         from .models import CrawlTask
+        from characters.models import CharacterBasic
 
-        # CharacterBasic 존재 여부 확인
+        # CharacterBasic 존재 여부 확인 (Story 1.8: 게스트 모드 지원)
         try:
-            character = Character.objects.get(ocid=ocid, user=request.user)
-        except Character.DoesNotExist:
+            character_basic = CharacterBasic.objects.get(ocid=ocid)
+        except CharacterBasic.DoesNotExist:
             return Response(
-                {"error": "character_not_found", "message": "캐릭터를 찾을 수 없습니다."},
+                {"error": "character_not_found", "message": "캐릭터를 찾을 수 없습니다. 먼저 캐릭터를 조회해주세요."},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -515,16 +573,16 @@ class CrawlStartView(APIView):
         force_refresh = request.data.get('force_refresh', False)
 
         # Story 2.7: AC #3 - 마지막 크롤링 시간 확인
-        recently_crawled = self._check_recently_crawled(character)
+        recently_crawled = self._check_recently_crawled(character_basic)
 
-        # Celery task 등록 (AC #1)
-        task = crawl_character_data.delay(character.id, crawl_types)
+        # Celery task 등록 (AC #1) - Story 1.8: ocid 기반으로 변경
+        task = crawl_character_data.delay(ocid, crawl_types)
         task_id = task.id
 
         # CrawlTask 모델에 레코드 생성 (AC #2)
         CrawlTask.objects.create(
             task_id=task_id,
-            character_basic=character,
+            character_basic=character_basic,
             task_type=','.join(crawl_types),
             status='PENDING',
             progress=0
@@ -544,8 +602,9 @@ class CrawlStartView(APIView):
 
 
 class CrawlStatusView(APIView):
-    """크롤링 상태 조회 API (Story 2.1: AC #5)"""
-    permission_classes = [IsAuthenticated]
+    """크롤링 상태 조회 API (Story 2.1: AC #5, Story 2.9: AC #3, #5)"""
+    permission_classes = [AllowAny]  # Story 1.8: 게스트 모드 지원
+    throttle_classes = []  # 상태 폴링을 위해 throttling 비활성화
 
     def get(self, request, task_id):
         """
@@ -559,6 +618,17 @@ class CrawlStatusView(APIView):
             "message": "인벤토리 수집 중...",
             "created_at": "2025-11-23T10:00:00Z",
             "updated_at": "2025-11-23T10:00:15Z"
+        }
+
+        Story 2.9 - FAILURE 상태 시 추가 필드:
+        {
+            "task_id": "abc123",
+            "status": "FAILURE",
+            "progress": 0,
+            "error_type": "NETWORK_ERROR",                              // AC-2.9.2
+            "error_message": "일시적인 네트워크 오류입니다...",           // AC-2.9.1
+            "technical_error": "TimeoutError: Connection timed out...", // AC-2.9.3
+            "updated_at": "2025-11-30T10:30:00Z"                        // AC-2.9.5
         }
         """
         from .services import TaskStatusService
@@ -587,8 +657,13 @@ class CrawlStatusView(APIView):
                 "updated_at": redis_status.get('updated_at')
             }
 
+            # Story 2.9: 에러 정보 추가 (AC-2.9.1, AC-2.9.2, AC-2.9.3)
             if redis_status.get('error'):
                 response_data['error_message'] = redis_status.get('error')
+            if redis_status.get('error_type'):
+                response_data['error_type'] = redis_status.get('error_type')
+            if redis_status.get('technical_error'):
+                response_data['technical_error'] = redis_status.get('technical_error')
         else:
             # Redis 데이터가 없으면 DB 데이터 사용
             response_data = {
@@ -600,7 +675,63 @@ class CrawlStatusView(APIView):
                 "updated_at": crawl_task.updated_at.isoformat()
             }
 
+            # Story 2.9: DB에서 에러 정보 조회 (AC-2.9.1, AC-2.9.2, AC-2.9.3)
             if crawl_task.error_message:
                 response_data['error_message'] = crawl_task.error_message
+            if crawl_task.error_type:
+                response_data['error_type'] = crawl_task.error_type
+            if crawl_task.technical_error:
+                response_data['technical_error'] = crawl_task.technical_error
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+class CrawlStatsAdminView(APIView):
+    """
+    관리자 전용 크롤링 통계 API (Story 2.10: AC-2.10.5, AC-2.10.6)
+
+    GET /api/admin/crawl-stats/
+    - IsAdminUser 권한 필요 (is_staff=True 또는 Django Admin)
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        """
+        관리자 크롤링 통계 조회 (AC-2.10.5, AC-2.10.6)
+
+        Response:
+        {
+            "success_rate_24h": 96.5,
+            "total_tasks_24h": 1250,
+            "successful_tasks": 1206,
+            "failed_tasks": 44,
+            "error_breakdown": {
+                "CHARACTER_NOT_FOUND": 20,
+                "NETWORK_ERROR": 15,
+                "MAINTENANCE": 0,
+                "UNKNOWN": 9
+            },
+            "hourly_stats": [...],
+            "last_updated": "2025-11-30T10:30:00Z"
+        }
+        """
+        # 최근 24시간 성공률 (AC-2.10.5)
+        stats = MonitoringService.get_success_rate(hours=24)
+
+        # 에러 유형별 통계 (AC-2.10.6)
+        error_breakdown = MonitoringService.get_error_breakdown(hours=24)
+
+        # 시간대별 통계 (차트용)
+        hourly_stats = MonitoringService.get_hourly_stats(hours=24)
+
+        response_data = {
+            "success_rate_24h": stats['success_rate'],
+            "total_tasks_24h": stats['total_tasks'],
+            "successful_tasks": stats['successful_tasks'],
+            "failed_tasks": stats['failed_tasks'],
+            "error_breakdown": error_breakdown,
+            "hourly_stats": hourly_stats,
+            "last_updated": timezone.now().isoformat()
+        }
 
         return Response(response_data, status=status.HTTP_200_OK)

@@ -1,0 +1,48 @@
+{
+  "basic": {
+    "date": "2024-12-01T00:00:00+09:00",
+    "character_name": "테스트캐릭터",
+    "world_name": "스카니아",
+    "character_gender": "여",
+    "character_class": "아크메이지(불,독)",
+    "character_class_level": "6",
+    "character_level": 280,
+    "character_exp": 123456789012,
+    "character_exp_rate": "45.123",
+    "character_guild_name": "테스트길드",
+    "character_image": "https://open.api.nexon.com/static/maplestory/character/test.png",
+    "character_date_create": "2020-01-15",
+    "access_flag": "true",
+    "liberation_quest_clear_flag": "true"
+  },
+  "popularity": {
+    "date": "2024-12-01T00:00:00+09:00",
+    "popularity": 12345
+  },
+  "stat": {
+    "date": "2024-12-01T00:00:00+09:00",
+    "character_class": "아크메이지(불,독)",
+    "final_stat": [
+      {"stat_name": "최소 스탯공격력", "stat_value": "12345678"},
+      {"stat_name": "최대 스탯공격력", "stat_value": "13579000"},
+      {"stat_name": "INT", "stat_value": "35000"}
+    ],
+    "remain_ap": 0
+  },
+  "ability": null,
+  "item_equipment": null,
+  "cashitem_equipment": null,
+  "symbol": null,
+  "link_skill": null,
+  "skill": null,
+  "hexamatrix": null,
+  "hexamatrix_stat": null,
+  "vmatrix": null,
+  "dojang": null,
+  "set_effect": null,
+  "beauty_equipment": null,
+  "android_equipment": null,
+  "pet_equipment": null,
+  "propensity": null,
+  "hyper_stat": null
+}

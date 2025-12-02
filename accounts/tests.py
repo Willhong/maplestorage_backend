@@ -646,11 +646,18 @@ class CrawlTaskTest(APITestCase):
         # Create test user
         self.user = User.objects.create_user(username='testuser', password='testpass123')
 
-        # Create test character
+        # Create test character (accounts.Character - for backward compatibility)
         self.character = Character.objects.create(
             user=self.user,
             ocid='test-ocid-123',
             character_name='TestChar'
+        )
+
+        # Story 1.8: Create CharacterBasic for guest mode support
+        self.character_basic = CharacterBasic.objects.create(
+            ocid='test-ocid-123',
+            character_name='TestChar',
+            world_name='스카니아'
         )
 
         # Authenticate
@@ -689,17 +696,17 @@ class CrawlTaskTest(APITestCase):
         self.assertEqual(task.character_basic.ocid, self.character.ocid)
         self.assertEqual(task.status, 'PENDING')
 
-    def test_crawl_task_status_query(self, ):
+    def test_crawl_task_status_query(self):
         """
         AC 2.1.4: task_id로 상태 조회
         """
         from .models import CrawlTask
         from .services import TaskStatusService
 
-        # Create test task
+        # Create test task - Story 1.8: use character_basic
         task = CrawlTask.objects.create(
             task_id='test-task-123',
-            character_basic=self.character,
+            character_basic=self.character_basic,
             task_type='full',
             status='STARTED',
             progress=50
@@ -770,11 +777,17 @@ class CrawlTaskTest(APITestCase):
         # Note: This test verifies the exponential backoff calculation
         # Full integration test would require actual Celery worker
 
-    def test_unauthorized_crawl_request(self):
+    @patch('accounts.tasks.crawl_character_data.delay')
+    def test_guest_mode_crawl_request(self, mock_delay):
         """
-        AC: 인증되지 않은 요청 → 401
+        Story 1.8: 게스트 모드에서도 크롤링 가능 (AllowAny)
         """
-        # Logout
+        # Mock Celery task
+        mock_task = Mock()
+        mock_task.id = 'test-task-guest'
+        mock_delay.return_value = mock_task
+
+        # Logout (guest mode)
         self.client.force_authenticate(user=None)
 
         # Send request
@@ -783,8 +796,8 @@ class CrawlTaskTest(APITestCase):
             'crawl_types': ['inventory']
         }, format='json')
 
-        # Assert 401 Unauthorized
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # Story 1.8: Guest mode should allow crawl (202 Accepted)
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
 
     def test_task_not_found(self):
         """
@@ -805,23 +818,27 @@ class CrawlAPIDataIntegrationTests(TestCase):
 
     def setUp(self):
         """테스트 데이터 준비"""
-        # 테스트용 캐릭터 생성
+        # 테스트용 캐릭터 생성 (accounts.Character)
         self.character = Character.objects.create(
-            character_name='테스트캐릭터'
+            character_name='테스트캐릭터',
+            ocid='test-ocid-integration'
+        )
+
+        # Story 1.8: CharacterBasic도 생성 (게스트 모드 지원)
+        self.character_basic = CharacterBasic.objects.create(
+            ocid='test-ocid-integration',
+            character_name='테스트캐릭터',
+            world_name='스카니아'
         )
 
     @patch('characters.services.requests.get')
-    @patch('characters.services.Character.objects.filter')
-    def test_crawl_api_data_full_flow(self, mock_character_filter, mock_requests_get):
+    def test_crawl_api_data_full_flow(self, mock_requests_get):
         """
         Integration: Celery task에서 'api_data' 타입 호출, 전체 API 호출 플로우 및 DB 저장 확인
         AC 2.2.1, 2.2.2, 2.2.3, 2.2.4 통합 테스트
         """
         from datetime import datetime
         from django.utils import timezone
-
-        # Mock Character.objects.filter (OCID 조회용)
-        mock_character_filter.return_value.first.return_value = None
 
         # Mock API 응답 준비
         def mock_api_response(*args, **kwargs):
@@ -871,75 +888,74 @@ class CrawlAPIDataIntegrationTests(TestCase):
 
         mock_requests_get.side_effect = mock_api_response
 
-        # Celery task 실행 (동기 실행)
+        # Celery task 실행 (동기 실행) - Story 1.8: ocid로 변경
         result = crawl_character_data.apply(
-            args=[self.character.id, ['api_data']]
+            args=[self.character_basic.ocid, ['api_data']]
         ).get()
 
         # 결과 검증
         self.assertEqual(result['api_data']['status'], 'success')
-        self.assertEqual(result['api_data']['ocid'], 'test_ocid_123')
+        self.assertEqual(result['api_data']['ocid'], self.character_basic.ocid)
 
         # DB 저장 검증
-        # CharacterBasic이 생성되었는지 확인
-        character_basic = CharacterBasic.objects.filter(ocid='test_ocid_123').first()
-        self.assertIsNotNone(character_basic)
-        self.assertEqual(character_basic.character_name, '테스트캐릭터')
-        self.assertEqual(character_basic.world_name, '스카니아')
-        self.assertEqual(character_basic.character_class, '히어로')
+        # CharacterBasic이 업데이트되었는지 확인 (Story 1.8: 기존 CharacterBasic 사용)
+        self.character_basic.refresh_from_db()
+        self.assertEqual(self.character_basic.character_name, '테스트캐릭터')
+        self.assertEqual(self.character_basic.world_name, '스카니아')
+        self.assertEqual(self.character_basic.character_class, '히어로')
 
         # CharacterPopularity가 생성되었는지 확인
-        popularity = CharacterPopularity.objects.filter(character=character_basic).first()
+        popularity = CharacterPopularity.objects.filter(character=self.character_basic).first()
         self.assertIsNotNone(popularity)
         self.assertEqual(popularity.popularity, 12345)
 
         # CharacterStat이 생성되었는지 확인
-        stat = CharacterStat.objects.filter(character=character_basic).first()
+        stat = CharacterStat.objects.filter(character=self.character_basic).first()
         self.assertIsNotNone(stat)
         self.assertEqual(stat.character_class, '히어로')
 
-    @patch('characters.services.requests.get')
-    @patch('characters.services.Character.objects.filter')
-    def test_crawl_api_data_character_not_found(self, mock_character_filter, mock_requests_get):
+    def test_crawl_api_data_character_not_found(self):
         """
-        Integration: 캐릭터를 찾을 수 없는 경우 에러 처리
+        Integration: CharacterBasic을 찾을 수 없는 경우 에러 처리
+        Story 1.8: ocid 기반으로 변경
         """
-        # Mock Character.objects.filter
-        mock_character_filter.return_value.first.return_value = None
+        from celery.exceptions import Retry
 
-        # Mock API 응답 (OCID 없음)
-        mock_response = MagicMock()
-        mock_response.raise_for_status = MagicMock()
-        mock_response.json.return_value = {}  # ocid 없음
-        mock_requests_get.return_value = mock_response
+        # Celery task 실행 - 존재하지 않는 ocid로 호출
+        # Task should raise Retry (which wraps ValueError) when CharacterBasic is not found
+        with self.assertRaises(Retry) as context:
+            crawl_character_data.apply(
+                args=['nonexistent-ocid-12345', ['api_data']]
+            ).get()
 
-        # Celery task 실행
-        result = crawl_character_data.apply(
-            args=[self.character.id, ['api_data']]
-        ).get()
-
-        # 에러 상태 검증
-        self.assertIn('error', result['api_data'])
+        # 에러 메시지 검증 (ValueError message is wrapped in Retry)
+        self.assertIn('CharacterBasic', str(context.exception))
+        self.assertIn('not found', str(context.exception))
 
     @patch('util.rate_limiter.check_rate_limit')
     @patch('characters.services.requests.get')
-    @patch('characters.services.Character.objects.filter')
-    def test_rate_limit_applied_during_crawl(self, mock_character_filter, mock_requests_get, mock_rate_limit):
+    def test_rate_limit_applied_during_crawl(self, mock_requests_get, mock_rate_limit):
         """
         AC 2.2.5: Celery task 실행 시 Rate Limit이 적용되는지 확인
+        Story 1.8: ocid 기반으로 변경
         """
         # Mock 설정
-        mock_character_filter.return_value.first.return_value = None
         mock_rate_limit.return_value = True
 
         mock_response = MagicMock()
         mock_response.raise_for_status = MagicMock()
-        mock_response.json.return_value = {'ocid': 'test_ocid'}
+        mock_response.json.return_value = {
+            'date': '2025-11-23T10:00:00+09:00',
+            'character_name': '테스트캐릭터',
+            'world_name': '스카니아',
+            'character_class': '히어로',
+            'character_level': 250
+        }
         mock_requests_get.return_value = mock_response
 
-        # Celery task 실행
+        # Celery task 실행 - Story 1.8: ocid 사용
         crawl_character_data.apply(
-            args=[self.character.id, ['api_data']]
+            args=[self.character_basic.ocid, ['api_data']]
         ).get()
 
         # Rate limiter가 호출되었는지 확인
@@ -961,11 +977,18 @@ class ManualRefreshFunctionTests(APITestCase):
             password='testpass123'
         )
 
-        # 테스트 캐릭터 생성
+        # 테스트 캐릭터 생성 (accounts.Character)
         self.character = Character.objects.create(
             user=self.user,
             ocid='test-ocid-refresh-001',
             character_name='RefreshTestChar'
+        )
+
+        # Story 1.8: CharacterBasic도 생성 (게스트 모드 지원)
+        self.character_basic = CharacterBasic.objects.create(
+            ocid='test-ocid-refresh-001',
+            character_name='RefreshTestChar',
+            world_name='스카니아'
         )
 
         # 인증 설정
@@ -1063,20 +1086,12 @@ class ManualRefreshFunctionTests(APITestCase):
         """
         AC 2.7.3: 마지막 크롤링 1시간 이내 → recently_crawled=true
         """
-        from datetime import timedelta
         from django.utils import timezone
         from characters.models import CharacterBasic
 
-        # Create CharacterBasic with recent last_updated
-        character_basic = CharacterBasic.objects.create(
-            ocid='test-ocid-refresh-001',
-            character_name='RefreshTestChar',
-            world_name='스카니아',
-            character_gender='남',
-            character_class='히어로'
-        )
-        # Update last_updated to now (within 1 hour)
-        CharacterBasic.objects.filter(pk=character_basic.pk).update(
+        # Update existing character_basic's last_updated to now (within 1 hour)
+        # Use the self.character_basic created in setUp
+        CharacterBasic.objects.filter(pk=self.character_basic.pk).update(
             last_updated=timezone.now()
         )
 
@@ -1100,11 +1115,25 @@ class ManualRefreshFunctionTests(APITestCase):
         """
         AC 2.7.3: 이전 크롤링 없음 → recently_crawled=false
         """
-        # Create a new character without any CharacterBasic
+        from datetime import timedelta
+        from django.utils import timezone
+
+        # Create a new character
         new_character = Character.objects.create(
             user=self.user,
             ocid='test-ocid-new-char',
             character_name='NewChar'
+        )
+        # Story 1.8: CharacterBasic도 생성
+        new_character_basic = CharacterBasic.objects.create(
+            ocid='test-ocid-new-char',
+            character_name='NewChar',
+            world_name='스카니아'
+        )
+        # Set last_updated to more than 1 hour ago to simulate no recent crawl
+        old_time = timezone.now() - timedelta(hours=2)
+        CharacterBasic.objects.filter(pk=new_character_basic.pk).update(
+            last_updated=old_time
         )
 
         # Mock Celery task
@@ -1131,10 +1160,10 @@ class ManualRefreshFunctionTests(APITestCase):
         from django.utils import timezone
         from .models import CrawlTask
 
-        # Create recent successful CrawlTask
+        # Create recent successful CrawlTask - Story 1.8: use character_basic
         CrawlTask.objects.create(
             task_id='previous-success-task',
-            character_basic=self.character,
+            character_basic=self.character_basic,
             task_type='inventory',
             status='SUCCESS',
             progress=100
@@ -1285,11 +1314,18 @@ class ManualRefreshFunctionTests(APITestCase):
         }, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_crawl_character_belongs_to_another_user(self):
+    @patch('accounts.tasks.crawl_character_data.delay')
+    def test_crawl_any_character_allowed_guest_mode(self, mock_delay):
         """
-        Cannot crawl another user's character → 404
+        Story 1.8: 게스트 모드에서 모든 캐릭터 크롤링 가능
+        Any CharacterBasic can be crawled regardless of user ownership
         """
-        # Create another user's character
+        # Mock Celery task
+        mock_task = Mock()
+        mock_task.id = 'test-any-char-task'
+        mock_delay.return_value = mock_task
+
+        # Create another user's character (accounts.Character)
         other_user = User.objects.create_user(
             username='otheruser',
             password='testpass'
@@ -1300,9 +1336,18 @@ class ManualRefreshFunctionTests(APITestCase):
             character_name='OtherChar'
         )
 
-        # Try to crawl other user's character
+        # Create CharacterBasic for the character (게스트 모드 지원)
+        other_character_basic = CharacterBasic.objects.create(
+            ocid='other-user-ocid',
+            character_name='OtherChar',
+            world_name='스카니아'
+        )
+
+        # Try to crawl other user's character - should succeed with guest mode
         url = f'/api/characters/{other_character.ocid}/crawl/'
         response = self.client.post(url, {
             'crawl_types': ['inventory']
         }, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Story 1.8: Guest mode allows crawling any character
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)

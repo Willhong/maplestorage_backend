@@ -69,6 +69,13 @@ class CharacterBasic(models.Model):
                 )
 
             # 히스토리 저장
+            # 이미지 URL 변환: open.api.nexon.com -> avatar.maplestory.nexon.com
+            character_image = data.get('character_image', '')
+            if character_image:
+                character_image = character_image.replace(
+                    '?',
+                    '?width=300&height=300&'
+                )
             history_data = {
                 'date': data.get('date') or timezone.now(),
                 'character_name': data.get('character_name'),
@@ -78,7 +85,7 @@ class CharacterBasic(models.Model):
                 'character_exp': data.get('character_exp'),
                 'character_exp_rate': data.get('character_exp_rate'),
                 'character_guild_name': data.get('character_guild_name'),
-                'character_image': data.get('character_image'),
+                'character_image': character_image,
                 'character_date_create': data.get('character_date_create'),
                 'access_flag': True if data.get('access_flag') == 'true' else False,
                 'liberation_quest_clear_flag': True if data.get('liberation_quest_clear_flag') == 'true' else False,

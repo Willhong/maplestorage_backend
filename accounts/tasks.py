@@ -1,13 +1,17 @@
 """
-Celery tasks for character crawling (Story 2.1, 2.2, 2.3)
+Celery tasks for character crawling (Story 2.1, 2.2, 2.3, 2.9, 2.10)
 """
 from celery import shared_task
 from typing import List
 import logging
 import time
 import asyncio
-from .services import TaskStatusService
+from .services import TaskStatusService, MonitoringService
 from .models import Character, CrawlTask
+from .exceptions import (
+    CrawlError, CharacterNotFoundError, NetworkError, MaintenanceError,
+    ErrorType, classify_exception
+)
 from characters.services import MapleAPIService
 from characters.models import CharacterBasic, CharacterPopularity, CharacterStat, Inventory, Storage
 from characters.crawler_services import CrawlerService, CrawlingError, ParsingError, StorageParsingError
@@ -16,14 +20,105 @@ from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 
+# Story 2.10: 성공률 임계치
+SUCCESS_RATE_WARNING_THRESHOLD = 95.0  # AC-2.10.3: 이메일 알림
+SUCCESS_RATE_CRITICAL_THRESHOLD = 80.0  # AC-2.10.4: 긴급 알림 (Slack)
+
+
+@shared_task
+def check_crawl_success_rate():
+    """
+    크롤링 성공률 체크 Periodic Task (Story 2.10: AC-2.10.3, AC-2.10.4)
+
+    매시간 실행되어 성공률을 확인하고, 임계치 이하 시 알림 전송
+    - 95% 미만: 이메일 알림 (WARNING)
+    - 80% 미만: 이메일 + Slack 알림 (CRITICAL)
+
+    알림 중복 방지: 동일 임계치 알림은 1시간 내 중복 발송 안 함
+    """
+    from .notifications import AlertService
+
+    logger.info("Starting crawl success rate check...")
+
+    # 최근 24시간 성공률 조회
+    stats = MonitoringService.get_success_rate(hours=24)
+    success_rate = stats['success_rate']
+    total_tasks = stats['total_tasks']
+
+    logger.info(f"Current success rate: {success_rate}% ({total_tasks} tasks)")
+
+    # 데이터가 없으면 체크 스킵
+    if total_tasks == 0:
+        logger.info("No crawl tasks in the last 24 hours, skipping alert check")
+        return {
+            'status': 'skipped',
+            'reason': 'no_data',
+            'success_rate': success_rate,
+            'total_tasks': total_tasks
+        }
+
+    # AC-2.10.4: 80% 미만 - 긴급 알림 (CRITICAL)
+    if success_rate < SUCCESS_RATE_CRITICAL_THRESHOLD:
+        if MonitoringService.can_send_alert('critical'):
+            error_breakdown = MonitoringService.get_error_breakdown(hours=24)
+            AlertService.send_critical_alert(success_rate, total_tasks, error_breakdown)
+            MonitoringService.mark_alert_sent('critical')
+            logger.warning(f"CRITICAL alert sent: success rate {success_rate}%")
+            return {
+                'status': 'alert_sent',
+                'alert_type': 'critical',
+                'success_rate': success_rate,
+                'total_tasks': total_tasks
+            }
+        else:
+            logger.info("Critical alert already sent within the last hour")
+            return {
+                'status': 'alert_skipped',
+                'alert_type': 'critical',
+                'reason': 'duplicate_prevention',
+                'success_rate': success_rate,
+                'total_tasks': total_tasks
+            }
+
+    # AC-2.10.3: 95% 미만 - 경고 알림 (WARNING)
+    elif success_rate < SUCCESS_RATE_WARNING_THRESHOLD:
+        if MonitoringService.can_send_alert('warning'):
+            AlertService.send_warning_alert(success_rate, total_tasks)
+            MonitoringService.mark_alert_sent('warning')
+            logger.warning(f"WARNING alert sent: success rate {success_rate}%")
+            return {
+                'status': 'alert_sent',
+                'alert_type': 'warning',
+                'success_rate': success_rate,
+                'total_tasks': total_tasks
+            }
+        else:
+            logger.info("Warning alert already sent within the last hour")
+            return {
+                'status': 'alert_skipped',
+                'alert_type': 'warning',
+                'reason': 'duplicate_prevention',
+                'success_rate': success_rate,
+                'total_tasks': total_tasks
+            }
+
+    # 정상 상태 (95% 이상)
+    logger.info(f"Success rate {success_rate}% is within normal range")
+    return {
+        'status': 'ok',
+        'success_rate': success_rate,
+        'total_tasks': total_tasks
+    }
+
 
 @shared_task(bind=True, max_retries=3)
-def crawl_character_data(self, character_id: int, crawl_types: List[str]):
+def crawl_character_data(self, ocid: str, crawl_types: List[str]):
     """
     캐릭터 데이터 크롤링 메인 태스크 (Story 2.1, 2.2, 2.3)
+    Story 1.8: ocid 기반으로 변경하여 게스트 모드 지원
 
     Args:
-        character_id: Character의 primary key
+        ocid: 캐릭터 OCID (CharacterBasic 식별자)
         crawl_types: ['inventory', 'item_details', 'storage', 'meso', 'api_data']
 
     Returns:
@@ -39,15 +134,34 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
             progress=0,
             message='크롤링 시작 중...'
         )
-        logger.info(f'Crawl task {task_id} started for character {character_id}')
+        logger.info(f'Crawl task {task_id} started for ocid {ocid}')
 
-        # 2. Character 조회
+        # 2. CharacterBasic 조회 (Story 1.8: 게스트 모드 지원)
         try:
-            character = Character.objects.get(id=character_id)
-        except Character.DoesNotExist:
-            raise ValueError(f'Character with id {character_id} not found')
+            character_basic = CharacterBasic.objects.get(ocid=ocid)
+        except CharacterBasic.DoesNotExist:
+            raise ValueError(f'CharacterBasic with ocid {ocid} not found')
 
-        # 3. 크롤링 실행
+        # 3. character_info_url 새로 가져오기 (만료시간이 있으므로 항상 갱신)
+        character_info_url = None
+        crawl_types_needing_url = {'inventory', 'storage', 'meso'}
+        if crawl_types_needing_url.intersection(crawl_types):
+            TaskStatusService.update_task_status(
+                task_id,
+                'STARTED',
+                progress=0,
+                message='캐릭터 URL 조회 중...'
+            )
+            crawler = CrawlerService()
+            character_info_url = asyncio.run(
+                crawler.fetch_character_info_url(character_basic.character_name)
+            )
+            # URL 저장
+            character_basic.character_info_url = character_info_url
+            character_basic.save(update_fields=['character_info_url'])
+            logger.info(f'Fetched and saved character_info_url: {character_info_url}')
+
+        # 4. 크롤링 실행
         results = {}
         total_types = len(crawl_types)
 
@@ -57,15 +171,14 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
             # Story 2.2: 공식 API 데이터 수집
             if crawl_type == 'api_data':
                 try:
-                    # Step 1: OCID 조회 (AC 2.2.1)
+                    # Step 1: OCID는 이미 있음 (Story 1.8: ocid 기반으로 변경)
                     TaskStatusService.update_task_status(
                         task_id,
                         'STARTED',
                         progress=base_progress,
-                        message='OCID 조회 중...'
+                        message='캐릭터 정보 수집 중...'
                     )
-                    ocid = MapleAPIService.get_ocid(character.character_name)
-                    logger.info(f'OCID retrieved: {ocid}')
+                    logger.info(f'Using existing OCID: {ocid}')
 
                     # Step 2: 캐릭터 기본 정보 (AC 2.2.2)
                     TaskStatusService.update_task_status(
@@ -107,13 +220,13 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
 
                 except ValidationError as ve:
                     # AC 2.2.7: 검증 실패 로깅
-                    logger.error(f'Pydantic validation error for character {character_id}: {ve}')
+                    logger.error(f'Pydantic validation error for ocid {ocid}: {ve}')
                     results['api_data'] = {
                         'status': 'validation_error',
                         'error': str(ve)
                     }
                 except Exception as e:
-                    logger.error(f'API data collection failed for character {character_id}: {e}')
+                    logger.error(f'API data collection failed for ocid {ocid}: {e}')
                     results['api_data'] = {
                         'status': 'error',
                         'error': str(e)
@@ -130,34 +243,13 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                     )
 
                     # AC 2.3.1: Playwright로 크롤링 실행
-                    # CharacterBasic 조회하여 character_info_url 얻기
-                    character_basic = CharacterBasic.objects.filter(
-                        character_name=character.character_name
-                    ).first()
-
-                    if not character_basic:
-                        raise ValueError(f'CharacterBasic not found for {character.character_name}')
-
-                    # character_info_url이 없으면 임시 URL 생성 (TODO: 실제 URL은 랭킹 페이지에서 크롤링)
-                    character_info_url = character_basic.character_info_url
-                    if not character_info_url:
-                        # 임시 URL 생성 (실제로는 랭킹 페이지에서 검색 필요)
-                        character_info_url = f'https://maplestory.nexon.com/MyMaple/Character/Detail/{character.character_name}'
-                        logger.warning(f'character_info_url not found for {character.character_name}, using temporary URL')
-
+                    # character_info_url은 task 시작 시 미리 가져옴 (재사용)
                     crawler = CrawlerService()
                     crawled_data = asyncio.run(
-                        crawler.crawl_inventory(character_info_url, character.character_name)
+                        crawler.crawl_inventory(character_info_url, character_basic.character_name)
                     )
 
                     # AC 2.3.3 - 2.3.5: 데이터 검증 및 저장
-                    character_basic = CharacterBasic.objects.filter(
-                        character_name=character.character_name
-                    ).first()
-
-                    if not character_basic:
-                        raise ValueError(f'CharacterBasic not found for {character.character_name}')
-
                     # AC 2.3.6: 이전 데이터는 히스토리로 보관 (덮어쓰지 않음)
                     saved_items = []
                     for item_data in crawled_data['items']:
@@ -216,13 +308,7 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                     )
 
                     # 캐릭터의 Inventory 아이템 조회 (detail_url이 있는 것만)
-                    character_basic = CharacterBasic.objects.filter(
-                        character_name=character.character_name
-                    ).first()
-
-                    if not character_basic:
-                        raise ValueError(f'CharacterBasic not found for {character.character_name}')
-
+                    # Story 1.8: character_basic은 이미 조회됨
                     inventory_items = Inventory.objects.filter(
                         character_basic=character_basic,
                         detail_url__isnull=False,
@@ -284,38 +370,28 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                         message=f'창고 수집 중... ({base_progress}%)'  # Story 2.7: AC #2
                     )
 
-                    # CharacterBasic 조회
-                    character_basic = CharacterBasic.objects.filter(
-                        character_name=character.character_name
-                    ).first()
-
-                    if not character_basic:
-                        raise ValueError(f'CharacterBasic not found for {character.character_name}')
-
-                    # character_info_url 확인
-                    character_info_url = character_basic.character_info_url
-                    if not character_info_url:
-                        character_info_url = f'https://maplestory.nexon.com/MyMaple/Character/Detail/{character.character_name}'
-                        logger.warning(f'character_info_url not found for {character.character_name}, using temporary URL')
-
-                    # AC 2.4.8: 공유 창고 중복 방지 체크
+                    # AC 2.4.8: 공유 창고 중복 방지 체크 (Story 1.8: ocid 기반으로 변경)
                     from django.core.cache import cache
-                    user_id = character.user_id if hasattr(character, 'user_id') else character.id
-                    shared_cache_key = f'shared_storage:{user_id}'
+                    shared_cache_key = f'shared_storage:{ocid}'
                     skip_shared = cache.get(shared_cache_key)
 
+                    # character_info_url은 task 시작 시 미리 가져옴 (재사용)
                     crawler = CrawlerService()
                     crawled_data = asyncio.run(
-                        crawler.crawl_storage(character_info_url, character.character_name)
+                        crawler.crawl_storage(character_info_url, character_basic.character_name)
                     )
 
                     # AC 2.4.6, 2.4.7: Pydantic 검증 및 DB 저장
                     saved_shared = 0
                     saved_personal = 0
 
+                    # 크롤링 데이터 안전하게 가져오기
+                    shared_items = crawled_data.get('shared_items', [])
+                    personal_items = crawled_data.get('personal_items', [])
+
                     # 공유 창고 처리 (중복 방지 로직 적용)
-                    if not skip_shared and crawled_data['shared_items']:
-                        for item_data in crawled_data['shared_items']:
+                    if not skip_shared and shared_items:
+                        for item_data in shared_items:
                             try:
                                 validated_item = StorageItemSchema(**item_data)
                                 Storage.objects.create(
@@ -335,13 +411,13 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
 
                         # AC 2.4.8: 공유 창고 캐시 설정 (1시간 TTL)
                         cache.set(shared_cache_key, True, timeout=3600)
-                        logger.info(f'Shared storage cache set for user {user_id}')
+                        logger.info(f'Shared storage cache set for ocid {ocid}')
                     elif skip_shared:
-                        logger.info(f'Skipping shared storage crawl for user {user_id} (cached)')
+                        logger.info(f'Skipping shared storage crawl for ocid {ocid} (cached)')
                         saved_shared = -1  # 캐시 사용 표시
 
                     # 개인 창고 처리
-                    for item_data in crawled_data['personal_items']:
+                    for item_data in personal_items:
                         try:
                             validated_item = StorageItemSchema(**item_data)
                             Storage.objects.create(
@@ -365,7 +441,7 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                         'shared_items_saved': saved_shared,
                         'personal_items_saved': saved_personal,
                         'shared_from_cache': skip_shared is not None,
-                        'crawled_at': crawled_data['crawled_at']
+                        'crawled_at': crawled_data.get('crawled_at')
                     }
 
                 except (CrawlingError, StorageParsingError) as e:
@@ -392,31 +468,11 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                         message=f'메소 수집 중... ({base_progress}%)'  # Story 2.7: AC #2
                     )
 
-                    # CharacterBasic 조회
-                    character_basic = CharacterBasic.objects.filter(
-                        character_name=character.character_name
-                    ).first()
-
-                    if not character_basic:
-                        raise ValueError(f'CharacterBasic not found for {character.character_name}')
-
-                    # character_info_url 확인 (없으면 랭킹 페이지에서 새로 얻어옴)
-                    character_info_url = character_basic.character_info_url
-                    crawler = CrawlerService()
-
-                    if not character_info_url:
-                        logger.info(f'Fetching character_info_url from ranking page for {character.character_name}')
-                        character_info_url = asyncio.run(
-                            crawler.fetch_character_info_url(character.character_name)
-                        )
-                        # 얻어온 URL 저장
-                        character_basic.character_info_url = character_info_url
-                        character_basic.save(update_fields=['character_info_url'])
-                        logger.info(f'Saved character_info_url: {character_info_url}')
-
+                    # character_info_url은 task 시작 시 미리 가져옴 (재사용)
                     # AC 2.5.1: 캐릭터 메소 크롤링
+                    crawler = CrawlerService()
                     crawled_data = asyncio.run(
-                        crawler.crawl_character_meso(character_info_url, character.character_name)
+                        crawler.crawl_character_meso(character_info_url, character_basic.character_name)
                     )
 
                     meso_amount = crawled_data.get('meso')
@@ -459,7 +515,7 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
                         }
                     else:
                         # AC 2.5.6: 파싱 실패 시 null 저장 및 에러 로깅
-                        logger.warning(f'Meso parsing returned None for {character.character_name}')
+                        logger.warning(f'Meso parsing returned None for {character_basic.character_name}')
                         results['meso'] = {
                             'status': 'success',
                             'meso': None,
@@ -488,12 +544,19 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
             progress=100,
             message='완료! (100%)'
         )
+
+        # Story 2.10: 성공 기록 (AC-2.10.1)
+        MonitoringService.record_crawl_result(task_id, 'SUCCESS')
+
         logger.info(f'Crawl task {task_id} completed successfully')
 
         return results
 
     except Exception as exc:
         logger.error(f'Crawl task {task_id} failed: {exc}')
+
+        # Story 2.9: 예외를 적절한 CrawlError로 분류 (AC-2.9.1, AC-2.9.2)
+        crawl_error = classify_exception(exc)
 
         # Retry logic with exponential backoff (AC #6, #7, #8)
         retry_count = self.request.retries
@@ -502,22 +565,35 @@ def crawl_character_data(self, character_id: int, crawl_types: List[str]):
         TaskStatusService.update_task_status(
             task_id,
             'RETRY',
-            error=str(exc),
-            message=f'재시도 {retry_count + 1}/3 ({countdown}초 후)'
+            error=crawl_error.user_message,
+            message=f'재시도 {retry_count + 1}/3 ({countdown}초 후)',
+            error_type=crawl_error.error_type.value,
+            technical_error=crawl_error.technical_error
         )
 
         if retry_count >= 2:
-            # 최종 실패 (AC #8)
+            # 최종 실패 (AC #8, Story 2.9: AC-2.9.1, AC-2.9.2, AC-2.9.3)
             TaskStatusService.update_task_status(
                 task_id,
                 'FAILURE',
-                error=str(exc)
+                error=crawl_error.user_message,
+                error_type=crawl_error.error_type.value,
+                technical_error=crawl_error.technical_error
             )
 
-            # CrawlTask 모델 업데이트 (AC #9)
+            # Story 2.10: 실패 기록 (AC-2.10.1)
+            MonitoringService.record_crawl_result(
+                task_id,
+                'FAILURE',
+                error_type=crawl_error.error_type.value
+            )
+
+            # CrawlTask 모델 업데이트 (AC #9, Story 2.9: AC-2.9.2, AC-2.9.3)
             CrawlTask.objects.filter(task_id=task_id).update(
                 status='FAILURE',
-                error_message=str(exc),
+                error_message=crawl_error.user_message,
+                error_type=crawl_error.error_type.value,
+                technical_error=crawl_error.technical_error,
                 retry_count=3
             )
 

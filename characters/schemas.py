@@ -5,7 +5,7 @@ from typing import List, Dict, Optional, Any, Literal
 
 
 class CharacterBasicSchema(BaseModel):
-    date: Optional[datetime]
+    date: Optional[datetime] = None
     character_name: str
     world_name: str
     character_gender: str
@@ -14,11 +14,11 @@ class CharacterBasicSchema(BaseModel):
     character_level: int
     character_exp: int
     character_exp_rate: str
-    character_guild_name: Optional[str]
+    character_guild_name: Optional[str] = None
     character_image: str
-    character_date_create: Optional[str]
+    character_date_create: Optional[str] = None
     access_flag: str
-    liberation_quest_clear_flag: str
+    liberation_quest_clear_flag: str = Field(default=None, validation_alias='liberation_quest_clear')
 
 
 class CharacterPopularitySchema(BaseModel):
@@ -155,7 +155,7 @@ class ItemEquipmentSchema(BaseModel):
     cuttable_count: Optional[str]
     golden_hammer_flag: Optional[str]
     scroll_resilience_count: Optional[str]
-    scroll_upgradable_count: Optional[str] = None
+    scroll_upgradable_count: Optional[str] = Field(default=None, validation_alias='scroll_upgradeable_count')
     soul_name: Optional[str] = None
     soul_option: Optional[str] = None
     item_etc_option: Optional[ItemEtcOptionSchema]

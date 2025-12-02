@@ -112,11 +112,65 @@ class CharacterBasicHistorySerializer(serializers.ModelSerializer):
 
 
 class CharacterBasicSerializer(serializers.ModelSerializer):
+    """
+    캐릭터 기본 정보 Serializer
+    Story 2.8: last_crawled_at, last_crawl_status 필드 추가
+    """
     history = CharacterBasicHistorySerializer(many=True, read_only=True)
+    last_crawled_at = serializers.SerializerMethodField()
+    last_crawl_status = serializers.SerializerMethodField()
 
     class Meta:
         model = CharacterBasic
         exclude = ['id']
+
+    def get_last_crawled_at(self, obj):
+        """
+        마지막 크롤링 시간 조회 (Story 2.8: AC #1)
+
+        Returns:
+            str | None: ISO 8601 형식의 마지막 크롤링 시간 또는 None
+        """
+        from accounts.models import CrawlTask
+
+        last_task = CrawlTask.objects.filter(
+            character_basic=obj,
+            status='SUCCESS'
+        ).order_by('-updated_at').first()
+
+        if last_task:
+            return last_task.updated_at.isoformat()
+        return None
+
+    def get_last_crawl_status(self, obj):
+        """
+        마지막 크롤링 상태 조회 (Story 2.8: AC #5)
+
+        Returns:
+            str: 'SUCCESS' | 'FAILED' | 'NEVER_CRAWLED'
+        """
+        from accounts.models import CrawlTask
+
+        last_task = CrawlTask.objects.filter(
+            character_basic=obj
+        ).order_by('-updated_at').first()
+
+        if not last_task:
+            return 'NEVER_CRAWLED'
+
+        if last_task.status == 'SUCCESS':
+            return 'SUCCESS'
+        elif last_task.status in ('FAILURE', 'RETRY'):
+            return 'FAILED'
+        else:
+            # PENDING, STARTED 상태인 경우 이전 성공 여부 확인
+            previous_success = CrawlTask.objects.filter(
+                character_basic=obj,
+                status='SUCCESS'
+            ).exists()
+            if previous_success:
+                return 'SUCCESS'
+            return 'NEVER_CRAWLED'
 
 
 class CharacterBeautyEquipmentSerializer(serializers.ModelSerializer):
