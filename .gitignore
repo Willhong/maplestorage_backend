@@ -4,3 +4,10 @@
 
 #db
 /db.sqlite3
+
+#python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb

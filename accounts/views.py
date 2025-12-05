@@ -359,70 +359,24 @@ class CharacterCreateView(APIView):
 
     def get(self, request):
         """
-        Get user's characters (Story 1.7: AC #1)
+        Get user's characters (Story 1.7: AC #1, Story 3.1: AC #1, #4)
         Story 2.8: N+1 쿼리 방지를 위해 크롤링 상태 미리 조회
+        Story 3.1: CharacterListSerializer 사용 (character_image, inventory_count, has_expiring_items 포함)
         """
-        from characters.models import CharacterBasic
-        from .models import CrawlTask
-        from django.db.models import OuterRef, Subquery, Max
+        from characters.serializers import CharacterListSerializer
 
+        # 본인 캐릭터만 조회 (AC-ownership)
+        # AC-3.1.4: 최근 등록순 정렬
         characters = Character.objects.filter(user=request.user).order_by('-created_at')
 
-        # Story 2.8: 크롤링 상태 미리 조회 (N+1 쿼리 방지)
-        ocids = list(characters.values_list('ocid', flat=True))
+        # Story 3.1: CharacterListSerializer 사용
+        serializer = CharacterListSerializer(characters, many=True)
 
-        # CharacterBasic ID 매핑
-        character_basic_map = {}
-        if ocids:
-            basics = CharacterBasic.objects.filter(ocid__in=ocids).values('ocid', 'id')
-            character_basic_map = {b['ocid']: b['id'] for b in basics}
-
-        # 마지막 성공 크롤링 시간 조회
-        crawl_success_map = {}
-        crawl_status_map = {}
-
-        if character_basic_map:
-            basic_ids = list(character_basic_map.values())
-
-            # 마지막 성공 크롤링 시간
-            success_tasks = CrawlTask.objects.filter(
-                character_basic_id__in=basic_ids,
-                status='SUCCESS'
-            ).values('character_basic_id').annotate(
-                last_updated=Max('updated_at')
-            )
-            for task in success_tasks:
-                crawl_success_map[task['character_basic_id']] = task['last_updated']
-
-            # 마지막 크롤링 상태
-            for basic_id in basic_ids:
-                last_task = CrawlTask.objects.filter(
-                    character_basic_id=basic_id
-                ).order_by('-updated_at').first()
-
-                if not last_task:
-                    crawl_status_map[basic_id] = 'NEVER_CRAWLED'
-                elif last_task.status == 'SUCCESS':
-                    crawl_status_map[basic_id] = 'SUCCESS'
-                elif last_task.status in ('FAILURE', 'RETRY'):
-                    crawl_status_map[basic_id] = 'FAILED'
-                else:
-                    if basic_id in crawl_success_map:
-                        crawl_status_map[basic_id] = 'SUCCESS'
-                    else:
-                        crawl_status_map[basic_id] = 'NEVER_CRAWLED'
-
-        # Serializer context에 크롤링 정보 전달
-        serializer = CharacterResponseSerializer(
-            characters,
-            many=True,
-            context={
-                'character_basic_map': character_basic_map,
-                'crawl_success_map': crawl_success_map,
-                'crawl_status_map': crawl_status_map
-            }
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Story 3.1: count, results 형식으로 반환
+        return Response({
+            'count': characters.count(),
+            'results': serializer.data
+        }, status=status.HTTP_200_OK)
 
     @method_decorator(ratelimit(key='user', rate='10/h', method='POST', block=True))
     def post(self, request):
@@ -575,6 +529,20 @@ class CrawlStartView(APIView):
         # Story 2.7: AC #3 - 마지막 크롤링 시간 확인
         recently_crawled = self._check_recently_crawled(character_basic)
 
+        # 1시간 이내 크롤링이 있고 강제 새로고침이 아니면 크롤링 시작 안 함
+        # 프론트엔드에서 팝업으로 사용자 확인 후 force_refresh=true로 재요청
+        if recently_crawled and not force_refresh:
+            return Response(
+                {
+                    "task_id": None,
+                    "status": "RECENTLY_CRAWLED",
+                    "message": "1시간 이내에 크롤링한 기록이 있습니다",
+                    "estimated_time": 0,
+                    "recently_crawled": True
+                },
+                status=status.HTTP_200_OK
+            )
+
         # Celery task 등록 (AC #1) - Story 1.8: ocid 기반으로 변경
         task = crawl_character_data.delay(ocid, crawl_types)
         task_id = task.id
@@ -595,7 +563,7 @@ class CrawlStartView(APIView):
                 "status": "PENDING",
                 "message": "크롤링 작업이 시작되었습니다",
                 "estimated_time": 30,  # seconds
-                "recently_crawled": recently_crawled  # Story 2.7: AC #3
+                "recently_crawled": False
             },
             status=status.HTTP_202_ACCEPTED
         )
@@ -683,7 +651,51 @@ class CrawlStatusView(APIView):
             if crawl_task.technical_error:
                 response_data['technical_error'] = crawl_task.technical_error
 
+        # SUCCESS일 때 크롤링 결과 데이터 포함 (추가 API 호출 없이 바로 UI 업데이트)
+        if response_data.get('status') == 'SUCCESS':
+            response_data['crawl_data'] = self._get_crawl_result_data(crawl_task)
+
         return Response(response_data, status=status.HTTP_200_OK)
+
+    def _get_crawl_result_data(self, crawl_task):
+        """크롤링 결과 데이터 조회 (inventory, storage, meso)"""
+        from characters.models import Inventory, Storage, CharacterBasic
+        from characters.serializers import InventoryItemSerializer, StorageItemSerializer
+
+        character_basic = crawl_task.character_basic
+        if not character_basic:
+            return None
+
+        result = {}
+
+        # 최근 인벤토리 데이터
+        latest_inventory = character_basic.inventory_items.order_by('-crawled_at').first()
+        if latest_inventory:
+            items = character_basic.inventory_items.filter(
+                crawled_at=latest_inventory.crawled_at
+            ).order_by('slot_position')
+            result['inventory'] = {
+                'crawled_at': latest_inventory.crawled_at.isoformat(),
+                'items': InventoryItemSerializer(items, many=True).data,
+                'total_count': items.count()
+            }
+
+        # 최근 창고 데이터
+        latest_storage = character_basic.storage_items.order_by('-crawled_at').first()
+        if latest_storage:
+            items = character_basic.storage_items.filter(
+                crawled_at=latest_storage.crawled_at
+            ).order_by('slot_position')
+            result['storage'] = {
+                'crawled_at': latest_storage.crawled_at.isoformat(),
+                'items': StorageItemSerializer(items, many=True).data,
+                'total_count': items.count()
+            }
+
+        # 메소 데이터
+        result['meso'] = character_basic.meso
+
+        return result
 
 
 class CrawlStatsAdminView(APIView):

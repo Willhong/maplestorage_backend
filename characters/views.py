@@ -521,6 +521,9 @@ class CharacterAllDataView(BaseCharacterView):
 
         - 최근 1시간 이내 크롤링 기록이 없으면 자동 시작
         - Celery 태스크로 비동기 실행 (API 응답 지연 없음)
+
+        Returns:
+            dict: {'task_id': str, 'status': str} 또는 None
         """
         from datetime import timedelta
         from accounts.models import CrawlTask
@@ -537,17 +540,17 @@ class CharacterAllDataView(BaseCharacterView):
 
             if recent_crawl:
                 logger.info(f"최근 크롤링 기록 있음, 자동 크롤링 스킵 - OCID: {ocid}")
-                return
+                return None
 
             # 현재 진행 중인 크롤링이 있는지 확인
             pending_crawl = CrawlTask.objects.filter(
                 character_basic=character_basic,
                 status__in=['PENDING', 'STARTED']
-            ).exists()
+            ).order_by('-created_at').first()
 
             if pending_crawl:
-                logger.info(f"진행 중인 크롤링 있음, 자동 크롤링 스킵 - OCID: {ocid}")
-                return
+                logger.info(f"진행 중인 크롤링 있음, task_id 반환 - OCID: {ocid}")
+                return {'task_id': pending_crawl.task_id, 'status': pending_crawl.status}
 
             # Celery 태스크 시작
             from accounts.tasks import crawl_character_data
@@ -565,10 +568,12 @@ class CharacterAllDataView(BaseCharacterView):
             )
 
             logger.info(f"자동 크롤링 시작됨 - OCID: {ocid}, Task ID: {task.id}")
+            return {'task_id': task.id, 'status': 'PENDING'}
 
         except Exception as e:
             # 크롤링 실패해도 API 응답에는 영향 없음
             logger.warning(f"자동 크롤링 시작 실패 - OCID: {ocid}, 오류: {str(e)}")
+            return None
 
     def validate_and_save_data(self, endpoint_name: str, data: dict, ocid: str, view_class):
         """각 엔드포인트의 데이터를 검증하고 저장"""
@@ -707,13 +712,18 @@ class CharacterAllDataView(BaseCharacterView):
             logger.info(f"전체 데이터 캐싱 완료 - Key: {cache_key}")
 
             # --- 자동 크롤링 시작 (인벤토리/창고/메소) ---
-            self._trigger_auto_crawl(ocid, character)
+            crawl_task = self._trigger_auto_crawl(ocid, character)
             # --- 자동 크롤링 끝 ---
 
             total_duration = time.time() - start_time  # 성공 응답 전 시간 측정
             logger.info(
                 f"전체 데이터 조회 성공 응답 - OCID: {ocid}, 총 소요시간: {total_duration:.2f}초")
-            return Response(self.format_response_data(serialized_data))
+
+            # 응답 데이터 구성 (크롤링 task 정보 포함)
+            response_data = self.format_response_data(serialized_data)
+            if crawl_task:
+                response_data['crawl_task'] = crawl_task
+            return Response(response_data)
             # --- 데이터 조회 및 직렬화/캐싱 로직 끝 ---
 
         except Exception as e:
@@ -919,3 +929,75 @@ class RedisHealthCheckView(APIView):
                 "status": "error",
                 "message": f"Redis 서버 연결 실패: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# =============================================================================
+# 캐릭터 목록 뷰 (Story 3.1)
+# =============================================================================
+
+class CharacterListView(APIView):
+    """
+    캐릭터 목록 조회 뷰 (Story 3.1)
+
+    GET /api/characters/ - 인증된 사용자의 캐릭터 목록 반환
+
+    AC-3.1.1: 모든 캐릭터가 카드 형태로 표시
+    AC-3.1.4: 캐릭터는 최근 업데이트 순으로 정렬
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 캐릭터 목록 조회",
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description='캐릭터 수'),
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'ocid': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'nickname': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                                    'world_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_class': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_level': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'character_image': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                                    'inventory_count': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'has_expiring_items': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                }
+                            )
+                        )
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자"
+        },
+        tags=['캐릭터 목록']
+    )
+    def get(self, request):
+        """
+        인증된 사용자의 캐릭터 목록을 반환합니다.
+
+        AC-3.1.4: 최근 업데이트 순으로 정렬 (created_at 기준 내림차순)
+        """
+        from accounts.models import Character
+        from .serializers import CharacterListSerializer
+
+        # 본인 캐릭터만 조회 (AC-ownership)
+        characters = Character.objects.filter(
+            user=request.user
+        ).order_by('-created_at')  # 최근 등록순 정렬 (AC-3.1.4)
+
+        serializer = CharacterListSerializer(characters, many=True)
+
+        return Response({
+            'count': characters.count(),
+            'results': serializer.data
+        })

@@ -96,6 +96,7 @@ async def main():
                     # DB 저장
                     Inventory.objects.create(
                         character_basic=character_basic,
+                        item_type=validated_item.item_type,
                         item_name=validated_item.item_name,
                         item_icon=validated_item.item_icon,
                         quantity=validated_item.quantity,

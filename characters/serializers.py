@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework import serializers
 from .models import (
     Hair, Face, Skin, CashItemEquipment, CashItemOption,
@@ -14,6 +16,7 @@ from .models import (
     CharacterSetEffect, Skill, CharacterSkill, StatDetail, CharacterStat,
     Symbol, CharacterSymbolEquipment, VCore, CharacterVMatrix
 )
+from accounts.models import Character
 
 
 class HairSerializer(serializers.ModelSerializer):
@@ -516,6 +519,156 @@ class CharacterVMatrixSerializer(serializers.ModelSerializer):
 
 
 # =============================================================================
+# 캐릭터 목록 Serializer (Story 3.1)
+# =============================================================================
+
+class CharacterListSerializer(serializers.ModelSerializer):
+    """
+    캐릭터 목록 조회용 Serializer (Story 3.1)
+
+    AC-3.1.1: 모든 캐릭터가 카드 형태로 표시
+    AC-3.1.2: 썸네일, 이름, 별명, 레벨, 직업, 월드, 마지막 업데이트 시간 포함
+    """
+    # accounts.Character에서 가져오는 필드
+    id = serializers.IntegerField(source='pk')
+
+    # CharacterBasic에서 가져오는 필드
+    character_name = serializers.SerializerMethodField()
+    world_name = serializers.SerializerMethodField()
+    character_class = serializers.SerializerMethodField()
+
+    # CharacterBasicHistory에서 가져오는 필드
+    character_level = serializers.SerializerMethodField()
+    character_image = serializers.SerializerMethodField()
+
+    # 계산 필드
+    nickname = serializers.SerializerMethodField()  # Story 3.3에서 추가될 필드
+    last_crawled_at = serializers.SerializerMethodField()
+    inventory_count = serializers.SerializerMethodField()
+    has_expiring_items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Character
+        fields = [
+            'id', 'ocid', 'character_name', 'nickname', 'world_name',
+            'character_class', 'character_level', 'character_image',
+            'last_crawled_at', 'inventory_count', 'has_expiring_items'
+        ]
+
+    def _get_character_basic(self, obj):
+        """CharacterBasic 객체를 캐싱하여 반환"""
+        if not hasattr(obj, '_character_basic_cache'):
+            try:
+                obj._character_basic_cache = CharacterBasic.objects.get(ocid=obj.ocid)
+            except CharacterBasic.DoesNotExist:
+                obj._character_basic_cache = None
+        return obj._character_basic_cache
+
+    def _get_latest_history(self, obj):
+        """최신 CharacterBasicHistory 객체를 캐싱하여 반환"""
+        if not hasattr(obj, '_latest_history_cache'):
+            basic = self._get_character_basic(obj)
+            if basic:
+                obj._latest_history_cache = basic.history.order_by('-date').first()
+            else:
+                obj._latest_history_cache = None
+        return obj._latest_history_cache
+
+    def get_character_name(self, obj):
+        """캐릭터 이름 (accounts.Character 또는 CharacterBasic에서)"""
+        # accounts.Character의 character_name 우선 사용
+        if obj.character_name:
+            return obj.character_name
+        # CharacterBasic에서 가져오기
+        basic = self._get_character_basic(obj)
+        return basic.character_name if basic else None
+
+    def get_world_name(self, obj):
+        """월드 이름"""
+        # accounts.Character에 world_name이 있으면 사용
+        if obj.world_name:
+            return obj.world_name
+        # CharacterBasic에서 가져오기
+        basic = self._get_character_basic(obj)
+        return basic.world_name if basic else None
+
+    def get_character_class(self, obj):
+        """직업"""
+        # accounts.Character에 character_class가 있으면 사용
+        if obj.character_class:
+            return obj.character_class
+        # CharacterBasic에서 가져오기
+        basic = self._get_character_basic(obj)
+        return basic.character_class if basic else None
+
+    def get_character_level(self, obj):
+        """캐릭터 레벨 (CharacterBasicHistory에서)"""
+        # accounts.Character에 character_level이 있으면 사용
+        if obj.character_level:
+            return obj.character_level
+        # CharacterBasicHistory에서 가져오기
+        history = self._get_latest_history(obj)
+        return history.character_level if history else None
+
+    def get_character_image(self, obj):
+        """캐릭터 이미지 URL (CharacterBasicHistory에서)"""
+        history = self._get_latest_history(obj)
+        return history.character_image if history else None
+
+    def get_nickname(self, obj):
+        """캐릭터 별명 (Story 3.3에서 실제 필드 추가 예정)"""
+        # 현재는 nickname 필드가 없으므로 None 반환
+        # Story 3.3에서 accounts.Character에 nickname 필드 추가 후 구현 예정
+        return getattr(obj, 'nickname', None)
+
+    def get_last_crawled_at(self, obj):
+        """마지막 크롤링 시간 (AC-3.1.2)"""
+        from accounts.models import CrawlTask
+
+        basic = self._get_character_basic(obj)
+        if not basic:
+            return None
+
+        last_task = CrawlTask.objects.filter(
+            character_basic=basic,
+            status='SUCCESS'
+        ).order_by('-updated_at').first()
+
+        if last_task:
+            return last_task.updated_at.isoformat()
+        return None
+
+    def get_inventory_count(self, obj):
+        """인벤토리 아이템 수"""
+        basic = self._get_character_basic(obj)
+        if not basic:
+            return 0
+
+        # 가장 최근 크롤링의 아이템 수
+        latest_item = basic.inventory_items.order_by('-crawled_at').first()
+        if not latest_item:
+            return 0
+
+        return basic.inventory_items.filter(
+            crawled_at=latest_item.crawled_at
+        ).count()
+
+    def get_has_expiring_items(self, obj):
+        """7일 이내 만료 아이템 유무"""
+        basic = self._get_character_basic(obj)
+        if not basic:
+            return False
+
+        seven_days_later = timezone.now() + timedelta(days=7)
+
+        # 인벤토리에서 7일 이내 만료 아이템 확인
+        return basic.inventory_items.filter(
+            expiry_date__isnull=False,
+            expiry_date__lte=seven_days_later
+        ).exists()
+
+
+# =============================================================================
 # 크롤링 데이터 Serializers (인벤토리, 창고)
 # =============================================================================
 
@@ -528,7 +681,7 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         from .models import Inventory
         model = Inventory
         fields = [
-            'id', 'item_name', 'item_icon', 'quantity', 'item_options',
+            'id', 'item_type', 'item_name', 'item_icon', 'quantity', 'item_options',
             'slot_position', 'expiry_date', 'crawled_at', 'detail_url',
             'has_detail', 'is_expirable', 'days_until_expiry'
         ]

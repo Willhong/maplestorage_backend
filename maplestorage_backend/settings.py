@@ -256,20 +256,27 @@ CELERY_TIMEZONE = 'Asia/Seoul'
 
 # 테스트 환경에서만 Celery task를 동기로 실행 (DEBUG 모드에서는 비동기 유지)
 import sys
-if 'test' in sys.argv:
+if 'test' in sys.argv or 'pytest' in sys.argv[0] if sys.argv else False:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
-
-# Redis Cache 설정
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'{REDIS_URL}/2',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+    # Story 3.1: 테스트 환경에서는 locmem 캐시 사용 (Redis 불필요)
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
         }
     }
-}
+else:
+    # Redis Cache 설정 (프로덕션)
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': f'{REDIS_URL}/2',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
 
 # Story 2.10: Alert Settings
 # 알림 받을 관리자 이메일

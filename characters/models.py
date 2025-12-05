@@ -2048,11 +2048,25 @@ class Inventory(models.Model):
     캐릭터의 인벤토리에 있는 아이템 정보를 저장합니다.
     크롤링을 통해 수집되며, crawled_at 타임스탬프로 히스토리를 보관합니다.
     """
+    ITEM_TYPE_CHOICES = [
+        ('equips', '장비'),
+        ('consumables', '소비'),
+        ('miscs', '기타'),
+        ('installables', '설치'),
+        ('cashes', '캐시'),
+    ]
+
     character_basic = models.ForeignKey(
         CharacterBasic,
         on_delete=models.CASCADE,
         related_name='inventory_items',
         help_text='연결된 캐릭터'
+    )
+    item_type = models.CharField(
+        max_length=20,
+        choices=ITEM_TYPE_CHOICES,
+        default='miscs',
+        help_text='아이템 유형 (장비/소비/기타/설치/캐시)'
     )
     item_name = models.CharField(
         max_length=255,
@@ -2094,13 +2108,14 @@ class Inventory(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['character_basic', 'item_name']),
+            models.Index(fields=['character_basic', 'item_type']),
             models.Index(fields=['expiry_date']),
             models.Index(fields=['character_basic', '-crawled_at']),
         ]
-        ordering = ['-crawled_at', 'slot_position']
+        ordering = ['-crawled_at', 'item_type', 'slot_position']
 
     def __str__(self):
-        return f"{self.character_basic.character_name} - {self.item_name} x{self.quantity}"
+        return f"{self.character_basic.character_name} - [{self.get_item_type_display()}] {self.item_name} x{self.quantity}"
 
     @property
     def is_expirable(self):

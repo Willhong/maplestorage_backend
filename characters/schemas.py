@@ -575,6 +575,10 @@ class InventoryItemSchema(BaseModel):
 
     크롤링된 인벤토리 아이템 데이터를 검증합니다.
     """
+    item_type: Literal['equips', 'consumables', 'miscs', 'installables', 'cashes'] = Field(
+        default='miscs',
+        description='아이템 유형 (장비/소비/기타/설치/캐시)'
+    )
     item_name: str = Field(..., min_length=1, max_length=255, description='아이템 이름')
     item_icon: str = Field(..., pattern=r'^https?://.+', description='아이템 아이콘 URL')
     quantity: int = Field(default=1, ge=1, description='아이템 수량 (1개 이상)')

@@ -263,6 +263,7 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
                             # DB 저장 (AC 2.3.8: detail_url 포함)
                             inventory_item = Inventory.objects.create(
                                 character_basic=character_basic,
+                                item_type=validated_item.item_type,
                                 item_name=validated_item.item_name,
                                 item_icon=validated_item.item_icon,
                                 quantity=validated_item.quantity,
@@ -510,6 +511,16 @@ def crawl_character_data(self, ocid: str, crawl_types: List[str]):
             progress=100,
             message='완료! (100%)'
         )
+
+        # 4. 크롤링 완료 후 all_data 캐시 무효화
+        # 새로고침 시 크롤링 데이터가 포함된 최신 데이터 반환
+        try:
+            from util.redis_client import redis_client
+            cache_key = f"character_data:{ocid}:all_data"
+            redis_client.delete(cache_key)
+            logger.info(f'Cache invalidated after crawl - Key: {cache_key}')
+        except Exception as cache_error:
+            logger.warning(f'Cache invalidation failed: {cache_error}')
 
         # Story 2.10: 성공 기록 (AC-2.10.1)
         MonitoringService.record_crawl_result(task_id, 'SUCCESS')
