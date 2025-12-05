@@ -1,0 +1,715 @@
+ERROR 2025-12-04 22:55:21,882 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:55:35,148 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:55:47,849 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:56:00,464 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:56:13,240 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:56:34,266 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:56:46,965 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:56:59,656 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:57:12,350 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-04 22:57:25,000 log Internal Server Error: /api/characters/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-05 14:39:54,661 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterid
+ERROR 2025-12-05 14:39:54,715 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:39:54,802 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterid
+ERROR 2025-12-05 14:39:54,856 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:15,428 log Internal Server Error: /api/characters/2e0a31fb5fef6dfe331d3bfef62f7ac8/crawl/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: characters_characterbasic
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_ratelimit\decorators.py", line 27, in _wrapped
+    return fn(request, *args, **kw)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\accounts\views.py", line 494, in post
+    character_basic = CharacterBasic.objects.get(ocid=ocid)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 645, in get
+    num = len(clone)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,440 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterid
+ERROR 2025-12-05 14:40:19,480 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,559 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,564 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,565 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,568 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,570 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,572 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,574 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,578 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,579 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,580 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,581 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,584 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,588 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,590 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,591 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,594 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,595 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,626 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,633 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,657 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,678 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,681 views 전체 데이터 조회 중 오류 발생 - 캐릭터명: 식사동그놈, OCID: 2e0a31fb5fef6dfe331d3bfef62f7ac8, 총 소요시간: 0.30초, 오류: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,683 views Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: characters_characterbasic
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 692, in get
+    character = CharacterBasic.objects.get(ocid=ocid)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 645, in get
+    num = len(clone)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: characters_characterbasic
+
+ERROR 2025-12-05 14:40:19,684 log Internal Server Error: /characters/all/
+ERROR 2025-12-05 14:40:19,744 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterid
+ERROR 2025-12-05 14:40:19,794 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,857 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,862 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,866 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,868 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,869 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,871 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,872 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,873 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,875 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,878 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,879 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,881 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,882 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,883 views 데이터베이스 저장 중 오류 발생: 기본 정보 생성 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,884 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,886 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,888 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,893 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,901 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,928 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,943 views 데이터베이스 저장 중 오류 발생: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,947 views 전체 데이터 조회 중 오류 발생 - 캐릭터명: 식사동그놈, OCID: 2e0a31fb5fef6dfe331d3bfef62f7ac8, 총 소요시간: 0.26초, 오류: no such table: characters_characterbasic
+ERROR 2025-12-05 14:40:19,948 views Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+sqlite3.OperationalError: no such table: characters_characterbasic
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 692, in get
+    character = CharacterBasic.objects.get(ocid=ocid)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 645, in get
+    num = len(clone)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 382, in __len__
+    self._fetch_all()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+django.db.utils.OperationalError: no such table: characters_characterbasic
+
+ERROR 2025-12-05 14:40:19,949 log Internal Server Error: /characters/all/
+ERROR 2025-12-05 15:04:17,868 views 데이터베이스 저장 중 오류 발생: database is locked
