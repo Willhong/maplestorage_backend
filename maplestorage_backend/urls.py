@@ -4,7 +4,7 @@ from django.urls import path, include, re_path
 from test.views import sampleview
 from accounts.views import (
     APIKeyView, AccountListView, RegisterView, CustomTokenObtainPairView,
-    GoogleLoginView, UserProfileView, CharacterCreateView,
+    GoogleLoginView, UserProfileView, CharacterCreateView, CharacterDetailView,
     CrawlStartView, CrawlStatusView, CrawlStatsAdminView
 )
 from rest_framework.authtoken.views import obtain_auth_token
@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/auth/google/', GoogleLoginView.as_view(), name='google-login'),
     path('api/users/me/', UserProfileView.as_view(), name='user-profile'),
     path('api/characters/', CharacterCreateView.as_view(), name='character-create'),
+    path('api/characters/<int:pk>/', CharacterDetailView.as_view(), name='character-detail'),  # Story 3.2: 캐릭터 연결 해제
     path('api/characters/<str:ocid>/crawl/', CrawlStartView.as_view(), name='crawl-start'),
     path('api/crawl-tasks/<str:task_id>/', CrawlStatusView.as_view(), name='crawl-status'),
     path('api/admin/crawl-stats/', CrawlStatsAdminView.as_view(), name='crawl-stats-admin'),  # Story 2.10

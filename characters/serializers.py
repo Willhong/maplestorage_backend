@@ -542,7 +542,6 @@ class CharacterListSerializer(serializers.ModelSerializer):
     character_image = serializers.SerializerMethodField()
 
     # 계산 필드
-    nickname = serializers.SerializerMethodField()  # Story 3.3에서 추가될 필드
     last_crawled_at = serializers.SerializerMethodField()
     inventory_count = serializers.SerializerMethodField()
     has_expiring_items = serializers.SerializerMethodField()
@@ -550,7 +549,7 @@ class CharacterListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Character
         fields = [
-            'id', 'ocid', 'character_name', 'nickname', 'world_name',
+            'id', 'ocid', 'character_name', 'world_name',
             'character_class', 'character_level', 'character_image',
             'last_crawled_at', 'inventory_count', 'has_expiring_items'
         ]
@@ -614,12 +613,6 @@ class CharacterListSerializer(serializers.ModelSerializer):
         """캐릭터 이미지 URL (CharacterBasicHistory에서)"""
         history = self._get_latest_history(obj)
         return history.character_image if history else None
-
-    def get_nickname(self, obj):
-        """캐릭터 별명 (Story 3.3에서 실제 필드 추가 예정)"""
-        # 현재는 nickname 필드가 없으므로 None 반환
-        # Story 3.3에서 accounts.Character에 nickname 필드 추가 후 구현 예정
-        return getattr(obj, 'nickname', None)
 
     def get_last_crawled_at(self, obj):
         """마지막 크롤링 시간 (AC-3.1.2)"""

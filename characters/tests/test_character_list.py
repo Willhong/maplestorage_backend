@@ -150,7 +150,7 @@ class TestCharacterListAuthenticated:
     ):
         """
         AC-3.1.2: 각 캐릭터에 필수 필드가 포함되어 있는지 확인
-        - id, ocid, character_name, nickname, world_name, character_class,
+        - id, ocid, character_name, world_name, character_class,
         - character_level, character_image, last_crawled_at, inventory_count, has_expiring_items
         """
         response = authenticated_client.get('/api/characters/')
@@ -162,7 +162,6 @@ class TestCharacterListAuthenticated:
         assert 'id' in character
         assert 'ocid' in character
         assert 'character_name' in character
-        assert 'nickname' in character  # Story 3.3에서 추가 예정, 현재 None
         assert 'world_name' in character
         assert 'character_class' in character
         assert 'character_level' in character

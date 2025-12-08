@@ -347,6 +347,36 @@ class UserProfileView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CharacterDetailView(APIView):
+    """
+    DELETE /api/characters/{id}/ - 캐릭터 연결 해제 (Story 3.2)
+    AC-3.2.3: 캐릭터의 user 연결이 해제된다 (Character.user = None)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        """
+        캐릭터 연결 해제 (데이터 삭제 아님!)
+
+        AC-3.2.3: character.user = None으로 연결 해제
+        - 소유권 검증: character.user == request.user
+        - 다른 사용자 캐릭터: 404 응답 (정보 노출 방지)
+        - 존재하지 않는 캐릭터: 404 응답
+
+        CharacterBasic, Inventory, Storage, Meso 데이터는 보존됨
+        """
+        try:
+            character = Character.objects.get(id=pk, user=request.user)
+        except Character.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # 연결 해제 (데이터 삭제 아님!)
+        character.user = None
+        character.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class CharacterCreateView(APIView):
     """
     GET /api/characters/ - 캐릭터 목록 조회 (Story 1.7: AC #1)

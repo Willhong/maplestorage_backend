@@ -963,7 +963,6 @@ class CharacterListView(APIView):
                                     'id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                     'ocid': openapi.Schema(type=openapi.TYPE_STRING),
                                     'character_name': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'nickname': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
                                     'world_name': openapi.Schema(type=openapi.TYPE_STRING),
                                     'character_class': openapi.Schema(type=openapi.TYPE_STRING),
                                     'character_level': openapi.Schema(type=openapi.TYPE_INTEGER),
@@ -1000,4 +999,159 @@ class CharacterListView(APIView):
         return Response({
             'count': characters.count(),
             'results': serializer.data
+        })
+
+
+# =============================================================================
+# 인벤토리 목록 뷰 (Story 3.4)
+# =============================================================================
+
+class InventoryListView(APIView):
+    """
+    인벤토리 아이템 목록 조회 뷰 (Story 3.4, 3.5)
+
+    GET /api/characters/{ocid}/inventory/ - 특정 캐릭터의 인벤토리 아이템 반환
+    GET /api/characters/{ocid}/inventory/?category=equipment - 카테고리 필터링 (Story 3.5)
+
+    AC-3.4.1: 모든 인벤토리 아이템이 그리드 형태로 표시 (Frontend 구현)
+    AC-3.4.2: 각 아이템은 아이콘, 이름, 수량, 강화 수치 포함
+    AC-3.4.4: 기간제 아이템 days_until_expiry 필드 포함
+    AC-3.5.1: 카테고리 필터 선택 시 해당 카테고리만 표시
+    AC-3.5.2: 카테고리 옵션: all, equipment, consumable, etc, expirable
+    """
+    permission_classes = [IsAuthenticated]
+
+    # 카테고리 필터 매핑 (Story 3.5)
+    # API 값 -> DB item_type 필드 값
+    CATEGORY_MAPPING = {
+        'equipment': 'equips',
+        'consumable': 'consumables',
+        'etc': 'miscs',
+        # 'expirable'은 item_type이 아닌 expiry_date 필드로 필터링
+    }
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 캐릭터 인벤토리 목록 조회 (카테고리 필터링 지원)",
+        manual_parameters=[
+            openapi.Parameter(
+                'ocid',
+                openapi.IN_PATH,
+                description="캐릭터 OCID",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'category',
+                openapi.IN_QUERY,
+                description="카테고리 필터 (all, equipment, consumable, etc, expirable)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='all'
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'character_name': openapi.Schema(type=openapi.TYPE_STRING, description='캐릭터 이름'),
+                        'items': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'item_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_icon': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'item_type': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_options': openapi.Schema(type=openapi.TYPE_OBJECT, nullable=True),
+                                    'slot_position': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'expiry_date': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                                    'crawled_at': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'days_until_expiry': openapi.Schema(type=openapi.TYPE_INTEGER, nullable=True),
+                                    'is_expirable': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                }
+                            )
+                        ),
+                        'total_count': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 아이템 수'),
+                        'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='마지막 크롤링 시간')
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자",
+            404: "캐릭터를 찾을 수 없음"
+        },
+        tags=['인벤토리']
+    )
+    def get(self, request, ocid):
+        """
+        특정 캐릭터의 인벤토리 아이템 목록을 반환합니다.
+
+        AC-3.4.1: 모든 인벤토리 아이템 반환
+        AC-3.4.2: 아이콘, 이름, 수량, 강화 수치(item_options) 포함
+        AC-3.4.4: 기간제 아이템 days_until_expiry 포함
+        AC-3.5.1: 카테고리 필터 선택 시 해당 카테고리만 표시
+        AC-3.5.2: 카테고리 옵션: all, equipment, consumable, etc, expirable
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Inventory
+        from .serializers import InventoryItemSerializer
+
+        # 1. 소유권 검증: 사용자가 이 캐릭터를 소유하는지 확인 (AC-ownership)
+        # 정보 노출 방지를 위해 403 대신 404 반환
+        try:
+            character = Character.objects.get(ocid=ocid, user=request.user)
+        except Character.DoesNotExist:
+            return Response(
+                {"error": "캐릭터를 찾을 수 없습니다."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 2. CharacterBasic 조회
+        try:
+            character_basic = CharacterBasic.objects.get(ocid=ocid)
+        except CharacterBasic.DoesNotExist:
+            return Response(
+                {"error": "캐릭터 기본 정보를 찾을 수 없습니다."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 3. 인벤토리 아이템 조회 (AC-3.4.1: 모든 아이템)
+        inventory_items = Inventory.objects.filter(
+            character_basic=character_basic
+        )
+
+        # 4. 카테고리 필터 적용 (Story 3.5: AC-3.5.1, AC-3.5.2)
+        category = request.query_params.get('category', 'all')
+
+        if category == 'expirable':
+            # 기간제 아이템: expiry_date가 있는 아이템만
+            inventory_items = inventory_items.filter(expiry_date__isnull=False)
+        elif category in self.CATEGORY_MAPPING:
+            # item_type 기반 필터링 (equipment, consumable, etc)
+            db_item_type = self.CATEGORY_MAPPING[category]
+            inventory_items = inventory_items.filter(item_type=db_item_type)
+        # 'all' 또는 잘못된 카테고리는 필터 없이 전체 반환 (AC-3.5.2 기본값)
+
+        # 정렬 적용
+        inventory_items = inventory_items.order_by('item_type', 'slot_position')
+
+        # 5. Serializer로 직렬화 (AC-3.4.2, AC-3.4.4)
+        serializer = InventoryItemSerializer(inventory_items, many=True)
+
+        # 6. 마지막 크롤링 시간 계산
+        last_crawled_at = None
+        if inventory_items.exists():
+            latest_item = inventory_items.order_by('-crawled_at').first()
+            if latest_item:
+                last_crawled_at = latest_item.crawled_at.isoformat()
+
+        return Response({
+            'character_name': character_basic.character_name,
+            'items': serializer.data,
+            'total_count': inventory_items.count(),
+            'last_crawled_at': last_crawled_at,
+            'category': category  # 현재 적용된 카테고리 반환 (Story 3.5)
         })

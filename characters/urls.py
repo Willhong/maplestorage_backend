@@ -44,4 +44,6 @@ urlpatterns = [
     path('all/', views.CharacterAllDataView.as_view(),
          name='character-all-data'),
     path('redis-health/', views.RedisHealthCheckView.as_view(), name='redis-health'),
+    # Story 3.4: 인벤토리 목록 조회 API
+    path('<str:ocid>/inventory/', views.InventoryListView.as_view(), name='inventory-list'),
 ]
