@@ -6,6 +6,7 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.utils import timezone
+from django.db.models import F
 import logging
 import asyncio
 import aiohttp
@@ -1030,8 +1031,11 @@ class InventoryListView(APIView):
         # 'expirable'은 item_type이 아닌 expiry_date 필드로 필터링
     }
 
+    # 허용된 정렬 필드 (Story 3.9: AC-3.9.1)
+    VALID_SORT_FIELDS = ['slot_position', 'item_name', 'quantity', 'crawled_at', 'expiry_date']
+
     @swagger_auto_schema(
-        operation_description="인증된 사용자의 캐릭터 인벤토리 목록 조회 (카테고리 필터링 지원)",
+        operation_description="인증된 사용자의 캐릭터 인벤토리 목록 조회 (카테고리 필터링, 정렬 지원)",
         manual_parameters=[
             openapi.Parameter(
                 'ocid',
@@ -1047,6 +1051,22 @@ class InventoryListView(APIView):
                 type=openapi.TYPE_STRING,
                 required=False,
                 default='all'
+            ),
+            openapi.Parameter(
+                'sort',
+                openapi.IN_QUERY,
+                description="정렬 기준 (slot_position, item_name, quantity, crawled_at, expiry_date)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='slot_position'
+            ),
+            openapi.Parameter(
+                'order',
+                openapi.IN_QUERY,
+                description="정렬 순서 (asc, desc)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='asc'
             )
         ],
         responses={
@@ -1076,7 +1096,10 @@ class InventoryListView(APIView):
                             )
                         ),
                         'total_count': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 아이템 수'),
-                        'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='마지막 크롤링 시간')
+                        'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='마지막 크롤링 시간'),
+                        'category': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 카테고리'),
+                        'sort': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 정렬 기준'),
+                        'order': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 정렬 순서')
                     }
                 )
             ),
@@ -1094,6 +1117,8 @@ class InventoryListView(APIView):
         AC-3.4.4: 기간제 아이템 days_until_expiry 포함
         AC-3.5.1: 카테고리 필터 선택 시 해당 카테고리만 표시
         AC-3.5.2: 카테고리 옵션: all, equipment, consumable, etc, expirable
+        AC-3.9.1: 정렬 옵션: slot_position, item_name, quantity, crawled_at, expiry_date
+        AC-3.9.6: 만료일 정렬 시 null 값은 마지막에 표시
         """
         from accounts.models import Character
         from .models import CharacterBasic, Inventory
@@ -1135,13 +1160,35 @@ class InventoryListView(APIView):
             inventory_items = inventory_items.filter(item_type=db_item_type)
         # 'all' 또는 잘못된 카테고리는 필터 없이 전체 반환 (AC-3.5.2 기본값)
 
-        # 정렬 적용
-        inventory_items = inventory_items.order_by('item_type', 'slot_position')
+        # 5. 정렬 적용 (Story 3.9: AC-3.9.1, AC-3.9.4, AC-3.9.6)
+        sort_field = request.query_params.get('sort', 'slot_position')
+        order = request.query_params.get('order', 'asc')
 
-        # 5. Serializer로 직렬화 (AC-3.4.2, AC-3.4.4)
+        # 허용된 정렬 필드 검증 (허용되지 않은 필드는 기본값으로)
+        if sort_field not in self.VALID_SORT_FIELDS:
+            sort_field = 'slot_position'
+
+        # 정렬 순서 검증
+        if order not in ['asc', 'desc']:
+            order = 'asc'
+
+        # AC-3.9.6: 만료일 정렬 시 null 값은 마지막에 표시 (NULLS LAST)
+        if sort_field == 'expiry_date':
+            if order == 'asc':
+                inventory_items = inventory_items.order_by(F('expiry_date').asc(nulls_last=True))
+            else:
+                inventory_items = inventory_items.order_by(F('expiry_date').desc(nulls_last=True))
+        else:
+            # 일반 정렬
+            if order == 'desc':
+                inventory_items = inventory_items.order_by(f'-{sort_field}')
+            else:
+                inventory_items = inventory_items.order_by(sort_field)
+
+        # 6. Serializer로 직렬화 (AC-3.4.2, AC-3.4.4)
         serializer = InventoryItemSerializer(inventory_items, many=True)
 
-        # 6. 마지막 크롤링 시간 계산
+        # 7. 마지막 크롤링 시간 계산
         last_crawled_at = None
         if inventory_items.exists():
             latest_item = inventory_items.order_by('-crawled_at').first()
@@ -1153,5 +1200,211 @@ class InventoryListView(APIView):
             'items': serializer.data,
             'total_count': inventory_items.count(),
             'last_crawled_at': last_crawled_at,
-            'category': category  # 현재 적용된 카테고리 반환 (Story 3.5)
+            'category': category,  # 현재 적용된 카테고리 반환 (Story 3.5)
+            'sort': sort_field,    # 현재 적용된 정렬 기준 반환 (Story 3.9: AC-3.9.5)
+            'order': order         # 현재 적용된 정렬 순서 반환 (Story 3.9: AC-3.9.4)
+        })
+
+
+class StorageListView(APIView):
+    """
+    창고 아이템 목록 조회 뷰 (Story 3.6, 3.9)
+
+    GET /api/characters/{ocid}/storage/ - 사용자 계정의 창고 아이템 반환
+    GET /api/characters/{ocid}/storage/?category=equipment - 카테고리 필터링
+    GET /api/characters/{ocid}/storage/?sort=item_name&order=asc - 정렬 (Story 3.9)
+
+    중요: 창고는 계정 내 모든 캐릭터가 공유합니다.
+    어떤 캐릭터 ocid로 조회해도 동일한 창고 아이템 목록이 반환됩니다.
+
+    AC-3.6.1: 창고 탭 선택 시 창고 아이템 그리드 표시
+    AC-3.6.2: 계정 내 모든 캐릭터가 동일한 창고 공유
+    AC-3.6.3: 아이콘, 이름, 수량, 강화 수치 포함
+    AC-3.6.4: 빈 창고 시 빈 배열 반환
+    AC-3.6.5: 로딩 처리 (Frontend)
+    AC-3.6.6: 에러 처리 (Frontend)
+    AC-3.9.1: 정렬 옵션: slot_position, item_name, quantity, crawled_at, expiry_date
+    AC-3.9.6: 만료일 정렬 시 null 값은 마지막에 표시
+    """
+    permission_classes = [IsAuthenticated]
+
+    # 허용된 정렬 필드 (Story 3.9: AC-3.9.1)
+    VALID_SORT_FIELDS = ['slot_position', 'item_name', 'quantity', 'crawled_at', 'expiry_date']
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 창고 아이템 목록 조회 (계정 공유, 카테고리 필터링, 정렬 지원)",
+        manual_parameters=[
+            openapi.Parameter(
+                'ocid',
+                openapi.IN_PATH,
+                description="캐릭터 OCID (소유권 검증용, 창고는 계정 공유)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'category',
+                openapi.IN_QUERY,
+                description="카테고리 필터 (all, equipment, consumable, etc, expirable)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='all'
+            ),
+            openapi.Parameter(
+                'sort',
+                openapi.IN_QUERY,
+                description="정렬 기준 (slot_position, item_name, quantity, crawled_at, expiry_date)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='slot_position'
+            ),
+            openapi.Parameter(
+                'order',
+                openapi.IN_QUERY,
+                description="정렬 순서 (asc, desc)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='asc'
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'items': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'storage_type': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_icon': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'item_options': openapi.Schema(type=openapi.TYPE_OBJECT, nullable=True),
+                                    'slot_position': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'expiry_date': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                                    'crawled_at': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'days_until_expiry': openapi.Schema(type=openapi.TYPE_INTEGER, nullable=True),
+                                    'is_expirable': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                }
+                            )
+                        ),
+                        'total_count': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 아이템 수'),
+                        'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='마지막 크롤링 시간'),
+                        'category': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 카테고리'),
+                        'sort': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 정렬 기준'),
+                        'order': openapi.Schema(type=openapi.TYPE_STRING, description='적용된 정렬 순서')
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자",
+            404: "캐릭터를 찾을 수 없음"
+        },
+        tags=['창고']
+    )
+    def get(self, request, ocid):
+        """
+        사용자 계정의 창고 아이템 목록을 반환합니다.
+
+        창고는 계정 내 모든 캐릭터가 공유하므로,
+        어떤 캐릭터의 ocid로 조회해도 동일한 창고 아이템이 반환됩니다.
+
+        AC-3.6.1: 창고 아이템 그리드 표시
+        AC-3.6.2: 계정 공유 - 동일 사용자의 모든 캐릭터에서 같은 창고
+        AC-3.6.3: 아이콘, 이름, 수량, 강화 수치(item_options) 포함
+        AC-3.6.4: 빈 창고 시 빈 배열 반환
+        AC-3.9.1: 정렬 옵션: slot_position, item_name, quantity, crawled_at, expiry_date
+        AC-3.9.6: 만료일 정렬 시 null 값은 마지막에 표시
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Storage
+        from .serializers import StorageItemSerializer
+
+        # 1. 소유권 검증: 사용자가 이 캐릭터를 소유하는지 확인
+        # 정보 노출 방지를 위해 403 대신 404 반환
+        try:
+            character = Character.objects.get(ocid=ocid, user=request.user)
+        except Character.DoesNotExist:
+            return Response(
+                {"error": "캐릭터를 찾을 수 없습니다."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 2. 창고 아이템 조회 (AC-3.6.2: 계정 공유)
+        # 창고는 사용자(계정) 기준 조회 - 캐릭터와 무관하게 동일
+        # 사용자의 모든 캐릭터 ocid 목록 조회
+        user_character_ocids = Character.objects.filter(
+            user=request.user
+        ).values_list('ocid', flat=True)
+
+        # 해당 ocid에 해당하는 CharacterBasic의 Storage 조회
+        storage_items = Storage.objects.filter(
+            character_basic__ocid__in=user_character_ocids
+        )
+
+        # 3. 카테고리 필터 적용 (Story 3.5 패턴 재사용)
+        category = request.query_params.get('category', 'all')
+
+        if category == 'expirable':
+            # 기간제 아이템: expiry_date가 있는 아이템만
+            storage_items = storage_items.filter(expiry_date__isnull=False)
+        elif category == 'equipment':
+            # 장비 아이템: item_options에 enhancement가 있는 아이템
+            storage_items = storage_items.filter(item_options__isnull=False)
+        elif category == 'consumable':
+            # 소비 아이템: 수량이 1보다 크거나 소비류 키워드 포함
+            storage_items = storage_items.filter(quantity__gt=1)
+        elif category == 'etc':
+            # 기타: 장비도 소비도 아닌 아이템
+            storage_items = storage_items.filter(
+                item_options__isnull=True,
+                quantity=1,
+                expiry_date__isnull=True
+            )
+        # 'all' 또는 잘못된 카테고리는 필터 없이 전체 반환
+
+        # 4. 정렬 적용 (Story 3.9: AC-3.9.1, AC-3.9.4, AC-3.9.6)
+        sort_field = request.query_params.get('sort', 'slot_position')
+        order = request.query_params.get('order', 'asc')
+
+        # 허용된 정렬 필드 검증 (허용되지 않은 필드는 기본값으로)
+        if sort_field not in self.VALID_SORT_FIELDS:
+            sort_field = 'slot_position'
+
+        # 정렬 순서 검증
+        if order not in ['asc', 'desc']:
+            order = 'asc'
+
+        # AC-3.9.6: 만료일 정렬 시 null 값은 마지막에 표시 (NULLS LAST)
+        if sort_field == 'expiry_date':
+            if order == 'asc':
+                storage_items = storage_items.order_by(F('expiry_date').asc(nulls_last=True))
+            else:
+                storage_items = storage_items.order_by(F('expiry_date').desc(nulls_last=True))
+        else:
+            # 일반 정렬
+            if order == 'desc':
+                storage_items = storage_items.order_by(f'-{sort_field}')
+            else:
+                storage_items = storage_items.order_by(sort_field)
+
+        # 5. Serializer로 직렬화 (AC-3.6.3)
+        serializer = StorageItemSerializer(storage_items, many=True)
+
+        # 6. 마지막 크롤링 시간 계산
+        last_crawled_at = None
+        if storage_items.exists():
+            latest_item = storage_items.order_by('-crawled_at').first()
+            if latest_item:
+                last_crawled_at = latest_item.crawled_at.isoformat()
+
+        return Response({
+            'items': serializer.data,
+            'total_count': storage_items.count(),
+            'last_crawled_at': last_crawled_at,
+            'category': category,
+            'sort': sort_field,    # 현재 적용된 정렬 기준 반환 (Story 3.9: AC-3.9.5)
+            'order': order         # 현재 적용된 정렬 순서 반환 (Story 3.9: AC-3.9.4)
         })
