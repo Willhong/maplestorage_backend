@@ -777,3 +777,123 @@ class CrawlStatsAdminView(APIView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+# =============================================================================
+# Story 3.10: 일괄 캐릭터 등록 Views
+# =============================================================================
+
+class LinkedCharactersView(APIView):
+    """
+    연동 캐릭터 목록 조회 API (Story 3.10: AC #1, #4, #7)
+
+    GET /api/characters/linked/
+    - 현재 사용자의 모든 등록된 캐릭터 기반으로 계정 내 전체 캐릭터 목록 조회
+    - is_registered 필드로 이미 등록된 캐릭터 표시
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        계정 내 연동 캐릭터 목록 조회 (AC-3.10.1, AC-3.10.4, AC-3.10.7)
+
+        Response (200 OK):
+        {
+            "characters": [
+                {
+                    "ocid": "abc123...",
+                    "character_name": "캐릭터1",
+                    "world_name": "스카니아",
+                    "character_class": "히어로",
+                    "character_level": 260,
+                    "is_registered": true
+                },
+                ...
+            ],
+            "registered_count": 3,
+            "total_count": 10
+        }
+        """
+        from .services import CharacterService, BatchCharacterService
+        from .serializers import LinkedCharacterSerializer
+
+        try:
+            # Nexon API에서 연동 캐릭터 목록 조회 (AC-3.10.1, AC-3.10.7)
+            linked_characters = CharacterService.get_linked_characters(ocid=None)
+
+            # 이미 등록된 캐릭터 OCID 목록 조회 (AC-3.10.4)
+            registered_ocids = BatchCharacterService.get_registered_ocids(request.user)
+
+            # is_registered 필드 추가
+            for char in linked_characters:
+                char['is_registered'] = char.get('ocid') in registered_ocids
+
+            # Serializer로 직렬화
+            serializer = LinkedCharacterSerializer(linked_characters, many=True)
+
+            return Response({
+                'characters': serializer.data,
+                'registered_count': len(registered_ocids),
+                'total_count': len(linked_characters)
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            return Response(
+                {"error": "api_error", "message": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
+class BatchCharacterRegistrationView(APIView):
+    """
+    일괄 캐릭터 등록 API (Story 3.10: AC #3, #5, #6)
+
+    POST /api/characters/batch/
+    - 선택한 캐릭터들을 순차적으로 등록
+    - Rate Limiting을 고려한 순차 처리
+    - 부분 성공 허용 (트랜잭션 분리)
+    """
+    permission_classes = [IsAuthenticated]
+
+    @method_decorator(ratelimit(key='user', rate='5/h', method='POST', block=True))
+    def post(self, request):
+        """
+        선택한 캐릭터들을 일괄 등록 (AC-3.10.3, AC-3.10.5, AC-3.10.6)
+
+        Request body:
+        {
+            "character_names": ["캐릭터1", "캐릭터2", "캐릭터3"]
+        }
+
+        Response (200 OK):
+        {
+            "total": 3,
+            "success_count": 2,
+            "failure_count": 1,
+            "results": [
+                {"character_name": "캐릭터1", "ocid": "abc123", "success": true, "error": null},
+                {"character_name": "캐릭터2", "ocid": "def456", "success": true, "error": null},
+                {"character_name": "캐릭터3", "ocid": null, "success": false, "error": "이미 등록된 캐릭터입니다."}
+            ]
+        }
+        """
+        from .services import BatchCharacterService
+        from .serializers import (
+            BatchRegistrationRequestSerializer,
+            BatchRegistrationResponseSerializer
+        )
+
+        # Request 검증
+        request_serializer = BatchRegistrationRequestSerializer(data=request.data)
+        if not request_serializer.is_valid():
+            return Response(request_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        character_names = request_serializer.validated_data['character_names']
+
+        # 일괄 등록 실행 (AC-3.10.3, AC-3.10.5, AC-3.10.6)
+        result = BatchCharacterService.batch_register(request.user, character_names)
+
+        # Response 직렬화
+        response_serializer = BatchRegistrationResponseSerializer(result)
+
+        return Response(response_serializer.data, status=status.HTTP_200_OK)

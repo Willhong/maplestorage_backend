@@ -5,7 +5,8 @@ from test.views import sampleview
 from accounts.views import (
     APIKeyView, AccountListView, RegisterView, CustomTokenObtainPairView,
     GoogleLoginView, UserProfileView, CharacterCreateView, CharacterDetailView,
-    CrawlStartView, CrawlStatusView, CrawlStatsAdminView
+    CrawlStartView, CrawlStatusView, CrawlStatsAdminView,
+    LinkedCharactersView, BatchCharacterRegistrationView  # Story 3.10
 )
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import (
@@ -45,6 +46,8 @@ urlpatterns = [
     path('api/users/me/', UserProfileView.as_view(), name='user-profile'),
     path('api/characters/', CharacterCreateView.as_view(), name='character-create'),
     path('api/characters/<int:pk>/', CharacterDetailView.as_view(), name='character-detail'),  # Story 3.2: 캐릭터 연결 해제
+    path('api/characters/linked/', LinkedCharactersView.as_view(), name='linked-characters'),  # Story 3.10: 연동 캐릭터 조회
+    path('api/characters/batch/', BatchCharacterRegistrationView.as_view(), name='batch-registration'),  # Story 3.10: 일괄 등록
     path('api/characters/<str:ocid>/crawl/', CrawlStartView.as_view(), name='crawl-start'),
     path('api/crawl-tasks/<str:task_id>/', CrawlStatusView.as_view(), name='crawl-status'),
     path('api/admin/crawl-stats/', CrawlStatsAdminView.as_view(), name='crawl-stats-admin'),  # Story 2.10

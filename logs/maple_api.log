@@ -1546,3 +1546,5 @@ character_image
 access_flag
   Field required [type=missing, input_value={'character_name': '테...=datetime.timezone.utc)}, input_type=dict]
     For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-20 00:34:17,744 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-20 00:36:07,486 views 데이터베이스 저장 중 오류 발생: database is locked

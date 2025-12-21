@@ -230,3 +230,64 @@ class CharacterResponseSerializer(serializers.ModelSerializer):
             if previous_success:
                 return 'SUCCESS'
             return 'NEVER_CRAWLED'
+
+
+# =============================================================================
+# Story 3.10: 일괄 캐릭터 등록 Serializers
+# =============================================================================
+
+class LinkedCharacterSerializer(serializers.Serializer):
+    """
+    연동 캐릭터 정보 Serializer (Story 3.10: AC #1, #4, #7)
+
+    Nexon API에서 조회한 계정 내 캐릭터 정보를 직렬화합니다.
+    is_registered 필드로 이미 등록된 캐릭터를 구분합니다.
+    """
+    ocid = serializers.CharField()
+    character_name = serializers.CharField()
+    world_name = serializers.CharField(allow_null=True)
+    character_class = serializers.CharField(allow_null=True)
+    character_level = serializers.IntegerField(allow_null=True)
+    is_registered = serializers.BooleanField(default=False)
+
+
+class BatchRegistrationRequestSerializer(serializers.Serializer):
+    """
+    일괄 캐릭터 등록 요청 Serializer (Story 3.10: AC #3)
+
+    선택한 캐릭터 이름 목록을 받아 검증합니다.
+    """
+    character_names = serializers.ListField(
+        child=serializers.CharField(min_length=1, max_length=100),
+        min_length=1,
+        max_length=50  # 최대 50개 캐릭터 동시 등록
+    )
+
+    def validate_character_names(self, value):
+        """중복 제거 및 공백 제거"""
+        unique_names = list(set(name.strip() for name in value if name.strip()))
+        if not unique_names:
+            raise serializers.ValidationError("등록할 캐릭터 이름을 입력해주세요.")
+        return unique_names
+
+
+class BatchRegistrationResultSerializer(serializers.Serializer):
+    """
+    개별 캐릭터 등록 결과 Serializer (Story 3.10: AC #5, #6)
+    """
+    character_name = serializers.CharField()
+    ocid = serializers.CharField(allow_null=True)
+    success = serializers.BooleanField()
+    error = serializers.CharField(allow_null=True)
+
+
+class BatchRegistrationResponseSerializer(serializers.Serializer):
+    """
+    일괄 캐릭터 등록 응답 Serializer (Story 3.10: AC #3, #5, #6)
+
+    전체 등록 결과와 개별 결과를 포함합니다.
+    """
+    total = serializers.IntegerField()
+    success_count = serializers.IntegerField()
+    failure_count = serializers.IntegerField()
+    results = BatchRegistrationResultSerializer(many=True)

@@ -1351,3 +1351,246 @@ class ManualRefreshFunctionTests(APITestCase):
 
         # Story 1.8: Guest mode allows crawling any character
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+
+# =============================================================================
+# Story 3.10: 일괄 캐릭터 등록 테스트
+# =============================================================================
+
+class LinkedCharactersViewTest(APITestCase):
+    """
+    연동 캐릭터 목록 조회 API 테스트 (Story 3.10)
+    Tests AC 3.10.1, 3.10.4, 3.10.7
+    """
+
+    def setUp(self):
+        """테스트 데이터 준비"""
+        self.url = '/api/characters/linked/'
+
+        # 테스트 유저 생성
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+
+        # MapleStoryAPIKey 생성
+        from accounts.models import MapleStoryAPIKey
+        MapleStoryAPIKey.objects.create(api_key='test_api_key')
+
+        # 기존 등록된 캐릭터 생성
+        self.existing_character = Character.objects.create(
+            user=self.user,
+            ocid='existing-ocid-001',
+            character_name='ExistingChar'
+        )
+
+        # JWT 토큰 생성
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+
+    @patch('accounts.services.requests.get')
+    def test_get_linked_characters_success(self, mock_get):
+        """
+        AC 3.10.1: 전체 캐릭터 목록 조회 성공
+        """
+        # Mock Nexon API response
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.raise_for_status = Mock()
+        mock_response.json.return_value = {
+            'account_list': [{
+                'character_list': [
+                    {
+                        'ocid': 'existing-ocid-001',
+                        'character_name': 'ExistingChar',
+                        'world_name': '스카니아',
+                        'character_class': '히어로',
+                        'character_level': 260
+                    },
+                    {
+                        'ocid': 'new-ocid-002',
+                        'character_name': 'NewChar',
+                        'world_name': '루나',
+                        'character_class': '아크',
+                        'character_level': 240
+                    }
+                ]
+            }]
+        }
+        mock_get.return_value = mock_response
+
+        # 인증 헤더 설정
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        # 요청
+        response = self.client.get(self.url)
+
+        # 검증
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertIn('characters', data)
+        self.assertEqual(len(data['characters']), 2)
+        self.assertEqual(data['total_count'], 2)
+
+        # 이미 등록된 캐릭터 확인 (AC 3.10.4)
+        existing_char = next(c for c in data['characters'] if c['ocid'] == 'existing-ocid-001')
+        self.assertTrue(existing_char['is_registered'])
+
+        # 미등록 캐릭터 확인
+        new_char = next(c for c in data['characters'] if c['ocid'] == 'new-ocid-002')
+        self.assertFalse(new_char['is_registered'])
+
+    def test_get_linked_characters_unauthorized(self):
+        """
+        AC 3.10: 인증 없이 요청 시 401
+        """
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class BatchCharacterRegistrationViewTest(APITestCase):
+    """
+    일괄 캐릭터 등록 API 테스트 (Story 3.10)
+    Tests AC 3.10.3, 3.10.5, 3.10.6
+    """
+
+    def setUp(self):
+        """테스트 데이터 준비"""
+        self.url = '/api/characters/batch/'
+
+        # 캐시 클리어
+        from django.core.cache import cache
+        cache.clear()
+
+        # 테스트 유저 생성
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+
+        # MapleStoryAPIKey 생성
+        from accounts.models import MapleStoryAPIKey
+        MapleStoryAPIKey.objects.create(api_key='test_api_key')
+
+        # JWT 토큰 생성
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+
+    @patch('accounts.services.CharacterService.register_character')
+    def test_batch_register_success(self, mock_register):
+        """
+        AC 3.10.3: 선택한 캐릭터들 일괄 등록 성공
+        """
+        # Mock 설정 - 성공적인 캐릭터 등록
+        mock_char1 = Mock()
+        mock_char1.ocid = 'ocid-001'
+        mock_char2 = Mock()
+        mock_char2.ocid = 'ocid-002'
+        mock_register.side_effect = [mock_char1, mock_char2]
+
+        # 인증 헤더 설정
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        # 요청
+        response = self.client.post(self.url, {
+            'character_names': ['Char1', 'Char2']
+        }, format='json')
+
+        # 검증
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertEqual(data['total'], 2)
+        self.assertEqual(data['success_count'], 2)
+        self.assertEqual(data['failure_count'], 0)
+        self.assertEqual(len(data['results']), 2)
+
+        # 개별 결과 검증
+        for result in data['results']:
+            self.assertTrue(result['success'])
+            self.assertIsNotNone(result['ocid'])
+            self.assertIsNone(result['error'])
+
+    @patch('accounts.services.CharacterService.register_character')
+    def test_batch_register_partial_failure(self, mock_register):
+        """
+        AC 3.10.6: 부분 실패 시 실패 사유 표시
+        """
+        # Mock 설정 - 첫번째 성공, 두번째 실패
+        mock_char1 = Mock()
+        mock_char1.ocid = 'ocid-001'
+        mock_register.side_effect = [
+            mock_char1,
+            ValueError('캐릭터를 찾을 수 없습니다.')
+        ]
+
+        # 인증 헤더 설정
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        # 요청
+        response = self.client.post(self.url, {
+            'character_names': ['SuccessChar', 'FailChar']
+        }, format='json')
+
+        # 검증
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertEqual(data['total'], 2)
+        self.assertEqual(data['success_count'], 1)
+        self.assertEqual(data['failure_count'], 1)
+
+        # 성공 결과 검증
+        success_result = next(r for r in data['results'] if r['success'])
+        self.assertEqual(success_result['character_name'], 'SuccessChar')
+        self.assertIsNotNone(success_result['ocid'])
+
+        # 실패 결과 검증
+        fail_result = next(r for r in data['results'] if not r['success'])
+        self.assertEqual(fail_result['character_name'], 'FailChar')
+        self.assertIn('캐릭터를 찾을 수 없습니다', fail_result['error'])
+
+    def test_batch_register_empty_list(self):
+        """
+        빈 캐릭터 목록 → 400 에러
+        """
+        # 인증 헤더 설정
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        # 요청
+        response = self.client.post(self.url, {
+            'character_names': []
+        }, format='json')
+
+        # 검증
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_batch_register_unauthorized(self):
+        """
+        인증 없이 요청 시 401
+        """
+        response = self.client.post(self.url, {
+            'character_names': ['Char1']
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_batch_register_max_characters(self):
+        """
+        최대 50개 캐릭터 제한 검증
+        """
+        # 인증 헤더 설정
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+
+        # 51개 캐릭터 요청 (최대 50개 초과)
+        char_names = [f'Char{i}' for i in range(51)]
+        response = self.client.post(self.url, {
+            'character_names': char_names
+        }, format='json')
+
+        # 검증 - 400 에러 또는 잘린 리스트
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

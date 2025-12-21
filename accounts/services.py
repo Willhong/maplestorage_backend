@@ -33,6 +33,69 @@ class CharacterService:
         return api_key_obj.api_key
 
     @staticmethod
+    def get_linked_characters(ocid: str) -> list:
+        """
+        Get linked characters for the account (Story 3.10: AC #1, #7)
+
+        Uses Nexon API /maplestory/v1/character/list to get all characters
+        linked to the same account as the representative character.
+
+        Args:
+            ocid: Representative character's OCID
+
+        Returns:
+            list: List of character info dicts with ocid, name, world, class, level
+
+        Raises:
+            ValueError: If API call fails or character not found
+        """
+        api_key = CharacterService.get_api_key()
+        headers = {"x-nxopen-api-key": api_key}
+
+        # First, get the character's basic info to find account
+        CHARACTER_BASIC_URL = f"{NEXON_API_BASE}/maplestory/v1/character/basic"
+        CHARACTER_LIST_URL = f"{NEXON_API_BASE}/maplestory/v1/character/list"
+
+        try:
+            # Get character list from Nexon API
+            response = requests.get(
+                CHARACTER_LIST_URL,
+                headers=headers,
+                timeout=10
+            )
+
+            if response.status_code == 404:
+                raise ValueError("계정 정보를 찾을 수 없습니다. API 키를 확인해주세요.")
+
+            response.raise_for_status()
+            data = response.json()
+
+            # Parse account_list and extract all characters
+            characters = []
+            account_list = data.get('account_list', [])
+
+            for account in account_list:
+                character_list = account.get('character_list', [])
+                for char in character_list:
+                    characters.append({
+                        'ocid': char.get('ocid'),
+                        'character_name': char.get('character_name'),
+                        'world_name': char.get('world_name'),
+                        'character_class': char.get('character_class'),
+                        'character_level': char.get('character_level'),
+                    })
+
+            logger.info(f"Found {len(characters)} linked characters for OCID: {ocid}")
+            return characters
+
+        except requests.exceptions.Timeout:
+            logger.error(f"Nexon API timeout for linked characters: {ocid}")
+            raise ValueError("Nexon API 응답 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Nexon API error for linked characters: {ocid} - {str(e)}")
+            raise ValueError("현재 캐릭터 조회를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.")
+
+    @staticmethod
     def get_ocid_from_nexon(character_name):
         """
         Get OCID from Nexon API (Story 1.7: AC #5)
@@ -429,3 +492,101 @@ class MonitoringService:
         """
         alert_key = f"crawl:alert:last_sent:{alert_type}"
         cache.set(alert_key, True, cls.ALERT_TTL)
+
+
+class BatchCharacterService:
+    """
+    Service layer for batch character registration (Story 3.10)
+
+    AC-3.10.3: 선택한 캐릭터들을 일괄 등록
+    AC-3.10.4: 이미 등록된 캐릭터 확인
+    AC-3.10.5: 등록 진행률 추적
+    AC-3.10.6: 부분 실패 처리
+    """
+
+    RATE_LIMIT_DELAY = 0.5  # 0.5초 간격으로 API 호출 (Rate Limiting)
+
+    @staticmethod
+    def get_registered_ocids(user) -> set:
+        """
+        Get already registered character OCIDs for user (AC-3.10.4)
+
+        Args:
+            user: Django User object
+
+        Returns:
+            set: Set of already registered OCIDs
+        """
+        return set(
+            Character.objects.filter(user=user).values_list('ocid', flat=True)
+        )
+
+    @classmethod
+    def batch_register(cls, user, character_names: list) -> dict:
+        """
+        Register multiple characters sequentially (AC-3.10.3, AC-3.10.5, AC-3.10.6)
+
+        Implements sequential registration with rate limiting to avoid
+        Nexon API limits. Each character is registered independently,
+        allowing partial success.
+
+        Args:
+            user: Django User object
+            character_names: List of character names to register
+
+        Returns:
+            dict: {
+                'total': int,
+                'success_count': int,
+                'failure_count': int,
+                'results': [
+                    {'character_name': str, 'ocid': str | None, 'success': bool, 'error': str | None},
+                    ...
+                ]
+            }
+        """
+        import time
+
+        results = []
+        success_count = 0
+        failure_count = 0
+
+        for i, character_name in enumerate(character_names):
+            result = {
+                'character_name': character_name,
+                'ocid': None,
+                'success': False,
+                'error': None
+            }
+
+            try:
+                # Register single character using existing service
+                character = CharacterService.register_character(user, character_name)
+                result['success'] = True
+                result['ocid'] = character.ocid
+                success_count += 1
+                logger.info(f"Batch registration success: {character_name} ({i+1}/{len(character_names)})")
+
+            except ValueError as e:
+                error_message = str(e)
+                result['error'] = error_message
+                failure_count += 1
+                logger.warning(f"Batch registration failed: {character_name} - {error_message}")
+
+            except Exception as e:
+                result['error'] = "알 수 없는 오류가 발생했습니다."
+                failure_count += 1
+                logger.error(f"Batch registration unexpected error: {character_name} - {str(e)}")
+
+            results.append(result)
+
+            # Rate limiting: wait between API calls (except for last one)
+            if i < len(character_names) - 1:
+                time.sleep(cls.RATE_LIMIT_DELAY)
+
+        return {
+            'total': len(character_names),
+            'success_count': success_count,
+            'failure_count': failure_count,
+            'results': results
+        }
