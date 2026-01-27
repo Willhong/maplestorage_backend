@@ -48,4 +48,6 @@ urlpatterns = [
     path('<str:ocid>/inventory/', views.InventoryListView.as_view(), name='inventory-list'),
     # Story 3.6: 창고 목록 조회 API (계정 공유)
     path('<str:ocid>/storage/', views.StorageListView.as_view(), name='storage-list'),
+    # Story 3.5.3: 아이템 상세 정보 조회 API
+    path('inventory/<int:item_id>/detail/', views.ItemDetailView.as_view(), name='item-detail'),
 ]

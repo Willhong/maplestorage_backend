@@ -1408,3 +1408,171 @@ class StorageListView(APIView):
             'sort': sort_field,    # 현재 적용된 정렬 기준 반환 (Story 3.9: AC-3.9.5)
             'order': order         # 현재 적용된 정렬 순서 반환 (Story 3.9: AC-3.9.4)
         })
+
+
+# =============================================================================
+# 아이템 상세 정보 조회 API (Story 3.5.3)
+# =============================================================================
+
+class ItemDetailView(APIView):
+    """
+    아이템 상세 정보 조회 API (Story 3.5.3)
+
+    GET /api/characters/inventory/{item_id}/detail/
+
+    캐시된 상세 정보가 있으면 반환하고,
+    없으면 detail_url에서 크롤링을 시도합니다.
+    """
+
+    @swagger_auto_schema(
+        operation_summary="아이템 상세 정보 조회",
+        operation_description="""
+        인벤토리 아이템의 상세 정보를 조회합니다.
+
+        - has_detail=True인 경우: 캐시된 상세 정보 반환
+        - has_detail=False인 경우: detail_url에서 크롤링 시도
+
+        **Response Fields:**
+        - item_category: 장비 분류
+        - required_level: 착용 가능 레벨
+        - required_job: 착용 가능 직업
+        - attack_power/magic_power: 공격력/마력
+        - str_stat/dex_stat/int_stat/luk_stat: 기본 스탯
+        - potential_grade: 잠재능력 등급
+        - potential_option_1~3: 잠재능력 옵션
+        - additional_potential_grade: 에디셔널 등급
+        - additional_potential_option_1~3: 에디셔널 옵션
+        - soul_name/soul_option: 소울 정보
+        """,
+        manual_parameters=[
+            openapi.Parameter(
+                'item_id',
+                openapi.IN_PATH,
+                description="인벤토리 아이템 ID",
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
+                'force_refresh',
+                openapi.IN_QUERY,
+                description="강제 새로고침 (캐시 무시)",
+                type=openapi.TYPE_BOOLEAN,
+                default=False
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="상세 정보 조회 성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'status': openapi.Schema(type=openapi.TYPE_STRING, enum=['success', 'pending', 'unavailable']),
+                        'detail': openapi.Schema(type=openapi.TYPE_OBJECT),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            404: "아이템을 찾을 수 없음"
+        }
+    )
+    def get(self, request, item_id):
+        """아이템 상세 정보 조회"""
+        from .models import Inventory, ItemDetail
+        from .serializers import ItemDetailSerializer
+        from .crawler_services import ItemDetailCrawler, ItemDetailParser
+
+        # 인벤토리 아이템 조회
+        try:
+            inventory_item = Inventory.objects.get(id=item_id)
+        except Inventory.DoesNotExist:
+            return Response(
+                {'status': 'error', 'message': '아이템을 찾을 수 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        force_refresh = request.query_params.get('force_refresh', 'false').lower() == 'true'
+
+        # 캐시된 상세 정보가 있는 경우
+        if inventory_item.has_detail and not force_refresh:
+            try:
+                item_detail = inventory_item.detail
+                serializer = ItemDetailSerializer(item_detail)
+                return Response({
+                    'status': 'success',
+                    'detail': serializer.data,
+                    'cached': True
+                })
+            except ItemDetail.DoesNotExist:
+                # has_detail=True지만 실제 데이터가 없는 경우
+                inventory_item.has_detail = False
+                inventory_item.save()
+
+        # detail_url이 없는 경우
+        if not inventory_item.detail_url:
+            return Response({
+                'status': 'unavailable',
+                'message': '상세 정보 URL이 없습니다.',
+                'detail': None
+            })
+
+        # 동기적으로 크롤링 시도 (간단한 버전)
+        # 실제로는 비동기 태스크로 처리하는 것이 좋음
+        try:
+            import requests
+            from bs4 import BeautifulSoup
+
+            # 상세 페이지 가져오기
+            response = requests.get(
+                inventory_item.detail_url,
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                timeout=10
+            )
+
+            if response.status_code == 200:
+                # JSON 응답에서 view 필드 추출 (Nexon API는 JSON으로 HTML을 반환)
+                try:
+                    json_response = response.json()
+                    html_content = json_response.get('view', '')
+                except (json.JSONDecodeError, ValueError):
+                    # JSON이 아니면 raw HTML로 처리
+                    html_content = response.text
+
+                # HTML 파싱
+                detail_data = ItemDetailParser.parse_detail_page(
+                    html_content,
+                    inventory_item.item_name
+                )
+
+                if detail_data:
+                    # DB에 저장
+                    item_detail, created = ItemDetail.objects.update_or_create(
+                        inventory_item=inventory_item,
+                        defaults=detail_data
+                    )
+
+                    # has_detail 플래그 업데이트
+                    inventory_item.has_detail = True
+                    inventory_item.save()
+
+                    serializer = ItemDetailSerializer(item_detail)
+                    return Response({
+                        'status': 'success',
+                        'detail': serializer.data,
+                        'cached': False
+                    })
+
+            return Response({
+                'status': 'unavailable',
+                'message': '상세 정보를 가져올 수 없습니다.',
+                'detail': None
+            })
+
+        except Exception as e:
+            logger.error(f'Failed to fetch item detail: {e}')
+            return Response({
+                'status': 'error',
+                'message': f'상세 정보 조회 실패: {str(e)}',
+                'detail': None
+            })

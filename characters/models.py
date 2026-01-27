@@ -2167,6 +2167,28 @@ class ItemDetail(models.Model):
         help_text='착용 가능 직업'
     )
 
+    # REQ 스탯
+    required_str = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='착용 필요 STR'
+    )
+    required_dex = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='착용 필요 DEX'
+    )
+    required_int = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='착용 필요 INT'
+    )
+    required_luk = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='착용 필요 LUK'
+    )
+
     # 장비 스탯
     attack_power = models.IntegerField(
         null=True,
@@ -2229,7 +2251,64 @@ class ItemDetail(models.Model):
         help_text='방어율 무시 (%)'
     )
 
+    # 스탯 분해값 (base + bonus + scroll)
+    str_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='STR 분해값 {total, base, bonus, scroll}'
+    )
+    dex_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='DEX 분해값 {total, base, bonus, scroll}'
+    )
+    int_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='INT 분해값 {total, base, bonus, scroll}'
+    )
+    luk_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='LUK 분해값 {total, base, bonus, scroll}'
+    )
+    hp_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='HP 분해값 {total, base, bonus, scroll}'
+    )
+    mp_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='MP 분해값 {total, base, bonus, scroll}'
+    )
+    attack_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='공격력 분해값 {total, base, bonus, scroll}'
+    )
+    magic_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='마력 분해값 {total, base, bonus, scroll}'
+    )
+    defense_breakdown = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='방어력 분해값 {total, base, bonus, scroll}'
+    )
+
     # 강화 정보
+    star_force = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='현재 스타포스 강화 수치'
+    )
+    max_star_force = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='최대 스타포스 강화 가능 수치'
+    )
     upgrade_count = models.IntegerField(
         null=True,
         blank=True,
@@ -2305,6 +2384,18 @@ class ItemDetail(models.Model):
         null=True,
         blank=True,
         help_text='소울 옵션'
+    )
+
+    # 기타 정보
+    scissor_count = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text='가위 사용 가능 횟수'
+    )
+    etc_info = models.JSONField(
+        null=True,
+        blank=True,
+        help_text='기타 정보 (교환 불가, 고유장착 등)'
     )
 
     # 메타 정보

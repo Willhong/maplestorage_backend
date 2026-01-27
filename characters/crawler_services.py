@@ -1405,9 +1405,74 @@ class ItemDetailParser:
     """
 
     @staticmethod
+    def _parse_stat_breakdown(value_text: str) -> Dict[str, Any]:
+        """
+        스탯 분해값 파싱: "+36 (5 + 0 + 31)" 형식
+
+        Returns:
+            {'total': 36, 'base': 5, 'bonus': 0, 'scroll': 31}
+        """
+        import re
+
+        result = {'total': None, 'base': None, 'bonus': None, 'scroll': None}
+
+        # 전체값 추출 (+36 또는 +36%)
+        total_match = re.search(r'\+?(\d+)%?', value_text)
+        if total_match:
+            result['total'] = int(total_match.group(1))
+
+        # 분해값 추출: (base + bonus + scroll)
+        # 형식: (5 + 0 + 31) 또는 (200 + 0 + 180)
+        breakdown_match = re.search(r'\((\d+)\s*\+\s*(\d+)\s*\+\s*(\d+)\)', value_text)
+        if breakdown_match:
+            result['base'] = int(breakdown_match.group(1))
+            result['bonus'] = int(breakdown_match.group(2))
+            result['scroll'] = int(breakdown_match.group(3))
+
+        return result
+
+    @staticmethod
+    def _extract_grade_from_html(html_element) -> Optional[str]:
+        """
+        HTML 요소에서 등급 색상으로 등급 추출
+        유니크: #E3D04D (금색), 레전드리: #00FF00 (녹색),
+        에픽: #9966FF (보라), 레어: #66CCFF (하늘)
+        """
+        html_str = str(html_element)
+
+        # 색상코드로 등급 판별
+        grade_colors = {
+            '#00FF00': '레전드리',
+            '#00ff00': '레전드리',
+            '#E3D04D': '유니크',
+            '#e3d04d': '유니크',
+            '#9966FF': '에픽',
+            '#9966ff': '에픽',
+            '#66CCFF': '레어',
+            '#66ccff': '레어',
+        }
+
+        for color, grade in grade_colors.items():
+            if color in html_str:
+                return grade
+
+        # 텍스트로 등급 판별
+        text = html_element.get_text() if hasattr(html_element, 'get_text') else str(html_element)
+        if '레전드리' in text:
+            return '레전드리'
+        elif '유니크' in text:
+            return '유니크'
+        elif '에픽' in text:
+            return '에픽'
+        elif '레어' in text:
+            return '레어'
+
+        return None
+
+    @staticmethod
     def parse_detail_page(html_content: str, item_name: str) -> Dict[str, Any]:
         """
-        상세 페이지 HTML 파싱
+        상세 페이지 HTML 파싱 (Nexon JSON API 응답 HTML 구조)
 
         Args:
             html_content: HTML 문자열
@@ -1416,63 +1481,199 @@ class ItemDetailParser:
         Returns:
             파싱된 상세 정보 딕셔너리
         """
+        import re
+
         try:
             html_content = html_content.replace('\r\n', '').strip()
             soup = BeautifulSoup(html_content, 'html.parser')
 
-            # 모든 span 태그에서 데이터 추출
-            all_spans = soup.find_all('span')
-            span_data = {'name': item_name}
+            result = {}
 
-            for span in all_spans:
-                key = span.text.strip()
+            # 1. 장비 분류 및 착용 가능 직업 파싱 (ablilty02 영역)
+            for ablilty02 in soup.find_all('div', class_='ablilty02'):
+                text = ablilty02.get_text()
+                if '장비분류' in text:
+                    em = ablilty02.find('em')
+                    if em:
+                        result['item_category'] = em.get_text().strip()
+                elif '착용 가능한 직업' in text:
+                    em = ablilty02.find('em')
+                    if em:
+                        result['required_job'] = em.get_text().strip()
 
-                # 소울옵션 처리
-                if '소울옵션' in key:
-                    next_div = span.find_next('div')
-                    if next_div:
-                        span_data[key] = next_div.text
-                    continue
+            # 2. REQ 스탯 파싱 (ablilty01 영역)
+            ablilty01 = soup.find('div', class_='ablilty01')
+            if ablilty01:
+                req_mapping = {
+                    'REQ LEV': 'required_level',
+                    'REQ STR': 'required_str',
+                    'REQ DEX': 'required_dex',
+                    'REQ INT': 'required_int',
+                    'REQ LUK': 'required_luk',
+                }
+                for li in ablilty01.find_all('li'):
+                    span = li.find('span')
+                    em = li.find('em')
+                    if span and em:
+                        label = span.get_text().strip()
+                        value = em.get_text().strip()
+                        if label in req_mapping:
+                            try:
+                                result[req_mapping[label]] = int(value)
+                            except ValueError:
+                                pass
 
-                # 장비분류 처리
-                if '장비분류' in key:
-                    parts = key.split('|')
-                    if len(parts) >= 2:
-                        span_data['장비분류'] = parts[1].strip()
-                    continue
+            # 3. 스탯 정보 파싱 (stet_info 영역)
+            stet_info = soup.find('div', class_='stet_info')
+            etc_info = []
 
-                # 잠재능력 등급 처리
-                if '아이템' in key:
-                    if '에디셔널' in key:
-                        # "에디셔널 아이템 (유니크)" -> "유니크"
-                        grade = key.split('(')[1].split(
-                            ')')[0] if '(' in key else None
-                        span_data['에디셔널 잠재옵션 등급'] = grade
+            if stet_info:
+                for li in stet_info.find_all('li'):
+                    stet_th = li.find('div', class_='stet_th')
+                    point_td = li.find('div', class_='point_td')
+
+                    if not stet_th or not point_td:
+                        continue
+
+                    label = stet_th.get_text().strip()
+                    value_text = point_td.get_text().strip()
+                    point_td_html = str(point_td)
+
+                    # 잠재옵션 파싱
+                    if '잠재옵션' in label and '에디셔널' not in label:
+                        if '해당 사항이 없습니다' not in value_text:
+                            # 등급 추출
+                            grade = ItemDetailParser._extract_grade_from_html(stet_th)
+                            if grade:
+                                result['potential_grade'] = grade
+
+                            # 옵션 파싱 (br 태그로 구분)
+                            options = []
+                            for content in point_td.stripped_strings:
+                                if content and '해당 사항이 없습니다' not in content:
+                                    options.append(content.strip())
+                            for i, opt in enumerate(options[:3]):
+                                result[f'potential_option_{i+1}'] = opt
+
+                    # 에디셔널 잠재옵션 파싱
+                    elif '에디셔널 잠재옵션' in label:
+                        if '해당 사항이 없습니다' not in value_text:
+                            # 등급 추출
+                            grade = ItemDetailParser._extract_grade_from_html(stet_th)
+                            if grade:
+                                result['additional_potential_grade'] = grade
+
+                            # 옵션 파싱
+                            options = []
+                            for content in point_td.stripped_strings:
+                                if content and '해당 사항이 없습니다' not in content:
+                                    options.append(content.strip())
+                            for i, opt in enumerate(options[:3]):
+                                result[f'additional_potential_option_{i+1}'] = opt
+
+                    # 소울 옵션 파싱
+                    elif '소울옵션' in label or '소울' in label:
+                        # 소울 이름 추출
+                        soul_text = stet_th.get_text()
+                        if '의 소울' in soul_text:
+                            soul_name_match = re.search(r'(.+?)의 소울', soul_text)
+                            if soul_name_match:
+                                result['soul_name'] = soul_name_match.group(1).strip() + '의 소울'
+                        result['soul_option'] = value_text
+
+                    # 가위 사용 가능 횟수 파싱
+                    elif '가위 사용 가능 횟수' in label:
+                        scissor_match = re.search(r'(\d+)', value_text)
+                        if scissor_match:
+                            result['scissor_count'] = int(scissor_match.group(1))
+
+                    # 기타 정보 파싱
+                    elif '기타' in label:
+                        # 성 강화 정보, 교환 불가 등 추출
+                        for content in point_td.stripped_strings:
+                            content = content.strip()
+                            if not content:
+                                continue
+
+                            # 성 강화 정보 추출
+                            star_match = re.search(r'(\d+)성 강화', content)
+                            if star_match:
+                                result['star_force'] = int(star_match.group(1))
+
+                            max_star_match = re.search(r'(\d+)성까지 강화 가능', content)
+                            if max_star_match:
+                                result['max_star_force'] = int(max_star_match.group(1))
+
+                            # 기타 정보 수집
+                            if any(keyword in content for keyword in [
+                                '교환 불가', '고유장착', '고유 아이템',
+                                '1회 교환가능', '장착 시 교환 불가',
+                                '사용시 교환 불가', '퀘스트 아이템'
+                            ]):
+                                etc_info.append(content)
+
+                    # 일반 스탯 파싱 (분해값 포함)
                     else:
-                        # "아이템 (레전드리)" -> "레전드리"
-                        grade = key.split('(')[1].split(
-                            ')')[0] if '(' in key else None
-                        span_data['잠재옵션 등급'] = grade
+                        # 스탯 매핑
+                        stat_mapping = {
+                            'STR': ('str_stat', 'str_breakdown'),
+                            'DEX': ('dex_stat', 'dex_breakdown'),
+                            'INT': ('int_stat', 'int_breakdown'),
+                            'LUK': ('luk_stat', 'luk_breakdown'),
+                            'MaxHP': ('hp_stat', 'hp_breakdown'),
+                            'MaxMP': ('mp_stat', 'mp_breakdown'),
+                            '공격력': ('attack_power', 'attack_breakdown'),
+                            '마력': ('magic_power', 'magic_breakdown'),
+                            '물리방어력': ('defense', 'defense_breakdown'),
+                        }
 
-                    key = key.split('(')[0].strip()
+                        # 분해값 없는 스탯 매핑
+                        simple_stat_mapping = {
+                            '보스 몬스터 공격 시 데미지': 'boss_damage',
+                            '몬스터 방어율 무시': 'ignore_defense',
+                            '몬스터 방어력 무시': 'ignore_defense',
+                            '올스탯': 'all_stat',
+                        }
 
-                # 착용 가능한 직업 처리
-                if '착용 가능한 직업' in key:
-                    parts = key.split('|')
-                    if len(parts) >= 2:
-                        span_data['착용 가능한 직업'] = parts[1].strip()
-                    continue
+                        # 스탯 파싱
+                        matched = False
+                        for key, (total_field, breakdown_field) in stat_mapping.items():
+                            if key in label:
+                                breakdown = ItemDetailParser._parse_stat_breakdown(value_text)
+                                if breakdown['total'] is not None:
+                                    result[total_field] = breakdown['total']
+                                    # 분해값이 있으면 저장
+                                    if breakdown['base'] is not None:
+                                        result[breakdown_field] = {
+                                            'total': breakdown['total'],
+                                            'base': breakdown['base'],
+                                            'bonus': breakdown['bonus'],
+                                            'scroll': breakdown['scroll'],
+                                        }
+                                matched = True
+                                break
 
-                # 일반 key-value 처리
-                next_elem = span.find_next(
-                    'div') if 'REQ' not in key else span.find_next('em')
-                if next_elem:
-                    value = [line.strip()
-                             for line in next_elem.stripped_strings]
-                    span_data[key] = value
+                        if not matched:
+                            for key, field in simple_stat_mapping.items():
+                                if key in label:
+                                    match = re.search(r'\+?(\d+)%?', value_text)
+                                    if match:
+                                        result[field] = int(match.group(1))
+                                    break
 
-            # 파싱된 데이터를 ItemDetail 필드에 매핑
-            return ItemDetailParser._map_to_detail_fields(span_data)
+            # 기타 정보 저장
+            if etc_info:
+                result['etc_info'] = etc_info
+
+            # 4. 스타포스 정보가 item_title 영역에도 있을 수 있음
+            item_title = soup.find('div', class_='item_title')
+            if item_title and 'star_force' not in result:
+                title_text = item_title.get_text()
+                star_match = re.search(r'(\d+)성 강화', title_text)
+                if star_match:
+                    result['star_force'] = int(star_match.group(1))
+
+            return result
 
         except Exception as e:
             logger.error(

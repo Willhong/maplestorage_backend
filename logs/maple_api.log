@@ -1548,3 +1548,1598 @@ access_flag
     For further information visit https://errors.pydantic.dev/2.10/v/missing
 ERROR 2025-12-20 00:34:17,744 views 데이터베이스 저장 중 오류 발생: database is locked
 ERROR 2025-12-20 00:36:07,486 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 02:23:56,678 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 02:35:50,386 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 10:28:23,531 views CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:28:23,532 views 데이터베이스 저장 중 오류 발생: CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:28:23,741 views CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:28:23,743 views 데이터베이스 저장 중 오류 발생: CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:29:22,559 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 10:29:24,170 views CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:29:24,171 views 데이터베이스 저장 중 오류 발생: CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:29:26,467 views CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 10:29:26,468 views 데이터베이스 저장 중 오류 발생: CharacterItemEquipment 데이터 검증 실패: 30 validation errors for CharacterItemEquipmentSchema
+dragon_equipment.0.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.0.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.1.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_flag
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_grade
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_1
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_2
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+dragon_equipment.2.additional_potential_option_3
+  Field required [type=missing, input_value={'item_equipment_part': '..., 'freestyle_flag': '0'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.10/v/missing
+ERROR 2025-12-22 13:16:07,097 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 13:16:37,146 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 22:18:19,040 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1432, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:18:23,104 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:37:21,965 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:38:07,060 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:38:07,101 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:38:28,745 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:38:29,068 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:39:35,848 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:39:36,152 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:39:50,541 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:39:50,569 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:40:09,337 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:41:33,783 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:41:34,099 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:41:42,430 log Internal Server Error: /characters/all/
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 29, in _decorator
+    return method(self, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 99, in _get
+    return self.client.get(key, default=default, version=version, client=client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 260, in get
+    raise ConnectionInterrupted(connection=client) from e
+django_redis.exceptions.ConnectionInterrupted: Redis ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 128, in handle_exception
+    return super().handle_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 416, in initial
+    self.check_throttles(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\views.py", line 359, in check_throttles
+    if not throttle.allow_request(request, self):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\rest_framework\throttling.py", line 123, in allow_request
+    self.history = self.cache.get(self.key, [])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 92, in get
+    value = self._get(key, default, version, client)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\cache.py", line 36, in _decorator
+    raise e.__cause__
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\django_redis\client\default.py", line 258, in get
+    value = client.get(key)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\commands\core.py", line 1822, in get
+    return self.execute_command("GET", name, keys=[name])
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 559, in execute_command
+    return self._execute_command(*args, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\client.py", line 565, in _execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 1422, in get_connection
+    connection.connect()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\redis\connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 10061 connecting to localhost:6379. 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다.
+ERROR 2025-12-22 22:42:08,552 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-22 23:45:03,949 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-25 22:41:16,370 views 전체 데이터 조회 중 오류 발생 - 캐릭터명: 식사동그늠, OCID: None, 총 소요시간: 0.06초, 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+ERROR 2025-12-25 22:41:16,385 views Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 631, in get
+    ocid_data = CharacterIdView()._fetch_and_process_data(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 219, in _fetch_and_process_data
+    data = self.get_api_data(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\util\rate_limiter.py", line 49, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 51, in get_api_data
+    response.raise_for_status()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+
+ERROR 2025-12-25 22:41:16,387 log Internal Server Error: /characters/all/
+ERROR 2025-12-25 22:41:22,891 views 전체 데이터 조회 중 오류 발생 - 캐릭터명: 식사동그늠, OCID: None, 총 소요시간: 0.04초, 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+ERROR 2025-12-25 22:41:22,891 views Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 631, in get
+    ocid_data = CharacterIdView()._fetch_and_process_data(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 219, in _fetch_and_process_data
+    data = self.get_api_data(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\util\rate_limiter.py", line 49, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 51, in get_api_data
+    response.raise_for_status()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+
+ERROR 2025-12-25 22:41:22,892 log Internal Server Error: /characters/all/
+ERROR 2025-12-25 22:41:22,899 views 전체 데이터 조회 중 오류 발생 - 캐릭터명: 식사동그늠, OCID: None, 총 소요시간: 0.04초, 오류: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+ERROR 2025-12-25 22:41:22,899 views Traceback (most recent call last):
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 631, in get
+    ocid_data = CharacterIdView()._fetch_and_process_data(request)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\views.py", line 219, in _fetch_and_process_data
+    data = self.get_api_data(
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\util\rate_limiter.py", line 49, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\characters\mixins.py", line 51, in get_api_data
+    response.raise_for_status()
+  File "C:\Users\Hong\workspace\maplestorage\maplestorage_backend\.venv\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 400 Client Error: Bad Request for url: https://open.api.nexon.com/maplestory/v1/id?character_name=%EC%8B%9D%EC%82%AC%EB%8F%99%EA%B7%B8%EB%8A%A0
+
+ERROR 2025-12-25 22:41:22,900 log Internal Server Error: /characters/all/
+ERROR 2025-12-25 23:43:25,457 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-26 01:16:41,157 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-26 01:18:25,210 views 데이터베이스 저장 중 오류 발생: database is locked
+ERROR 2025-12-26 01:22:29,396 views Failed to fetch item detail: database is locked
+ERROR 2025-12-26 01:38:55,108 views Failed to fetch item detail: database is locked

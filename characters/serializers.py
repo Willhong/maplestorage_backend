@@ -695,6 +695,43 @@ class StorageItemSerializer(serializers.ModelSerializer):
         ]
 
 
+class ItemDetailSerializer(serializers.ModelSerializer):
+    """
+    아이템 상세 정보 Serializer (Story 3.5.3)
+
+    detail_url에서 크롤링한 장비 아이템의 상세 정보를 반환합니다.
+    """
+    class Meta:
+        from .models import ItemDetail
+        model = ItemDetail
+        fields = [
+            'item_category', 'required_level', 'required_job',
+            # REQ 스탯
+            'required_str', 'required_dex', 'required_int', 'required_luk',
+            # 스탯 (total)
+            'attack_power', 'magic_power', 'str_stat', 'dex_stat',
+            'int_stat', 'luk_stat', 'hp_stat', 'mp_stat', 'defense',
+            'all_stat', 'boss_damage', 'ignore_defense',
+            # 스탯 분해값 (base/bonus/scroll)
+            'str_breakdown', 'dex_breakdown', 'int_breakdown', 'luk_breakdown',
+            'hp_breakdown', 'mp_breakdown', 'attack_breakdown', 'magic_breakdown',
+            'defense_breakdown',
+            # 강화
+            'star_force', 'max_star_force', 'upgrade_count', 'upgrades_used',
+            # 잠재능력
+            'potential_grade', 'potential_option_1', 'potential_option_2', 'potential_option_3',
+            # 에디셔널
+            'additional_potential_grade', 'additional_potential_option_1',
+            'additional_potential_option_2', 'additional_potential_option_3',
+            # 소울
+            'soul_name', 'soul_option',
+            # 기타
+            'scissor_count', 'etc_info',
+            # 메타
+            'crawled_at'
+        ]
+
+
 class CharacterAllDataSerializer(serializers.ModelSerializer):
     basic = serializers.SerializerMethodField()
     popularity = serializers.SerializerMethodField()
