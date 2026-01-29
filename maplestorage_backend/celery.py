@@ -22,6 +22,12 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute=0),  # 매시 정각에 실행
         'options': {'expires': 3600},  # 1시간 후 만료 (중복 실행 방지)
     },
+    # Story 5.1: 매일 자정 기간제 아이템 체크
+    'check-expirable-items-daily': {
+        'task': 'characters.tasks.check_expirable_items',
+        'schedule': crontab(hour=0, minute=0),  # 매일 자정 (KST)
+        'options': {'expires': 7200},  # 2시간 후 만료
+    },
 }
 
 

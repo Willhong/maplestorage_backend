@@ -6,7 +6,9 @@ from accounts.views import (
     APIKeyView, AccountListView, RegisterView, CustomTokenObtainPairView,
     GoogleLoginView, UserProfileView, CharacterCreateView, CharacterDetailView,
     CrawlStartView, CrawlStatusView, CrawlStatsAdminView,
-    LinkedCharactersView, BatchCharacterRegistrationView  # Story 3.10
+    LinkedCharactersView, BatchCharacterRegistrationView,  # Story 3.10
+    NotificationSettingsView, TestNotificationView,  # Story 5.3
+    NotificationListView, NotificationReadView, NotificationMarkAllReadView, NotificationDeleteView  # Story 5.5
 )
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_simplejwt.views import (
@@ -51,6 +53,12 @@ urlpatterns = [
     path('api/characters/<str:ocid>/crawl/', CrawlStartView.as_view(), name='crawl-start'),
     path('api/crawl-tasks/<str:task_id>/', CrawlStatusView.as_view(), name='crawl-status'),
     path('api/admin/crawl-stats/', CrawlStatsAdminView.as_view(), name='crawl-stats-admin'),  # Story 2.10
+    path('api/settings/notifications/', NotificationSettingsView.as_view(), name='notification-settings'),  # Story 5.3
+    path('api/notifications/test/', TestNotificationView.as_view(), name='test-notification'),  # Story 5.3
+    path('api/notifications/', NotificationListView.as_view(), name='notification-list'),  # Story 5.5
+    path('api/notifications/<int:pk>/read/', NotificationReadView.as_view(), name='notification-read'),  # Story 5.5
+    path('api/notifications/mark-all-read/', NotificationMarkAllReadView.as_view(), name='notification-mark-all-read'),  # Story 5.5
+    path('api/notifications/<int:pk>/', NotificationDeleteView.as_view(), name='notification-delete'),  # Story 5.5
     path('accounts/', AccountListView.as_view(), name='account-list'),
     path('characters/', include('characters.urls')),
     # Swagger UI URL 추가

@@ -882,3 +882,110 @@ class CharacterAllDataSerializer(serializers.ModelSerializer):
     def get_meso(self, obj):
         """캐릭터 보유 메소"""
         return obj.meso
+
+
+# =============================================================================
+# 아이템 검색 Serializer (Story 4.1)
+# =============================================================================
+
+class ItemSearchResultSerializer(serializers.Serializer):
+    """
+    아이템 검색 결과 Serializer (Story 4.1)
+
+    인벤토리와 창고의 아이템을 통합 검색한 결과를 직렬화합니다.
+    """
+    item_name = serializers.CharField()
+    item_type = serializers.CharField(required=False)
+    quantity = serializers.IntegerField()
+    item_icon = serializers.URLField()
+    item_options = serializers.JSONField(required=False, allow_null=True)
+    location = serializers.CharField()  # 'inventory' or 'storage'
+    character_name = serializers.CharField()
+    character_ocid = serializers.CharField()
+    world_name = serializers.CharField()
+    expiry_date = serializers.DateTimeField(required=False, allow_null=True)
+    days_until_expiry = serializers.IntegerField(required=False, allow_null=True)
+    is_expirable = serializers.BooleanField()
+
+
+# =============================================================================
+# 메소 요약 Serializer (Story 4.3)
+# =============================================================================
+
+class MesoCharacterSerializer(serializers.Serializer):
+    """
+    메소 요약에 포함되는 캐릭터 정보 Serializer (Story 4.3)
+    """
+    ocid = serializers.CharField()
+    character_name = serializers.CharField()
+    world_name = serializers.CharField()
+    meso = serializers.IntegerField()
+    character_class = serializers.CharField()
+    character_level = serializers.IntegerField()
+
+
+class MesoStorageSerializer(serializers.Serializer):
+    """
+    메소 요약에 포함되는 창고 메소 정보 Serializer (Story 4.3)
+    """
+    meso = serializers.IntegerField()
+    last_updated = serializers.DateTimeField()
+
+
+class MesoSummarySerializer(serializers.Serializer):
+    """
+    메소 요약 Serializer (Story 4.3)
+
+    사용자의 모든 캐릭터와 창고의 메소를 집계하여 반환합니다.
+    """
+    total_meso = serializers.IntegerField()
+    character_meso_total = serializers.IntegerField()
+    storage_meso = serializers.IntegerField()
+    characters = MesoCharacterSerializer(many=True)
+    storage = MesoStorageSerializer()
+    last_updated = serializers.DateTimeField()
+
+
+# =============================================================================
+# 대시보드 통계 Serializer (Story 5.6)
+# =============================================================================
+
+class DashboardStatsSerializer(serializers.Serializer):
+    """
+    대시보드 통계 Serializer (Story 5.6)
+
+    사용자의 전체 캐릭터 통계를 집계하여 반환합니다.
+    """
+    total_characters = serializers.IntegerField()
+    total_meso = serializers.IntegerField()
+    expiring_items_count = serializers.IntegerField()
+    recent_crawl = serializers.DictField()
+
+
+# =============================================================================
+# 만료 예정 아이템 Serializer (Story 5.1/5.4)
+# =============================================================================
+
+class ExpiringItemDetailSerializer(serializers.Serializer):
+    """
+    만료 예정 아이템 상세 정보 Serializer (Story 5.1/5.4)
+    """
+    id = serializers.IntegerField()
+    item_name = serializers.CharField()
+    item_icon = serializers.URLField()
+    character_name = serializers.CharField()
+    character_ocid = serializers.CharField()
+    location = serializers.CharField()
+    expiry_date = serializers.DateTimeField()
+    days_until_expiry = serializers.IntegerField()
+    urgency = serializers.CharField()
+
+
+class ExpiringItemSerializer(serializers.Serializer):
+    """
+    만료 예정 아이템 목록 Serializer (Story 5.1/5.4)
+
+    7일 이내 만료되는 아이템 목록을 반환합니다.
+    """
+    count = serializers.IntegerField()
+    items = ExpiringItemDetailSerializer(many=True)

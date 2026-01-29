@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -897,3 +898,235 @@ class BatchCharacterRegistrationView(APIView):
         response_serializer = BatchRegistrationResponseSerializer(result)
 
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+# =============================================================================
+# Story 5.3: 알림 설정 Views
+# =============================================================================
+
+class NotificationSettingsView(APIView):
+    """
+    알림 설정 조회/수정 뷰 (Story 5.3)
+
+    GET /api/settings/notifications/ - 설정 조회
+    PATCH /api/settings/notifications/ - 설정 수정
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """사용자의 알림 설정 조회"""
+        from .models import NotificationSettings
+        from .serializers import NotificationSettingsSerializer
+
+        settings = NotificationSettings.get_or_create_for_user(request.user)
+        serializer = NotificationSettingsSerializer({
+            'email_enabled': settings.email_enabled,
+            'push_enabled': settings.push_enabled,
+            'schedule': settings.schedule,
+            'category': settings.category,
+            'quiet_hours_enabled': settings.quiet_hours_enabled,
+            'quiet_hours_start': settings.quiet_hours_start,
+            'quiet_hours_end': settings.quiet_hours_end,
+        })
+        return Response(serializer.data)
+
+    def patch(self, request):
+        """사용자의 알림 설정 수정 (AC-5.3: 즉시 저장)"""
+        from .models import NotificationSettings
+        from .serializers import NotificationSettingsSerializer
+
+        serializer = NotificationSettingsSerializer(data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        settings = NotificationSettings.get_or_create_for_user(request.user)
+
+        # 유효한 필드만 업데이트
+        for field, value in serializer.validated_data.items():
+            setattr(settings, field, value)
+
+        settings.save()
+
+        # 업데이트된 설정 반환
+        return Response(NotificationSettingsSerializer({
+            'email_enabled': settings.email_enabled,
+            'push_enabled': settings.push_enabled,
+            'schedule': settings.schedule,
+            'category': settings.category,
+            'quiet_hours_enabled': settings.quiet_hours_enabled,
+            'quiet_hours_start': settings.quiet_hours_start,
+            'quiet_hours_end': settings.quiet_hours_end,
+        }).data)
+
+
+class TestNotificationView(APIView):
+    """
+    테스트 알림 전송 뷰 (Story 5.3 AC-5.3.5)
+
+    POST /api/notifications/test/ - 테스트 알림 즉시 전송
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """테스트 알림 전송"""
+        user = request.user
+
+        # 샘플 아이템 데이터로 테스트 알림 전송
+        test_item_data = {
+            'item_id': 0,  # 테스트용 ID
+            'item_name': '테스트 아이템',
+            'item_source': 'inventory',
+            'character_name': '테스트 캐릭터',
+            'character_ocid': 'test',
+            'expiry_date': (timezone.now() + timezone.timedelta(days=3)).isoformat(),
+        }
+
+        try:
+            # 이메일 전송 시도 (중복 체크 우회)
+            from django.core.mail import send_mail
+            from django.conf import settings as django_settings
+
+            subject = "[메이플스토리지] 테스트 알림입니다"
+            message = f"""안녕하세요, {user.username}님!
+
+이 메일은 메이플스토리지 알림 테스트입니다.
+알림 설정이 정상적으로 작동하고 있습니다.
+
+---
+이 알림은 테스트 목적으로 발송되었습니다.
+"""
+
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=django_settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            return Response({
+                'success': True,
+                'message': '테스트 알림이 전송되었습니다.'
+            })
+
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': f'알림 전송 실패: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# =============================================================================
+# Story 5.5: 알림 이력 관리 Views
+# =============================================================================
+
+class NotificationPagination(PageNumberPagination):
+    """알림 목록 페이지네이션 (Story 5.5)"""
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class NotificationListView(APIView):
+    """
+    알림 목록 조회 (Story 5.5)
+    GET /api/notifications/?status=all|unread|read
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from .models import Notification
+        from .serializers import NotificationHistorySerializer
+
+        user = request.user
+        status_filter = request.query_params.get('status', 'all')
+
+        # 삭제되지 않은 알림만 조회
+        qs = Notification.objects.filter(
+            user=user,
+            deleted_at__isnull=True
+        ).order_by('-sent_at')
+
+        # 읽음/읽지 않음 필터
+        if status_filter == 'unread':
+            qs = qs.filter(read_at__isnull=True)
+        elif status_filter == 'read':
+            qs = qs.filter(read_at__isnull=False)
+
+        # 페이지네이션 적용
+        paginator = NotificationPagination()
+        page = paginator.paginate_queryset(qs, request)
+
+        if page is not None:
+            serializer = NotificationHistorySerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        # 페이지네이션 없이 전체 반환 (fallback)
+        serializer = NotificationHistorySerializer(qs, many=True)
+        return Response(serializer.data)
+
+
+class NotificationReadView(APIView):
+    """
+    알림 읽음 처리 (Story 5.5)
+    PATCH /api/notifications/{id}/read/
+    """
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        from .models import Notification
+
+        try:
+            notification = Notification.objects.get(
+                pk=pk, user=request.user, deleted_at__isnull=True
+            )
+        except Notification.DoesNotExist:
+            return Response({"error": "알림을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not notification.read_at:
+            notification.read_at = timezone.now()
+            notification.save()
+
+        return Response({"message": "알림을 읽음 처리했습니다."})
+
+
+class NotificationMarkAllReadView(APIView):
+    """
+    모든 알림 읽음 처리 (Story 5.5)
+    POST /api/notifications/mark-all-read/
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        from .models import Notification
+
+        count = Notification.objects.filter(
+            user=request.user,
+            deleted_at__isnull=True,
+            read_at__isnull=True
+        ).update(read_at=timezone.now())
+
+        return Response({"message": f"{count}개의 알림을 읽음 처리했습니다.", "count": count})
+
+
+class NotificationDeleteView(APIView):
+    """
+    알림 삭제 (Soft Delete) (Story 5.5)
+    DELETE /api/notifications/{id}/
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        from .models import Notification
+
+        try:
+            notification = Notification.objects.get(
+                pk=pk, user=request.user, deleted_at__isnull=True
+            )
+        except Notification.DoesNotExist:
+            return Response({"error": "알림을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        notification.deleted_at = timezone.now()
+        notification.save()
+
+        return Response({"message": "알림이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
