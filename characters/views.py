@@ -1576,3 +1576,757 @@ class ItemDetailView(APIView):
                 'message': f'상세 정보 조회 실패: {str(e)}',
                 'detail': None
             })
+
+
+# 아이템 검색 뷰 (Story 4.1)
+# =============================================================================
+
+class ItemSearchView(APIView):
+    """
+    통합 아이템 검색 뷰 (Story 4.1)
+
+    GET /api/search/items/ - 사용자의 모든 캐릭터에서 아이템 검색
+
+    사용자가 소유한 모든 캐릭터의 인벤토리와 창고에서 아이템을 검색합니다.
+    검색 결과는 페이지네이션되어 반환됩니다.
+
+    Query Parameters:
+    - q (required): 검색어 (아이템 이름 부분 일치, 대소문자 무시)
+    - type (optional): 아이템 타입 필터 ('equips', 'consumables', 'miscs', 'installables', 'cashes')
+    - location (optional): 위치 필터 ('inventory', 'storage', 'all', default: 'all')
+    - page (optional): 페이지 번호 (default: 1)
+    - page_size (optional): 페이지당 결과 수 (default: 20, max: 100)
+    """
+    permission_classes = [IsAuthenticated]
+
+    # 허용된 item_type 값
+    VALID_ITEM_TYPES = ['equips', 'consumables', 'miscs', 'installables', 'cashes']
+
+    @swagger_auto_schema(
+        operation_description="사용자의 모든 캐릭터에서 아이템 검색",
+        manual_parameters=[
+            openapi.Parameter(
+                'q',
+                openapi.IN_QUERY,
+                description="검색어 (아이템 이름)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'type',
+                openapi.IN_QUERY,
+                description="아이템 타입 필터 (equips, consumables, miscs, installables, cashes)",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
+                'location',
+                openapi.IN_QUERY,
+                description="위치 필터 (inventory, storage, all)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='all'
+            ),
+            openapi.Parameter(
+                'page',
+                openapi.IN_QUERY,
+                description="페이지 번호",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+                default=1
+            ),
+            openapi.Parameter(
+                'page_size',
+                openapi.IN_QUERY,
+                description="페이지당 결과 수 (최대 100)",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+                default=20
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 결과 수'),
+                        'next': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='다음 페이지 URL'),
+                        'previous': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='이전 페이지 URL'),
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'item_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_type': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'quantity': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'item_icon': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'item_options': openapi.Schema(type=openapi.TYPE_OBJECT, nullable=True),
+                                    'location': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_ocid': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'world_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'expiry_date': openapi.Schema(type=openapi.TYPE_STRING, nullable=True),
+                                    'days_until_expiry': openapi.Schema(type=openapi.TYPE_INTEGER, nullable=True),
+                                    'is_expirable': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                }
+                            )
+                        )
+                    }
+                )
+            ),
+            400: "잘못된 요청 (검색어 누락)",
+            401: "인증되지 않은 사용자"
+        },
+        tags=['아이템 검색']
+    )
+    def get(self, request):
+        """
+        사용자의 모든 캐릭터에서 아이템을 검색합니다.
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Inventory, Storage
+        from .serializers import ItemSearchResultSerializer
+        from django.core.paginator import Paginator, EmptyPage
+
+        # 1. 검색어 검증
+        query = request.query_params.get('q', '').strip()
+        if not query:
+            return Response(
+                {"error": "검색어(q)가 필요합니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 2. 필터 파라미터 추출
+        item_type = request.query_params.get('type', '').strip()
+        location = request.query_params.get('location', 'all').lower()
+
+        # item_type 검증
+        if item_type and item_type not in self.VALID_ITEM_TYPES:
+            return Response(
+                {"error": f"유효하지 않은 아이템 타입입니다. 허용된 값: {', '.join(self.VALID_ITEM_TYPES)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # location 검증
+        if location not in ['inventory', 'storage', 'all']:
+            location = 'all'
+
+        # 3. 사용자의 모든 캐릭터 OCID 조회
+        user_character_ocids = Character.objects.filter(
+            user=request.user
+        ).values_list('ocid', flat=True)
+
+        if not user_character_ocids:
+            # 사용자가 캐릭터를 등록하지 않은 경우
+            return Response({
+                'count': 0,
+                'next': None,
+                'previous': None,
+                'results': []
+            })
+
+        # 4. 아이템 검색 결과 수집
+        results = []
+
+        # 4-1. 인벤토리 검색 (location이 'inventory' 또는 'all')
+        if location in ['inventory', 'all']:
+            inventory_query = Inventory.objects.filter(
+                character_basic__ocid__in=user_character_ocids,
+                item_name__icontains=query
+            ).select_related('character_basic')
+
+            # item_type 필터 적용
+            if item_type:
+                inventory_query = inventory_query.filter(item_type=item_type)
+
+            # 최근 크롤링 데이터만 조회 (각 캐릭터의 최신 crawled_at)
+            for ocid in user_character_ocids:
+                latest_crawled = Inventory.objects.filter(
+                    character_basic__ocid=ocid
+                ).order_by('-crawled_at').first()
+
+                if latest_crawled:
+                    items = inventory_query.filter(
+                        character_basic__ocid=ocid,
+                        crawled_at=latest_crawled.crawled_at
+                    )
+
+                    for item in items:
+                        results.append({
+                            'item_name': item.item_name,
+                            'item_type': item.item_type,
+                            'quantity': item.quantity,
+                            'item_icon': item.item_icon,
+                            'item_options': item.item_options,
+                            'location': 'inventory',
+                            'character_name': item.character_basic.character_name,
+                            'character_ocid': item.character_basic.ocid,
+                            'world_name': item.character_basic.world_name,
+                            'expiry_date': item.expiry_date,
+                            'days_until_expiry': item.days_until_expiry,
+                            'is_expirable': item.is_expirable,
+                        })
+
+        # 4-2. 창고 검색 (location이 'storage' 또는 'all')
+        if location in ['storage', 'all']:
+            storage_query = Storage.objects.filter(
+                character_basic__ocid__in=user_character_ocids,
+                item_name__icontains=query
+            ).select_related('character_basic')
+
+            # 창고는 item_type 필드가 없으므로, 필터링하지 않음
+            # (필요시 item_options 유무 등으로 유추 가능)
+
+            # 최근 크롤링 데이터만 조회
+            for ocid in user_character_ocids:
+                latest_crawled = Storage.objects.filter(
+                    character_basic__ocid=ocid
+                ).order_by('-crawled_at').first()
+
+                if latest_crawled:
+                    items = storage_query.filter(
+                        character_basic__ocid=ocid,
+                        crawled_at=latest_crawled.crawled_at
+                    )
+
+                    for item in items:
+                        results.append({
+                            'item_name': item.item_name,
+                            'item_type': None,  # Storage 모델에는 item_type 필드 없음
+                            'quantity': item.quantity,
+                            'item_icon': item.item_icon,
+                            'item_options': item.item_options,
+                            'location': 'storage',
+                            'character_name': item.character_basic.character_name,
+                            'character_ocid': item.character_basic.ocid,
+                            'world_name': item.character_basic.world_name,
+                            'expiry_date': item.expiry_date,
+                            'days_until_expiry': item.days_until_expiry,
+                            'is_expirable': item.is_expirable,
+                        })
+
+        # 5. 페이지네이션 처리
+        page_number = request.query_params.get('page', 1)
+        page_size = min(int(request.query_params.get('page_size', 20)), 100)  # 최대 100개
+
+        paginator = Paginator(results, page_size)
+
+        try:
+            page_obj = paginator.page(page_number)
+        except EmptyPage:
+            # 페이지 번호가 범위를 벗어난 경우 빈 결과 반환
+            return Response({
+                'count': paginator.count,
+                'next': None,
+                'previous': None,
+                'results': []
+            })
+
+        # 6. next/previous URL 생성
+        next_url = None
+        previous_url = None
+
+        if page_obj.has_next():
+            next_url = request.build_absolute_uri(
+                f'?q={query}&location={location}&page={page_obj.next_page_number()}&page_size={page_size}'
+            )
+            if item_type:
+                next_url += f'&type={item_type}'
+
+        if page_obj.has_previous():
+            previous_url = request.build_absolute_uri(
+                f'?q={query}&location={location}&page={page_obj.previous_page_number()}&page_size={page_size}'
+            )
+            if item_type:
+                previous_url += f'&type={item_type}'
+
+        # 7. 직렬화 및 응답
+        serializer = ItemSearchResultSerializer(page_obj.object_list, many=True)
+
+        return Response({
+            'count': paginator.count,
+            'next': next_url,
+            'previous': previous_url,
+            'results': serializer.data
+        })
+
+
+# =============================================================================
+# 메소 요약 뷰 (Story 4.3)
+# =============================================================================
+
+class MesoSummaryView(APIView):
+    """
+    메소 요약 조회 뷰 (Story 4.3)
+
+    GET /api/characters/meso/summary/ - 사용자의 전체 메소 요약 반환
+
+    사용자의 모든 캐릭터가 보유한 메소와 창고 메소를 집계합니다.
+    창고 메소는 계정 공유이므로 중복 집계되지 않습니다.
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 전체 메소 요약 조회 (캐릭터 메소 + 창고 메소)",
+        manual_parameters=[
+            openapi.Parameter(
+                'sort',
+                openapi.IN_QUERY,
+                description="정렬 기준 (meso, name, level)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='meso'
+            ),
+            openapi.Parameter(
+                'order',
+                openapi.IN_QUERY,
+                description="정렬 순서 (asc, desc)",
+                type=openapi.TYPE_STRING,
+                required=False,
+                default='desc'
+            )
+        ],
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'total_meso': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 메소 (캐릭터 + 창고)'),
+                        'character_meso_total': openapi.Schema(type=openapi.TYPE_INTEGER, description='캐릭터 메소 합계'),
+                        'storage_meso': openapi.Schema(type=openapi.TYPE_INTEGER, description='창고 메소'),
+                        'characters': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'ocid': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'world_name': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'meso': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'character_class': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'character_level': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                }
+                            )
+                        ),
+                        'storage': openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'meso': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'last_updated': openapi.Schema(type=openapi.TYPE_STRING),
+                            }
+                        ),
+                        'last_updated': openapi.Schema(type=openapi.TYPE_STRING, description='마지막 업데이트 시간'),
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자"
+        },
+        tags=['메소 요약']
+    )
+    def get(self, request):
+        """
+        사용자의 전체 메소 요약을 반환합니다.
+
+        - 모든 캐릭터의 메소 합계 계산
+        - 창고 메소는 계정 공유이므로 1회만 집계
+        - 정렬 옵션: meso (기본값), name, level
+        - 정렬 순서: desc (기본값), asc
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Storage
+        from .serializers import MesoSummarySerializer
+        from django.db.models import Sum, Max, Q, F
+        from django.db.models.functions import Coalesce
+
+        # 1. 사용자의 캐릭터 OCID 목록 조회
+        user_character_ocids = Character.objects.filter(
+            user=request.user
+        ).values_list('ocid', flat=True)
+
+        if not user_character_ocids:
+            # 캐릭터가 없는 경우 빈 요약 반환
+            return Response({
+                'total_meso': 0,
+                'character_meso_total': 0,
+                'storage_meso': 0,
+                'characters': [],
+                'storage': {
+                    'meso': 0,
+                    'last_updated': None
+                },
+                'last_updated': timezone.now().isoformat()
+            })
+
+        # 2. 캐릭터 메소 집계 (NULL 값은 0으로 처리)
+        character_basics = CharacterBasic.objects.filter(
+            ocid__in=user_character_ocids
+        ).annotate(
+            safe_meso=Coalesce('meso', 0)
+        )
+
+        # 캐릭터 메소 총합 계산
+        character_meso_aggregate = character_basics.aggregate(
+            total=Sum('safe_meso')
+        )
+        character_meso_total = character_meso_aggregate['total'] or 0
+
+        # 3. 창고 메소 조회 (가장 최근 크롤링된 창고 메소)
+        latest_storage = Storage.objects.filter(
+            character_basic__ocid__in=user_character_ocids,
+            meso__isnull=False
+        ).order_by('-crawled_at').first()
+
+        storage_meso = latest_storage.meso if latest_storage and latest_storage.meso else 0
+        storage_last_updated = latest_storage.crawled_at if latest_storage else None
+
+        # 4. 정렬 옵션 처리
+        sort_field = request.query_params.get('sort', 'meso')
+        order = request.query_params.get('order', 'desc')
+
+        # 허용된 정렬 필드 검증
+        valid_sort_fields = {
+            'meso': 'safe_meso',
+            'name': 'character_name',
+            'level': 'character_level'
+        }
+
+        if sort_field not in valid_sort_fields:
+            sort_field = 'meso'
+
+        db_sort_field = valid_sort_fields[sort_field]
+
+        # 정렬 순서 검증
+        if order not in ['asc', 'desc']:
+            order = 'desc'
+
+        # 정렬 적용
+        if order == 'desc':
+            character_basics = character_basics.order_by(f'-{db_sort_field}')
+        else:
+            character_basics = character_basics.order_by(db_sort_field)
+
+        # 5. 캐릭터 목록 직렬화
+        characters_data = []
+        for char in character_basics:
+            characters_data.append({
+                'ocid': char.ocid,
+                'character_name': char.character_name,
+                'world_name': char.world_name,
+                'meso': char.safe_meso,
+                'character_class': char.character_class,
+                'character_level': char.character_level
+            })
+
+        # 6. 최종 응답 데이터 구성
+        total_meso = character_meso_total + storage_meso
+
+        # 마지막 업데이트 시간 계산 (캐릭터 또는 창고 중 최신)
+        last_updated = timezone.now()
+        if character_basics.exists():
+            latest_char_update = character_basics.aggregate(Max('last_updated'))['last_updated__max']
+            if latest_char_update:
+                last_updated = latest_char_update
+        if storage_last_updated and storage_last_updated > last_updated:
+            last_updated = storage_last_updated
+
+        response_data = {
+            'total_meso': total_meso,
+            'character_meso_total': character_meso_total,
+            'storage_meso': storage_meso,
+            'characters': characters_data,
+            'storage': {
+                'meso': storage_meso,
+                'last_updated': storage_last_updated.isoformat() if storage_last_updated else None
+            },
+            'last_updated': last_updated.isoformat()
+        }
+
+        serializer = MesoSummarySerializer(data=response_data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data)
+
+
+# =============================================================================
+# 대시보드 통계 뷰 (Story 5.6)
+# =============================================================================
+
+class DashboardStatsView(APIView):
+    """
+    대시보드 통계 조회 뷰 (Story 5.6)
+
+    GET /api/characters/dashboard/stats/ - 사용자의 전체 대시보드 통계 반환
+
+    사용자의 모든 캐릭터 통계를 집계합니다:
+    - 총 캐릭터 수
+    - 총 메소 (캐릭터 보유 메소 합계)
+    - 7일 이내 만료 아이템 수
+    - 최근 크롤링 정보
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 대시보드 통계 조회",
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'total_characters': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 캐릭터 수'),
+                        'total_meso': openapi.Schema(type=openapi.TYPE_INTEGER, description='총 메소 (캐릭터 보유)'),
+                        'expiring_items_count': openapi.Schema(type=openapi.TYPE_INTEGER, description='7일 이내 만료 아이템 수'),
+                        'recent_crawl': openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'last_crawled_at': openapi.Schema(type=openapi.TYPE_STRING, nullable=True, description='마지막 크롤링 시간'),
+                                'characters_updated': openapi.Schema(type=openapi.TYPE_INTEGER, description='24시간 내 업데이트된 캐릭터 수'),
+                            }
+                        ),
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자"
+        },
+        tags=['대시보드']
+    )
+    def get(self, request):
+        """
+        사용자의 대시보드 통계를 반환합니다.
+
+        - 총 캐릭터 수
+        - 총 메소 (캐릭터 보유 메소 합계)
+        - 7일 이내 만료 아이템 수
+        - 최근 크롤링 정보 (마지막 크롤링 시간, 24시간 내 업데이트된 캐릭터 수)
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Inventory, Storage
+        from .serializers import DashboardStatsSerializer
+        from django.db.models import Sum
+        from django.db.models.functions import Coalesce
+        from datetime import timedelta
+
+        # 1. 사용자의 캐릭터 OCID 목록 조회
+        user_ocids = Character.objects.filter(user=request.user).values_list('ocid', flat=True)
+
+        # 2. 총 캐릭터 수
+        total_characters = user_ocids.count()
+
+        # 3. 총 메소 (CharacterBasic의 meso 필드 합계)
+        total_meso = CharacterBasic.objects.filter(
+            ocid__in=user_ocids
+        ).aggregate(
+            total=Coalesce(Sum('meso'), 0)
+        )['total']
+
+        # 4. 7일 이내 만료 아이템 수
+        seven_days = timezone.now() + timedelta(days=7)
+
+        # 인벤토리에서 7일 이내 만료 아이템
+        expiring_inventory = Inventory.objects.filter(
+            character_basic__ocid__in=user_ocids,
+            expiry_date__isnull=False,
+            expiry_date__lte=seven_days
+        ).count()
+
+        # 창고에서 7일 이내 만료 아이템
+        expiring_storage = Storage.objects.filter(
+            character_basic__ocid__in=user_ocids,
+            expiry_date__isnull=False,
+            expiry_date__lte=seven_days
+        ).count()
+
+        expiring_items_count = expiring_inventory + expiring_storage
+
+        # 5. 최근 크롤링 정보
+        # 가장 최근에 크롤링된 캐릭터 정보
+        recent_crawl_char = CharacterBasic.objects.filter(
+            ocid__in=user_ocids
+        ).order_by('-last_updated').first()
+
+        # 24시간 이내에 크롤링된 캐릭터 수
+        twenty_four_hours_ago = timezone.now() - timedelta(hours=24)
+        characters_updated = CharacterBasic.objects.filter(
+            ocid__in=user_ocids,
+            last_updated__gte=twenty_four_hours_ago
+        ).count()
+
+        crawl_info = {
+            'last_crawled_at': recent_crawl_char.last_updated.isoformat() if recent_crawl_char and recent_crawl_char.last_updated else None,
+            'characters_updated': characters_updated
+        }
+
+        # 6. 응답 데이터 구성
+        response_data = {
+            'total_characters': total_characters,
+            'total_meso': total_meso,
+            'expiring_items_count': expiring_items_count,
+            'recent_crawl': crawl_info
+        }
+
+        serializer = DashboardStatsSerializer(data=response_data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data)
+
+
+# =============================================================================
+# 만료 예정 아이템 목록 조회 뷰 (Story 5.1/5.4)
+# =============================================================================
+
+class ExpiringItemsView(APIView):
+    """
+    만료 예정 아이템 목록 조회 뷰 (Story 5.1/5.4)
+
+    GET /api/characters/dashboard/expiring-items/ - 7일 이내 만료 예정 아이템 목록 반환
+
+    사용자의 모든 캐릭터에서 7일 이내 만료되는 아이템을 조회합니다:
+    - 인벤토리 및 창고의 만료 예정 아이템
+    - D-day 계산 및 긴급도 레벨 (danger/warning/info)
+    - 만료 임박 순으로 정렬
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="인증된 사용자의 7일 이내 만료 예정 아이템 목록 조회",
+        responses={
+            200: openapi.Response(
+                description="성공",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'count': openapi.Schema(type=openapi.TYPE_INTEGER, description='만료 예정 아이템 수'),
+                        'items': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='아이템 ID'),
+                                    'item_name': openapi.Schema(type=openapi.TYPE_STRING, description='아이템 이름'),
+                                    'item_icon': openapi.Schema(type=openapi.TYPE_STRING, description='아이템 아이콘 URL'),
+                                    'character_name': openapi.Schema(type=openapi.TYPE_STRING, description='캐릭터 이름'),
+                                    'character_ocid': openapi.Schema(type=openapi.TYPE_STRING, description='캐릭터 OCID'),
+                                    'location': openapi.Schema(type=openapi.TYPE_STRING, description='위치 (inventory/storage)'),
+                                    'expiry_date': openapi.Schema(type=openapi.TYPE_STRING, description='만료 날짜 (ISO 8601)'),
+                                    'days_until_expiry': openapi.Schema(type=openapi.TYPE_INTEGER, description='만료까지 남은 일수'),
+                                    'urgency': openapi.Schema(type=openapi.TYPE_STRING, description='긴급도 (danger/warning/info)'),
+                                }
+                            )
+                        ),
+                    }
+                )
+            ),
+            401: "인증되지 않은 사용자"
+        },
+        tags=['대시보드']
+    )
+    def get(self, request):
+        """
+        사용자의 7일 이내 만료 예정 아이템 목록을 반환합니다.
+
+        - 인벤토리 및 창고에서 만료 예정 아이템 조회
+        - D-day 계산 및 긴급도 레벨 추가
+        - 만료 임박 순으로 정렬
+        """
+        from accounts.models import Character
+        from .models import CharacterBasic, Inventory, Storage
+        from .serializers import ExpiringItemSerializer
+        from datetime import timedelta
+
+        # 1. 사용자의 캐릭터 OCID 목록 조회
+        user_ocids = Character.objects.filter(user=request.user).values_list('ocid', flat=True)
+
+        # 2. CharacterBasic을 통해 캐릭터 정보 매핑
+        character_basics = CharacterBasic.objects.filter(
+            ocid__in=user_ocids
+        ).select_related().only('ocid', 'character_name')
+
+        character_map = {cb.ocid: cb.character_name for cb in character_basics}
+
+        # 3. 7일 이내 만료 아이템 조회
+        seven_days_later = timezone.now() + timedelta(days=7)
+        now = timezone.now()
+
+        # 인벤토리 아이템
+        inventory_items = Inventory.objects.filter(
+            character_basic__ocid__in=user_ocids,
+            expiry_date__isnull=False,
+            expiry_date__gte=now,
+            expiry_date__lte=seven_days_later
+        ).select_related('character_basic').order_by('expiry_date')
+
+        # 창고 아이템
+        storage_items = Storage.objects.filter(
+            character_basic__ocid__in=user_ocids,
+            expiry_date__isnull=False,
+            expiry_date__gte=now,
+            expiry_date__lte=seven_days_later
+        ).select_related('character_basic').order_by('expiry_date')
+
+        # 4. 통합 아이템 목록 구성
+        items_data = []
+
+        # 인벤토리 아이템 추가
+        for item in inventory_items:
+            days_until_expiry = item.days_until_expiry
+
+            # 긴급도 계산
+            if days_until_expiry <= 1:
+                urgency = "danger"
+            elif days_until_expiry <= 3:
+                urgency = "warning"
+            else:
+                urgency = "info"
+
+            items_data.append({
+                'id': item.id,
+                'item_name': item.item_name,
+                'item_icon': item.item_icon,
+                'character_name': character_map.get(item.character_basic.ocid, item.character_basic.character_name),
+                'character_ocid': item.character_basic.ocid,
+                'location': 'inventory',
+                'expiry_date': item.expiry_date.isoformat(),
+                'days_until_expiry': days_until_expiry,
+                'urgency': urgency
+            })
+
+        # 창고 아이템 추가
+        for item in storage_items:
+            days_until_expiry = item.days_until_expiry
+
+            # 긴급도 계산
+            if days_until_expiry <= 1:
+                urgency = "danger"
+            elif days_until_expiry <= 3:
+                urgency = "warning"
+            else:
+                urgency = "info"
+
+            items_data.append({
+                'id': item.id,
+                'item_name': item.item_name,
+                'item_icon': item.item_icon,
+                'character_name': character_map.get(item.character_basic.ocid, item.character_basic.character_name),
+                'character_ocid': item.character_basic.ocid,
+                'location': 'storage',
+                'expiry_date': item.expiry_date.isoformat(),
+                'days_until_expiry': days_until_expiry,
+                'urgency': urgency
+            })
+
+        # 5. 만료 임박 순으로 정렬 (이미 쿼리에서 정렬되어 있지만 통합 후 재정렬)
+        items_data.sort(key=lambda x: x['expiry_date'])
+
+        # 6. 응답 데이터 구성
+        response_data = {
+            'count': len(items_data),
+            'items': items_data
+        }
+
+        serializer = ExpiringItemSerializer(data=response_data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data)

@@ -50,4 +50,12 @@ urlpatterns = [
     path('<str:ocid>/storage/', views.StorageListView.as_view(), name='storage-list'),
     # Story 3.5.3: 아이템 상세 정보 조회 API
     path('inventory/<int:item_id>/detail/', views.ItemDetailView.as_view(), name='item-detail'),
+    # Story 4.1: 통합 아이템 검색 API
+    path('search/items/', views.ItemSearchView.as_view(), name='item-search'),
+    # Story 4.3: 메소 요약 API
+    path('meso/summary/', views.MesoSummaryView.as_view(), name='meso-summary'),
+    # Story 5.6: 대시보드 통계 API
+    path('dashboard/stats/', views.DashboardStatsView.as_view(), name='dashboard-stats'),
+    # Story 5.1/5.4: 만료 예정 아이템 목록 API
+    path('dashboard/expiring-items/', views.ExpiringItemsView.as_view(), name='expiring-items'),
 ]

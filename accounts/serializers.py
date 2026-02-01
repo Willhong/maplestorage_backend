@@ -291,3 +291,37 @@ class BatchRegistrationResponseSerializer(serializers.Serializer):
     success_count = serializers.IntegerField()
     failure_count = serializers.IntegerField()
     results = BatchRegistrationResultSerializer(many=True)
+
+
+# =============================================================================
+# Story 5.3: 알림 설정 Serializers
+# =============================================================================
+
+class NotificationSettingsSerializer(serializers.Serializer):
+    """알림 설정 Serializer (Story 5.3)"""
+    email_enabled = serializers.BooleanField()
+    push_enabled = serializers.BooleanField()
+    schedule = serializers.DictField(child=serializers.BooleanField())
+    category = serializers.ChoiceField(choices=['ALL', 'EQUIPMENT', 'CONSUMABLE'])
+    quiet_hours_enabled = serializers.BooleanField()
+    quiet_hours_start = serializers.TimeField(allow_null=True, required=False)
+    quiet_hours_end = serializers.TimeField(allow_null=True, required=False)
+
+
+# =============================================================================
+# Story 5.5: 알림 이력 관리 Serializers
+# =============================================================================
+
+class NotificationHistorySerializer(serializers.Serializer):
+    """알림 기록 Serializer (Story 5.5)"""
+    id = serializers.IntegerField(read_only=True)
+    item_id = serializers.IntegerField()
+    item_source = serializers.CharField()
+    item_name = serializers.CharField()
+    character_name = serializers.CharField()
+    character_ocid = serializers.CharField()
+    notification_type = serializers.CharField()
+    channel = serializers.CharField()
+    expiry_date = serializers.DateTimeField()
+    sent_at = serializers.DateTimeField(read_only=True)
+    read_at = serializers.DateTimeField(read_only=True, allow_null=True)
